@@ -43,9 +43,9 @@ export interface PlayfieldMapProps {
 // --- Map constants ----------------------------------------------------------
 
 const LONDON_CENTRE: LngLatLike = [-0.118, 51.51]
-const INITIAL_ZOOM = 12
+const INITIAL_ZOOM = 13
 /** Zoom the follow-cam eases to — frames the local neighbourhood without cramming. */
-const FOLLOW_ZOOM = 13.5
+const FOLLOW_ZOOM = 14.2
 const FOLLOW_MS = 600
 
 /** CARTO Positron raster basemap — keyless, clean and light. */

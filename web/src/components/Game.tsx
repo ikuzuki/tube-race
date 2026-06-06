@@ -102,14 +102,14 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
   }, [restart])
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-stone text-ink">
+    <div className="flex min-h-screen flex-col bg-stone text-ink">
       <Header
         date={prettyDate(dateISO)}
         onHowToPlay={() => setOnboardingOpen(true)}
         onStats={() => setStatsOpen(true)}
       />
 
-      <main className="mx-auto flex w-full max-w-4xl min-h-0 flex-1 flex-col gap-3 p-3 sm:p-4">
+      <main className="mx-auto flex w-full max-w-4xl flex-col gap-3 p-3 sm:p-4">
         <Hud
           targetName={targetName}
           currentLineId={currentLine}
@@ -122,7 +122,7 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
           km={km}
         />
 
-        <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-map shadow-xl ring-1 ring-black/40">
+        <div className="relative h-[62vh] max-h-[640px] min-h-[380px] w-full overflow-hidden rounded-2xl bg-map shadow-xl ring-1 ring-black/40">
           <PlayfieldMap
             graph={graph}
             state={state}
