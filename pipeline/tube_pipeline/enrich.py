@@ -55,6 +55,29 @@ WIKIDATA_SPARQL_URL: str = "https://query.wikidata.org/sparql"
 WIKIPEDIA_SUMMARY_URL: str = "https://en.wikipedia.org/api/rest_v1/page/summary"
 """Base URL of the Wikipedia REST page-summary endpoint."""
 
+WIKIPEDIA_QUERY_URL: str = "https://en.wikipedia.org/w/api.php"
+"""Wikipedia Action API endpoint, used for the fuller ``prop=extracts`` intro.
+
+The REST summary ``extract`` is sometimes a single sentence; the Action API's
+``prop=extracts&exintro&explaintext`` returns the whole lead section as plain
+text, which gives the fun-fact heuristic more material to choose from.
+"""
+
+ANTHROPIC_MESSAGES_URL: str = "https://api.anthropic.com/v1/messages"
+"""Anthropic Messages API endpoint (used only when ``ANTHROPIC_API_KEY`` is set)."""
+
+ANTHROPIC_VERSION: str = "2023-06-01"
+"""``anthropic-version`` header value for the Messages API."""
+
+ANTHROPIC_MODEL: str = "claude-3-5-haiku-latest"
+"""Cheap, fast Haiku model used to distil one grounded fun fact per station."""
+
+ANTHROPIC_MAX_TOKENS: int = 80
+"""Token ceiling for the distilled fun fact (one short sentence)."""
+
+ANTHROPIC_TIMEOUT_S: float = 30.0
+"""Per-request timeout for the Anthropic call (kept short; falls back on timeout)."""
+
 USER_AGENT: str = (
     "TubeRacePipeline/0.1 (https://github.com/tube-race; station trivia enrichment) httpx"
 )
@@ -623,6 +646,253 @@ def first_sentence(extract: str, max_len: int = 220) -> str | None:
     return sentence or None
 
 
+# --------------------------------------------------------------------------- #
+# Fun-fact selection: skip the dull definition, pick the interesting sentence  #
+# --------------------------------------------------------------------------- #
+
+_GENERIC_DEFINITION_RE: re.Pattern[str] = re.compile(
+    r"""
+    \bis\s+(?:a|an|the)\s+            # "is a" / "is an" / "is the"
+    (?:[\w'’\-]+\s+){0,6}?            # up to a few qualifier words (e.g. "Grade II listed")
+    (?:
+        london\s+underground\s+(?:station|and)  # "London Underground station"/"... and ..."
+      | underground\s+station                    # "Underground station"
+      | tube\s+station                            # "tube station"
+      | (?:railway|train|metro)\s+station\b       # plain "railway/train/metro station"
+      | interchange\s+station\b                    # "interchange station"
+      | (?:central\s+london\s+)?railway\s+terminus # "central London railway terminus"
+    )
+    """,
+    re.IGNORECASE | re.VERBOSE,
+)
+"""Matches the dull "X is a[n] ... [Underground] station" opening definition.
+
+Deliberately broad over the boilerplate forms (plain tube station, interchange,
+railway terminus) so the heuristic can skip past them to something worth
+reading.
+"""
+
+_GENERIC_LINE_DEF_RE: re.Pattern[str] = re.compile(
+    r"\bis\s+(?:a|an)\s+(?:[\w'’\-]+\s+){0,3}?station\s+on\s+the\b",
+    re.IGNORECASE,
+)
+"""Matches the line-defining opener "X is a station on the <line> line".
+
+Kept separate from :data:`_GENERIC_DEFINITION_RE` because it is pinned to the
+indefinite article (``a``/``an``): that distinguishes the definitional "is a
+station on the Northern line" from a real superlative like "is the deepest
+station on the network", which must NOT be treated as boilerplate.
+"""
+
+# Tube line names. A sentence that leans on these is a line spoiler -- the UI
+# reveals which lines serve a station only as a post-game reward -- so such
+# sentences are demoted, never preferred.
+_LINE_NAMES: tuple[str, ...] = (
+    "bakerloo",
+    "central line",
+    "circle line",
+    "district line",
+    "hammersmith & city",
+    "hammersmith and city",
+    "jubilee line",
+    "metropolitan line",
+    "northern line",
+    "piccadilly line",
+    "victoria line",
+    "waterloo & city",
+    "waterloo and city",
+    "elizabeth line",
+)
+"""Line-name fragments whose presence makes a sentence a line spoiler."""
+
+_LINE_SPOILER_RE: re.Pattern[str] = re.compile(
+    "|".join(re.escape(name) for name in _LINE_NAMES), re.IGNORECASE
+)
+"""Any tube/Elizabeth line name (case-insensitive), for the spoiler demotion."""
+
+# Phrases that mark a genuinely interesting sentence. Weighted: an explicit
+# "named after" is the strongest signal (this is exactly the Oval-cricket-ground
+# kind of fact we want), superlatives and notable associations next.
+_INTEREST_PATTERNS: tuple[tuple[re.Pattern[str], int], ...] = (
+    (re.compile(r"\bnamed (?:after|for|in honou?r of)\b", re.IGNORECASE), 6),
+    (re.compile(r"\btakes its name from\b", re.IGNORECASE), 6),
+    (re.compile(r"\b(?:named|naming)\b", re.IGNORECASE), 3),
+    (
+        re.compile(
+            r"\b(?:oldest|deepest|highest|busiest|first|only|largest|smallest|"
+            r"longest|shortest|newest|rarest|northernmost|southernmost|"
+            r"easternmost|westernmost|unique|sole)\b",
+            re.IGNORECASE,
+        ),
+        4,
+    ),
+    (
+        re.compile(
+            r"\b(?:film|films|movie|television|tv series|sitcom|novel|song|"
+            r"music video|featured in|depicted in|appears in|filmed)\b",
+            re.IGNORECASE,
+        ),
+        4,
+    ),
+    (
+        re.compile(
+            r"\b(?:designed by|architect|Charles Holden|listed building|"
+            r"grade [I]+ listed|art deco|art-deco|mosaic|murals?|disused|"
+            r"abandoned|ghost station|deep-level shelter|air-raid|wartime|"
+            r"bomb|World War|blitz)\b",
+            re.IGNORECASE,
+        ),
+        4,
+    ),
+    (
+        re.compile(
+            r"\b(?:cricket|football|stadium|ground|palace|cathedral|abbey|"
+            r"museum|gallery|prison|gardens?|park|market|cemetery|brewery|"
+            r"racecourse|university|hospital)\b",
+            re.IGNORECASE,
+        ),
+        2,
+    ),
+)
+"""Regexes that flag interesting content, paired with the score they add."""
+
+_PROPER_NOUN_RE: re.Pattern[str] = re.compile(r"\b[A-Z][a-z]{2,}\b")
+"""A capitalised word (a rough proxy for a named person/place worth mentioning)."""
+
+_SENTENCE_SPLIT_RE: re.Pattern[str] = re.compile(r"(?<=[.!?])\s+(?=[A-Z(])")
+"""Splits an intro into sentences at a terminator followed by a capital/paren.
+
+Abbreviations like ``St.`` rarely precede a capital-then-space in these intros,
+and the small-fragment guard in :func:`_split_sentences` mops up the rest.
+"""
+
+
+def is_generic_definition(sentence: str) -> bool:
+    """Return whether a sentence is the dull "X is a ... station" boilerplate.
+
+    Parameters
+    ----------
+    sentence : str
+        A single sentence.
+
+    Returns
+    -------
+    bool
+        ``True`` if the sentence is the generic Underground-station definition
+        (or the line-defining "X is a station on the ... line" form).
+    """
+    return (
+        _GENERIC_DEFINITION_RE.search(sentence) is not None
+        or _GENERIC_LINE_DEF_RE.search(sentence) is not None
+    )
+
+
+def _split_sentences(text: str) -> list[str]:
+    """Split an intro paragraph into trimmed, non-trivial sentences.
+
+    Fragments shorter than :data:`_MIN_SENTENCE_LEN` are dropped (they are
+    almost always split artefacts), and any trailing reference brackets such as
+    ``[1]`` are stripped.
+
+    Parameters
+    ----------
+    text : str
+        The intro text (one or more paragraphs).
+
+    Returns
+    -------
+    list of str
+        The cleaned sentences in document order.
+    """
+    cleaned = re.sub(r"\[\d+\]", "", text).strip()
+    if not cleaned:
+        return []
+    parts = _SENTENCE_SPLIT_RE.split(cleaned)
+    out: list[str] = []
+    for part in parts:
+        candidate = part.strip()
+        if len(candidate) >= _MIN_SENTENCE_LEN:
+            out.append(candidate)
+    return out
+
+
+def _score_sentence(sentence: str) -> int:
+    """Score how interesting a candidate fun-fact sentence is.
+
+    Higher is better. Interest phrases (``named after``, superlatives, films,
+    notable landmarks) add their weight; otherwise unseen proper nouns add a
+    little (a sentence naming places/people beats a bare locator). A sentence
+    that mentions a tube line is heavily penalised so it is never preferred --
+    line identities are a post-game reveal in the UI.
+
+    Parameters
+    ----------
+    sentence : str
+        A single candidate sentence.
+
+    Returns
+    -------
+    int
+        The interest score (may be negative for line spoilers).
+    """
+    score = 0
+    for pattern, weight in _INTEREST_PATTERNS:
+        if pattern.search(sentence):
+            score += weight
+    # A couple of proper nouns beyond the leading station name suggest the
+    # sentence actually says something specific. Cap the contribution so a
+    # name-stuffed locator does not outrank a real fact.
+    proper_nouns = _PROPER_NOUN_RE.findall(sentence)
+    score += min(max(len(proper_nouns) - 1, 0), 2)
+    if _LINE_SPOILER_RE.search(sentence):
+        score -= 8
+    return score
+
+
+def best_fun_fact(extract: str, max_len: int = 220) -> str | None:
+    """Pick the most interesting sentence from a Wikipedia intro.
+
+    Skips the generic "X is a[n] ... Underground station" definition
+    sentence(s) and ranks the remainder by :func:`_score_sentence`, preferring
+    "named after", superlatives, notable landmarks/people, and unusual history
+    over a bare locator. Ties keep document order (earlier sentences win), which
+    favours the lead. Only if nothing non-generic survives does it fall back to
+    the first generic definition (then to :func:`first_sentence`), so a fact is
+    always returned when the extract has any content.
+
+    Parameters
+    ----------
+    extract : str
+        The Wikipedia intro text (REST summary ``extract`` or the fuller
+        Action-API ``prop=extracts`` lead section).
+    max_len : int, optional
+        Hard cap on the returned sentence length.
+
+    Returns
+    -------
+    str or None
+        One punchy sentence, or ``None`` if the extract is empty.
+    """
+    sentences = _split_sentences(extract)
+    if not sentences:
+        return first_sentence(extract, max_len=max_len)
+
+    non_generic = [s for s in sentences if not is_generic_definition(s)]
+    if non_generic:
+        # argmax by score, keeping the earliest on ties (stable enumerate key).
+        best = max(
+            enumerate(non_generic),
+            key=lambda pair: (_score_sentence(pair[1]), -pair[0]),
+        )[1]
+    else:
+        best = sentences[0]
+
+    best = best.strip()
+    if len(best) > max_len:
+        best = best[: max_len - 1].rstrip() + "…"
+    return best or None
+
+
 class WikidataClient:
     """Minimal client for the Wikidata SPARQL endpoint.
 
@@ -729,6 +999,9 @@ class WikipediaClient:
     ----------
     base_url : str, optional
         Summary endpoint base. Defaults to :data:`WIKIPEDIA_SUMMARY_URL`.
+    query_url : str, optional
+        Action API endpoint for the fuller intro. Defaults to
+        :data:`WIKIPEDIA_QUERY_URL`.
     timeout : float, optional
         Per-request timeout in seconds. Defaults to ``30.0``.
     delay_s : float, optional
@@ -743,11 +1016,13 @@ class WikipediaClient:
     def __init__(
         self,
         base_url: str = WIKIPEDIA_SUMMARY_URL,
+        query_url: str = WIKIPEDIA_QUERY_URL,
         timeout: float = 30.0,
         delay_s: float = DEFAULT_WIKI_DELAY_S,
         client: httpx.Client | None = None,
     ) -> None:
         self.base_url = base_url.rstrip("/")
+        self.query_url = query_url
         self.delay_s = delay_s
         self._owns_client = client is None
         self._client = client if client is not None else _new_http_client(timeout)
@@ -806,6 +1081,57 @@ class WikipediaClient:
             return None
         extract = body.get("extract")
         return extract if isinstance(extract, str) and extract.strip() else None
+
+    def intro_extract(self, title: str) -> str | None:
+        """Fetch the fuller lead-section plain text via the Action API.
+
+        Uses ``action=query&prop=extracts&exintro&explaintext`` which returns
+        the whole intro (often several sentences) rather than the single
+        sentence the REST summary can collapse to. Falls back to
+        :meth:`summary_extract` on any failure so the caller always has the best
+        available text. A missing/empty page yields ``None``.
+
+        Parameters
+        ----------
+        title : str
+            Article title, e.g. ``"Oval tube station"``.
+
+        Returns
+        -------
+        str or None
+            The intro plain text, or ``None`` if unavailable from both
+            endpoints.
+        """
+        params = {
+            "action": "query",
+            "format": "json",
+            "prop": "extracts",
+            "exintro": "1",
+            "explaintext": "1",
+            "redirects": "1",
+            "titles": title,
+        }
+        response: httpx.Response | None
+        try:
+            response = self._client.get(self.query_url, params=params)
+        except httpx.HTTPError:
+            response = None
+        finally:
+            if self.delay_s > 0:
+                time.sleep(self.delay_s)
+        if response is None or response.status_code != 200:
+            return self.summary_extract(title)
+        try:
+            body: dict[str, Any] = response.json()
+        except ValueError:
+            return self.summary_extract(title)
+        pages = body.get("query", {}).get("pages", {})
+        if isinstance(pages, dict):
+            for page in pages.values():
+                extract = page.get("extract") if isinstance(page, dict) else None
+                if isinstance(extract, str) and extract.strip():
+                    return extract
+        return self.summary_extract(title)
 
 
 class StationUsageClient:
@@ -878,6 +1204,192 @@ class StationUsageClient:
         response = self._client.get(self.url)
         response.raise_for_status()
         return parse_station_usage(response.content)
+
+
+# --------------------------------------------------------------------------- #
+# Optional AI distillation: one grounded fun fact via the Anthropic API        #
+# --------------------------------------------------------------------------- #
+
+_AI_SYSTEM_PROMPT: str = (
+    "You write a single fun fact about a London Underground station for a trivia "
+    "game. Rules, all mandatory:\n"
+    "- Use ONLY facts stated in the supplied Wikipedia text. Never add outside "
+    "knowledge and never guess. If the text has nothing more interesting than "
+    "the station being an Underground station, reply with exactly NONE.\n"
+    "- One sentence, at most about 20 words, no preamble.\n"
+    "- Do NOT restate that it is a London Underground/tube/railway station.\n"
+    "- Do NOT mention which lines serve the station (line names are a spoiler).\n"
+    "- Prefer the genuinely interesting angle: what it is named after, a nearby "
+    "landmark, a superlative (oldest/deepest/only), an appearance in film or TV, "
+    "or unusual history or design.\n"
+    "- Output the sentence itself only, or NONE."
+)
+"""System prompt pinning the model to grounded, spoiler-free, one-line output."""
+
+_AI_REFUSAL: str = "NONE"
+"""Sentinel the model is told to return when the text offers no good fact."""
+
+
+def build_fun_fact_prompt(name: str, intro_text: str) -> str:
+    """Build the user message asking the model to distil one fun fact.
+
+    Parameters
+    ----------
+    name : str
+        Human station name (without the ``Underground Station`` suffix is fine).
+    intro_text : str
+        The Wikipedia intro text the fact must be grounded in.
+
+    Returns
+    -------
+    str
+        The user-turn content for the Messages API.
+    """
+    trimmed = intro_text.strip()
+    return (
+        f"Station: {name}\n\n"
+        f"Wikipedia text:\n{trimmed}\n\n"
+        "Give the single best fun fact following all the rules, or NONE."
+    )
+
+
+def parse_fun_fact_response(payload: dict[str, Any]) -> str | None:
+    """Extract the distilled fun fact from a Messages API response body.
+
+    Joins the text blocks of the response, strips wrapping quotes/whitespace,
+    and maps the ``NONE`` refusal sentinel (or any line-spoiler / still-generic
+    answer) to ``None`` so the caller falls back to the heuristic.
+
+    Parameters
+    ----------
+    payload : dict
+        Decoded Messages API response.
+
+    Returns
+    -------
+    str or None
+        The cleaned one-line fact, or ``None`` if the model declined or returned
+        an unusable answer.
+    """
+    blocks = payload.get("content", [])
+    if not isinstance(blocks, list):
+        return None
+    text = "".join(
+        block.get("text", "")
+        for block in blocks
+        if isinstance(block, dict) and block.get("type") == "text"
+    ).strip()
+    if not text:
+        return None
+    # Models sometimes wrap the sentence in quotes; drop a single matching pair.
+    if len(text) >= 2 and text[0] in {'"', "'", "“"} and text[-1] in {'"', "'", "”"}:
+        text = text[1:-1].strip()
+    # Keep only the first line/sentence-ish chunk if it rambled.
+    text = text.splitlines()[0].strip()
+    if not text or text.strip().rstrip(".").upper() == _AI_REFUSAL:
+        return None
+    # Guardrails: a line spoiler or a still-generic definition is unusable.
+    if _LINE_SPOILER_RE.search(text) or is_generic_definition(text):
+        return None
+    return text
+
+
+class AnthropicClient:
+    """Minimal Anthropic Messages API client for distilling fun facts.
+
+    Only instantiated when an API key is available. Every failure mode (no key,
+    timeout, transport error, non-2xx, malformed body, refusal) resolves to
+    ``None`` from :meth:`distil_fun_fact`, so the heuristic always has the last
+    word and a flaky API never aborts a regeneration run.
+
+    Parameters
+    ----------
+    api_key : str
+        Anthropic API key (``ANTHROPIC_API_KEY``).
+    model : str, optional
+        Model id. Defaults to :data:`ANTHROPIC_MODEL` (a Haiku model).
+    endpoint : str, optional
+        Messages API URL. Defaults to :data:`ANTHROPIC_MESSAGES_URL`.
+    timeout : float, optional
+        Per-request timeout in seconds. Defaults to :data:`ANTHROPIC_TIMEOUT_S`.
+    client : httpx.Client or None, optional
+        An existing client to use (not closed by this object). When ``None`` a
+        client is created internally.
+    """
+
+    def __init__(
+        self,
+        api_key: str,
+        model: str = ANTHROPIC_MODEL,
+        endpoint: str = ANTHROPIC_MESSAGES_URL,
+        timeout: float = ANTHROPIC_TIMEOUT_S,
+        client: httpx.Client | None = None,
+    ) -> None:
+        self.api_key = api_key
+        self.model = model
+        self.endpoint = endpoint
+        self._owns_client = client is None
+        self._client = client if client is not None else httpx.Client(timeout=timeout)
+
+    def __enter__(self) -> AnthropicClient:
+        """Enter the runtime context and return this client.
+
+        Returns
+        -------
+        AnthropicClient
+            This client instance.
+        """
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        """Exit the runtime context, closing an internally owned client."""
+        self.close()
+
+    def close(self) -> None:
+        """Close the underlying HTTP client if this object created it."""
+        if self._owns_client:
+            self._client.close()
+
+    def distil_fun_fact(self, name: str, intro_text: str) -> str | None:
+        """Ask the model for one grounded, spoiler-free fun fact.
+
+        Parameters
+        ----------
+        name : str
+            Human station name.
+        intro_text : str
+            Wikipedia intro text to ground the fact in.
+
+        Returns
+        -------
+        str or None
+            The distilled fact, or ``None`` on refusal or any error (the caller
+            then falls back to the heuristic).
+        """
+        if not intro_text.strip():
+            return None
+        body = {
+            "model": self.model,
+            "max_tokens": ANTHROPIC_MAX_TOKENS,
+            "system": _AI_SYSTEM_PROMPT,
+            "messages": [{"role": "user", "content": build_fun_fact_prompt(name, intro_text)}],
+        }
+        headers = {
+            "x-api-key": self.api_key,
+            "anthropic-version": ANTHROPIC_VERSION,
+            "content-type": "application/json",
+        }
+        try:
+            response = self._client.post(self.endpoint, json=body, headers=headers)
+        except httpx.HTTPError:
+            return None
+        if response.status_code != 200:
+            return None
+        try:
+            payload: dict[str, Any] = response.json()
+        except ValueError:
+            return None
+        return parse_fun_fact_response(payload)
 
 
 def _new_http_client(timeout: float) -> httpx.Client:
@@ -1357,6 +1869,214 @@ def enrich_stations(
             "stations": infos,
         }
     )
+
+
+def clean_station_name(name: str) -> str:
+    """Strip the ``Underground Station`` suffix and parentheticals from a name.
+
+    Turns ``"Oval Underground Station"`` into ``"Oval"`` and
+    ``"Paddington (H&C Line)-Underground"`` into ``"Paddington"`` -- the form
+    wanted for an AI prompt or a fallback article title. An internal ``Station``
+    (``Battersea Power Station``) is preserved.
+
+    Parameters
+    ----------
+    name : str
+        Raw display name from the artefact.
+
+    Returns
+    -------
+    str
+        The cleaned, human-readable station name.
+    """
+    # Drop any parenthetical disambiguator anywhere (e.g. "(H&C Line)"), then the
+    # trailing "[-/ ]Underground[ Station]" / "tube station" suffix. Done in this
+    # order because the suffix strip in _TITLE_SUFFIX_RE is end-anchored and would
+    # otherwise leave a parenthetical that is not flush with the end of the name.
+    without_parens = re.sub(r"\s*\([^)]*\)", "", name)
+    return _TITLE_SUFFIX_RE.sub("", without_parens).strip()
+
+
+def select_fun_fact(
+    name: str,
+    intro_text: str | None,
+    ai_client: AnthropicClient | None = None,
+) -> str | None:
+    """Choose one fun fact for a station from its Wikipedia intro.
+
+    Prefers the AI distillation when an :class:`AnthropicClient` is supplied and
+    returns a usable answer; otherwise (or on AI refusal/error) falls back to the
+    :func:`best_fun_fact` heuristic. Returns ``None`` only when there is no intro
+    text at all.
+
+    Parameters
+    ----------
+    name : str
+        Cleaned station name (see :func:`clean_station_name`).
+    intro_text : str or None
+        The fetched Wikipedia intro text, or ``None`` if the fetch failed.
+    ai_client : AnthropicClient or None, optional
+        When provided, tried first for a distilled fact.
+
+    Returns
+    -------
+    str or None
+        The chosen fun fact, or ``None`` if no intro text was available.
+    """
+    if not intro_text or not intro_text.strip():
+        return None
+    if ai_client is not None:
+        distilled = ai_client.distil_fun_fact(name, intro_text)
+        if distilled:
+            return distilled
+    return best_fun_fact(intro_text)
+
+
+def _looks_like_line_article(title: str | None) -> bool:
+    """Return whether an article title is a tube-line article, not a station.
+
+    A handful of artefact ``wikiUrl``s point at a line article (e.g. Aldgate ->
+    ``Metropolitan_line``) rather than the station, a legacy of an imperfect
+    Wikidata sitelink. Such an intro is all line spoiler, so the caller refetches
+    from the canonical ``"{name} tube station"`` title instead.
+
+    Parameters
+    ----------
+    title : str or None
+        Article title decoded from the ``wikiUrl``.
+
+    Returns
+    -------
+    bool
+        ``True`` if the title is (or ends with) a tube-line article title.
+    """
+    if not title:
+        return False
+    return bool(re.search(r"\b(?:line|bakerloo)\s*$", title, re.IGNORECASE))
+
+
+def _fetch_station_fact(
+    name: str,
+    wiki_url: str | None,
+    wiki: WikipediaClient,
+    ai_client: AnthropicClient | None,
+) -> str | None:
+    """Fetch the intro for one station and distil its fun fact.
+
+    The article title is recovered from the existing ``wiki_url`` so the fact
+    stays grounded in the very page the artefact links. If that title is missing
+    or is a line article (a known legacy quirk), the canonical
+    ``"{clean name} tube station"`` title is used so the fact describes the
+    station, not a line. The ``wiki_url`` itself is never changed by this
+    function -- only the fact is produced.
+
+    Parameters
+    ----------
+    name : str
+        Cleaned station name.
+    wiki_url : str or None
+        The station's existing Wikipedia URL.
+    wiki : WikipediaClient
+        Client for the intro fetch.
+    ai_client : AnthropicClient or None
+        Optional AI distiller, tried before the heuristic.
+
+    Returns
+    -------
+    str or None
+        The chosen fun fact, or ``None`` if no usable intro was found.
+    """
+    title = article_title_from_url(wiki_url) if wiki_url else None
+    if title is not None and not _looks_like_line_article(title):
+        intro = wiki.intro_extract(title)
+        fact = select_fun_fact(name, intro, ai_client)
+        if fact and not is_generic_definition(fact):
+            return fact
+        # Hold the generic fact as a last resort but try the canonical title for
+        # something better.
+        fallback_fact = fact
+    else:
+        fallback_fact = None
+
+    canonical = f"{name} tube station" if name else None
+    if canonical and canonical != title:
+        intro = wiki.intro_extract(canonical)
+        fact = select_fun_fact(name, intro, ai_client)
+        if fact:
+            return fact
+    return fallback_fact
+
+
+def refresh_fun_facts(
+    info_file: StationInfoFile,
+    wiki: WikipediaClient,
+    ai_client: AnthropicClient | None = None,
+) -> StationInfoFile:
+    """Return a copy of the artefact with only each station's ``funFact`` redone.
+
+    For every station the Wikipedia intro is fetched (from the station's existing
+    ``wikiUrl``, see :func:`_fetch_station_fact`) and distilled into one punchy,
+    sourced, spoiler-free sentence -- via the AI path when ``ai_client`` is given,
+    otherwise the :func:`best_fun_fact` heuristic. Every other field (``name``,
+    ``openedYear``, ``openedRank``, ``dailyTraffic``, ``dailyTrafficRank``,
+    ``wikiUrl``) and the file-level ``version``/``generatedAt``/``counts`` are
+    copied through unchanged. A station whose fetch yields nothing keeps its
+    current fact rather than losing it.
+
+    Parameters
+    ----------
+    info_file : StationInfoFile
+        The existing, validated artefact to refresh.
+    wiki : WikipediaClient
+        Client for the per-station intro fetches.
+    ai_client : AnthropicClient or None, optional
+        Optional AI distiller.
+
+    Returns
+    -------
+    StationInfoFile
+        A new, re-validated artefact identical to the input except for refreshed
+        ``funFact`` values.
+    """
+    stations: dict[str, dict[str, Any]] = {}
+    for sid, info in info_file.stations.items():
+        data = info.model_dump(by_alias=True, exclude_none=True)
+        name = clean_station_name(info.name)
+        fact = _fetch_station_fact(name, info.wiki_url, wiki, ai_client)
+        if fact:
+            data["funFact"] = fact
+        # else: leave the pre-existing funFact (if any) untouched.
+        stations[sid] = data
+
+    return StationInfoFile.model_validate(
+        {
+            "version": info_file.version,
+            "generatedAt": info_file.generated_at,
+            "counts": info_file.counts.model_dump(by_alias=True),
+            "stations": stations,
+        }
+    )
+
+
+def load_station_info_file(path: str) -> StationInfoFile:
+    """Load and validate an existing ``stations-info.json`` artefact.
+
+    Parameters
+    ----------
+    path : str
+        Path to the artefact.
+
+    Returns
+    -------
+    StationInfoFile
+        The parsed, validated artefact (camelCase keys are accepted via the
+        model's field aliases).
+    """
+    import json
+    from pathlib import Path
+
+    raw = json.loads(Path(path).read_text(encoding="utf-8"))
+    return StationInfoFile.model_validate(raw)
 
 
 def write_station_info(info_file: StationInfoFile, out_path: str) -> None:

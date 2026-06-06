@@ -17,6 +17,7 @@ functions deliberately avoid.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from datetime import date
 
@@ -24,11 +25,15 @@ import httpx
 
 from tube_pipeline.build_graph import build_graph, write_graph
 from tube_pipeline.enrich import (
+    AnthropicClient,
     StationUsageClient,
     WikidataClient,
     WikipediaClient,
     enrich_stations,
+    is_generic_definition,
     load_graph_stations,
+    load_station_info_file,
+    refresh_fun_facts,
     write_station_info,
 )
 from tube_pipeline.tfl_client import TflClient
@@ -123,13 +128,66 @@ def _enrich_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _refresh_facts_command(args: argparse.Namespace) -> int:
+    """Run the ``refresh-facts`` subcommand: redo only the ``funFact`` field.
+
+    Loads the existing ``stations-info.json``, re-derives one punchy, sourced,
+    spoiler-free fun fact per station from Wikipedia (via the Anthropic API when
+    ``ANTHROPIC_API_KEY`` is set, otherwise a heuristic), and writes the artefact
+    back with every other field preserved. On a Wikipedia/parse failure the prior
+    artefact is left untouched and a non-zero code returned.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed arguments. Uses ``args.info`` (input) and ``args.out`` (output).
+
+    Returns
+    -------
+    int
+        Process exit code (``0`` on success, ``1`` on a fetch/parse failure).
+    """
+    info_file = load_station_info_file(args.info)
+    api_key = os.environ.get("ANTHROPIC_API_KEY") or None
+    method = "AI (claude-haiku) + heuristic fallback" if api_key else "heuristic only"
+    print(f"Refreshing fun facts for {len(info_file.stations)} stations [{method}].")
+    try:
+        with WikipediaClient() as wikipedia:
+            ai_client = AnthropicClient(api_key) if api_key else None
+            try:
+                refreshed = refresh_fun_facts(info_file, wikipedia, ai_client=ai_client)
+            finally:
+                if ai_client is not None:
+                    ai_client.close()
+    except (httpx.HTTPError, ValueError) as exc:
+        print(
+            f"Fun-fact refresh aborted: could not fetch/parse Wikipedia: {exc}. "
+            f"Left {args.out} unchanged.",
+            file=sys.stderr,
+        )
+        return 1
+    write_station_info(refreshed, args.out)
+    generic = sum(
+        1
+        for info in refreshed.stations.values()
+        if info.fun_fact is None or is_generic_definition(info.fun_fact)
+    )
+    total = len(refreshed.stations)
+    print(
+        f"Wrote {args.out}: refreshed funFact for {total} stations "
+        f"({total - generic} non-generic, {generic} still-generic/missing)."
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Construct the argument parser for the CLI.
 
     Returns
     -------
     argparse.ArgumentParser
-        Parser exposing the ``build`` and ``enrich`` subcommands.
+        Parser exposing the ``build``, ``enrich`` and ``refresh-facts``
+        subcommands.
     """
     parser = argparse.ArgumentParser(
         prog="tube_pipeline.cli",
@@ -163,6 +221,22 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"Output path for stations-info.json (default: {DEFAULT_INFO_OUT_PATH}).",
     )
     enrich.set_defaults(func=_enrich_command)
+
+    refresh = subparsers.add_parser(
+        "refresh-facts",
+        help="Redo only the funFact field in stations-info.json from Wikipedia (+optional AI).",
+    )
+    refresh.add_argument(
+        "--info",
+        default=DEFAULT_INFO_OUT_PATH,
+        help=f"Input stations-info.json path (default: {DEFAULT_INFO_OUT_PATH}).",
+    )
+    refresh.add_argument(
+        "--out",
+        default=DEFAULT_INFO_OUT_PATH,
+        help=f"Output path for stations-info.json (default: {DEFAULT_INFO_OUT_PATH}).",
+    )
+    refresh.set_defaults(func=_refresh_facts_command)
     return parser
 
 
