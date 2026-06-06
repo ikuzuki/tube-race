@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tube-race-pipeline"
+version = "0.1.0"
+description = "TfL tube network to graph.json pipeline for the Tube Race game"
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.27.0",
+    "pydantic>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "respx>=0.21.0",
+    "ruff>=0.4.0",
+    "mypy>=1.8.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["pipeline"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "N", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["tube_pipeline"]
+
+[tool.pytest.ini_options]
+testpaths = ["pipeline/tests"]
+python_files = ["test_*.py"]
+addopts = [
+    "--strict-markers",
+    "--import-mode=importlib",
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
