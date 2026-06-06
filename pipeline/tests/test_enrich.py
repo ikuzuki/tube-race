@@ -1258,27 +1258,26 @@ def test_refresh_fun_facts_keeps_existing_when_fetch_yields_nothing() -> None:
 def test_refresh_fun_facts_refetches_canonical_for_line_article() -> None:
     """A wikiUrl pointing at a line article triggers a canonical-title refetch.
 
-    Aldgate's artefact links the Metropolitan line article; the station fact must
-    come from the station's own page, while the wikiUrl is left unchanged.
+    The station fact must come from the station's own page, while the wikiUrl is
+    left unchanged. Uses a non-curated station so the fetch path is exercised.
     """
-    aldgate = StationInfo.model_validate(
+    faketon = StationInfo.model_validate(
         {
-            "name": "Aldgate Underground Station",
+            "name": "Faketon Underground Station",
             "openedYear": 1863,
-            "funFact": "The Metropolitan line is a London Underground line between Aldgate and Amersham.",
+            "funFact": "The Example line is a London Underground line.",
             "wikiUrl": "https://en.wikipedia.org/wiki/Metropolitan_line",
         }
     )
-    info_file = _info_file({"940GZZLUALD": aldgate})
+    info_file = _info_file({"940GZZLUFKT": faketon})
 
     def handler(request: httpx.Request) -> httpx.Response:
-        # The canonical "Aldgate tube station" title is requested (not the line).
+        # The canonical "Faketon tube station" title is requested (not the line).
         title = request.url.params.get("titles", "")
-        if title == "Aldgate tube station":
+        if title == "Faketon tube station":
             intro = (
-                "Aldgate is a London Underground station near the City of London. "
-                "It stands on the site of the medieval Aldgate, one of the gates "
-                "in the London Wall."
+                "Faketon is a London Underground station near the City of London. "
+                "It stands on the site of a medieval gate in the old London Wall."
             )
             return httpx.Response(200, json={"query": {"pages": {"1": {"extract": intro}}}})
         return httpx.Response(200, json={"query": {"pages": {"-1": {"missing": ""}}}})
@@ -1288,7 +1287,7 @@ def test_refresh_fun_facts_refetches_canonical_for_line_article() -> None:
     with WikipediaClient(client=httpx.Client(), delay_s=0.0) as wiki:
         refreshed = refresh_fun_facts(info_file, wiki)
 
-    out = refreshed.stations["940GZZLUALD"]
+    out = refreshed.stations["940GZZLUFKT"]
     assert "London Wall" in (out.fun_fact or "")
     assert "Metropolitan line" not in (out.fun_fact or "")
     # wikiUrl is preserved exactly, even though it points at the line article.
@@ -1297,17 +1296,20 @@ def test_refresh_fun_facts_refetches_canonical_for_line_article() -> None:
 
 @respx.mock
 def test_refresh_fun_facts_uses_ai_client_when_given() -> None:
-    """With an AnthropicClient, the distilled fact is used end to end."""
-    oval = StationInfo.model_validate(
+    """With an AnthropicClient, the distilled fact is used end to end.
+
+    Uses a non-curated station so the AI path is reached (curated facts skip it).
+    """
+    testbridge = StationInfo.model_validate(
         {
-            "name": "Oval Underground Station",
-            "funFact": "Oval is a London Underground station.",
-            "wikiUrl": "https://en.wikipedia.org/wiki/Oval_tube_station",
+            "name": "Testbridge Underground Station",
+            "funFact": "Testbridge is a London Underground station.",
+            "wikiUrl": "https://en.wikipedia.org/wiki/Testbridge_tube_station",
         }
     )
-    info_file = _info_file({"940GZZLUOVL": oval})
+    info_file = _info_file({"940GZZLUTBR": testbridge})
 
-    intro = "Oval is a tube station. It is named after the Oval cricket ground."
+    intro = "Testbridge is a tube station. It is named after a famous bridge."
     respx.get(url__startswith=WIKIPEDIA_QUERY_URL).mock(
         return_value=httpx.Response(200, json={"query": {"pages": {"1": {"extract": intro}}}})
     )
@@ -1315,9 +1317,7 @@ def test_refresh_fun_facts_uses_ai_client_when_given() -> None:
         return_value=httpx.Response(
             200,
             json={
-                "content": [
-                    {"type": "text", "text": "Takes its name from the Oval cricket ground."}
-                ]
+                "content": [{"type": "text", "text": "Named after the famous Testbridge crossing."}]
             },
         )
     )
@@ -1328,8 +1328,29 @@ def test_refresh_fun_facts_uses_ai_client_when_given() -> None:
         refreshed = refresh_fun_facts(info_file, wiki, ai_client=ai)
 
     assert (
-        refreshed.stations["940GZZLUOVL"].fun_fact == "Takes its name from the Oval cricket ground."
+        refreshed.stations["940GZZLUTBR"].fun_fact == "Named after the famous Testbridge crossing."
     )
+
+
+@respx.mock
+def test_refresh_fun_facts_uses_curated_override() -> None:
+    """A curated station gets its hand-authored fact, with no network fetch."""
+    oval = StationInfo.model_validate(
+        {
+            "name": "Oval Underground Station",
+            "funFact": "Oval is a London Underground station.",
+            "wikiUrl": "https://en.wikipedia.org/wiki/Oval_tube_station",
+        }
+    )
+    info_file = _info_file({"940GZZLUOVL": oval})
+
+    # No HTTP routes registered: any fetch would raise under respx, proving the
+    # curated path skips Wikipedia entirely.
+    with WikipediaClient(client=httpx.Client(), delay_s=0.0) as wiki:
+        refreshed = refresh_fun_facts(info_file, wiki)
+
+    fact = refreshed.stations["940GZZLUOVL"].fun_fact or ""
+    assert "first international cricket venue" in fact
 
 
 def test_load_station_info_file_roundtrip(tmp_path: Path) -> None:

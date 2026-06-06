@@ -43,6 +43,7 @@ from typing import Any
 
 import httpx
 
+from tube_pipeline.curated_facts import CURATED_FACTS
 from tube_pipeline.models import (
     StationInfo,
     StationInfoCounts,
@@ -2038,14 +2039,22 @@ def refresh_fun_facts(
         A new, re-validated artefact identical to the input except for refreshed
         ``funFact`` values.
     """
+    # Curated overrides (hand-authored, authoritative) keyed by normalised name.
+    curated_by_norm = {normalise_name(k): v for k, v in CURATED_FACTS.items()}
+
     stations: dict[str, dict[str, Any]] = {}
     for sid, info in info_file.stations.items():
         data = info.model_dump(by_alias=True, exclude_none=True)
         name = clean_station_name(info.name)
-        fact = _fetch_station_fact(name, info.wiki_url, wiki, ai_client)
-        if fact:
-            data["funFact"] = fact
-        # else: leave the pre-existing funFact (if any) untouched.
+        curated = curated_by_norm.get(normalise_name(info.name))
+        if curated:
+            # A curated fact wins, and we skip the (slow) Wikipedia fetch entirely.
+            data["funFact"] = curated
+        else:
+            fact = _fetch_station_fact(name, info.wiki_url, wiki, ai_client)
+            if fact:
+                data["funFact"] = fact
+            # else: leave the pre-existing funFact (if any) untouched.
         stations[sid] = data
 
     return StationInfoFile.model_validate(
