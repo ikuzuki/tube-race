@@ -3,11 +3,15 @@
 Usage
 -----
 ``python -m tube_pipeline.cli build --out web/public/data/graph.json``
+``python -m tube_pipeline.cli enrich --graph web/public/data/graph.json \\
+    --out web/public/data/stations-info.json``
 
 The ``build`` command fetches live TfL route sequences and writes the
-``graph.json`` artefact. The build date stamped into the artefact defaults to
-today (UTC), so the CLI is the source of non-determinism that
-:func:`tube_pipeline.build_graph.build_graph` deliberately avoids.
+``graph.json`` artefact. The ``enrich`` command reads that graph and writes a
+companion ``stations-info.json`` of per-station trivia from Wikidata and
+Wikipedia. The build date stamped into each artefact defaults to today (UTC),
+so the CLI is the source of non-determinism that the underlying build/enrich
+functions deliberately avoid.
 """
 
 from __future__ import annotations
@@ -16,10 +20,23 @@ import argparse
 from datetime import date
 
 from tube_pipeline.build_graph import build_graph, write_graph
+from tube_pipeline.enrich import (
+    WikidataClient,
+    WikipediaClient,
+    enrich_stations,
+    load_graph_stations,
+    write_station_info,
+)
 from tube_pipeline.tfl_client import TflClient
 
 DEFAULT_OUT_PATH: str = "web/public/data/graph.json"
 """Default destination for the generated graph artefact."""
+
+DEFAULT_GRAPH_PATH: str = "web/public/data/graph.json"
+"""Default location of the input graph for ``enrich``."""
+
+DEFAULT_INFO_OUT_PATH: str = "web/public/data/stations-info.json"
+"""Default destination for the generated station-info artefact."""
 
 
 def _build_command(args: argparse.Namespace) -> int:
@@ -48,13 +65,50 @@ def _build_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _enrich_command(args: argparse.Namespace) -> int:
+    """Run the ``enrich`` subcommand: read the graph and write station info.
+
+    Reads station ids/coordinates from ``args.graph``, fetches Wikidata
+    candidates plus Wikipedia summaries, and writes the enriched
+    ``stations-info.json`` to ``args.out``.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed arguments. Uses ``args.graph`` and ``args.out``.
+
+    Returns
+    -------
+    int
+        Process exit code (``0`` on success).
+    """
+    generated_at = date.today().isoformat()
+    graph_stations = load_graph_stations(args.graph)
+    with WikidataClient() as wikidata, WikipediaClient() as wikipedia:
+        info_file = enrich_stations(
+            graph_stations,
+            wikidata=wikidata,
+            wikipedia=wikipedia,
+            generated_at=generated_at,
+        )
+    write_station_info(info_file, args.out)
+    print(
+        f"Wrote {args.out}: "
+        f"{info_file.counts.total} stations, "
+        f"{info_file.counts.with_opened} with openedYear, "
+        f"{info_file.counts.with_traffic} with dailyTraffic "
+        f"(generatedAt={info_file.generated_at})."
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Construct the argument parser for the CLI.
 
     Returns
     -------
     argparse.ArgumentParser
-        Parser exposing the ``build`` subcommand.
+        Parser exposing the ``build`` and ``enrich`` subcommands.
     """
     parser = argparse.ArgumentParser(
         prog="tube_pipeline.cli",
@@ -72,6 +126,22 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"Output path for graph.json (default: {DEFAULT_OUT_PATH}).",
     )
     build.set_defaults(func=_build_command)
+
+    enrich = subparsers.add_parser(
+        "enrich",
+        help="Read graph.json and write stations-info.json from Wikidata/Wikipedia.",
+    )
+    enrich.add_argument(
+        "--graph",
+        default=DEFAULT_GRAPH_PATH,
+        help=f"Input graph.json path (default: {DEFAULT_GRAPH_PATH}).",
+    )
+    enrich.add_argument(
+        "--out",
+        default=DEFAULT_INFO_OUT_PATH,
+        help=f"Output path for stations-info.json (default: {DEFAULT_INFO_OUT_PATH}).",
+    )
+    enrich.set_defaults(func=_enrich_command)
     return parser
 
 

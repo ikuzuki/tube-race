@@ -125,13 +125,13 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
         <div className="relative min-h-0 flex-1 overflow-hidden rounded-2xl bg-map shadow-xl ring-1 ring-black/40">
           <PlayfieldMap
             graph={graph}
-            adj={adj}
             state={state}
             legalMoves={legalMoves}
             currentLine={currentLine}
             targetId={puzzle.targetId}
             stationsById={stationsById}
             onMove={play}
+            showOptimal={false}
             className="absolute inset-0 h-full w-full"
           />
         </div>
