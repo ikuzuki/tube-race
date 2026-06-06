@@ -1,0 +1,41 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-06-06",
+  "counts": { "total": 4, "withOpened": 4, "withTraffic": 3 },
+  "stations": {
+    "brixton": {
+      "name": "Brixton",
+      "openedYear": 1971,
+      "openedRank": 268,
+      "dailyTraffic": 78000,
+      "dailyTrafficRank": 18,
+      "funFact": "The southern terminus of the Victoria line and one of the deepest-served corners of the network.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Brixton_station"
+    },
+    "oval": {
+      "name": "Oval",
+      "openedYear": 1890,
+      "openedRank": 40,
+      "dailyTraffic": 19000,
+      "dailyTrafficRank": 190,
+      "funFact": "Named after the nearby Surrey County Cricket Ground; one of the first deep-level tube stations in the world.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Oval_tube_station"
+    },
+    "kings-cross": {
+      "name": "King's Cross St. Pancras",
+      "openedYear": 1863,
+      "openedRank": 3,
+      "dailyTraffic": 240000,
+      "dailyTrafficRank": 2,
+      "funFact": "The busiest interchange on the Underground, served by six lines.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/King%27s_Cross_St_Pancras_tube_station"
+    },
+    "victoria-stn": {
+      "name": "Victoria",
+      "openedYear": 1868,
+      "openedRank": 9,
+      "funFact": "One of the busiest stations in the UK, the Victoria line platforms opened a century after the original.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Victoria_station_(England)"
+    }
+  }
+}

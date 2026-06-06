@@ -1,16 +1,27 @@
-// Presentational game shell. Receives an already-loaded graph/adjacency/puzzle
-// (App does the async loading) so tests can drive it from the committed fixture
-// without any network. Owns no data fetching — only composition + the
-// React-bound game state via useGameState.
+// Game shell: composes the chrome (Header, HUD, modals, intro + result cards)
+// around the interactive PlayfieldMap, and binds the engine via useGameState.
+// App does the async load and hands the loaded graph/adjacency/puzzle in, so this
+// stays drivable from a fixture in tests. Today's date is passed in for
+// determinism + the share grid.
 
-import { useMemo } from 'react'
-import type { Adjacency, DailyPuzzle, GameState, TubeGraph } from '../engine'
-import { compass, stationIndex } from '../engine'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { Adjacency, DailyPuzzle, GameState, Station, TubeGraph } from '../engine'
+import { compass, score, stationIndex } from '../engine'
 import { useGameState } from '../hooks/useGameState'
-import { displayName } from '../lib/projection'
+import { useStats } from '../hooks/useStats'
+import { useOnboarding } from '../hooks/useOnboarding'
+import { useStationInfo } from '../hooks/useStationInfo'
+import type { StationInfo } from '../lib/stationInfo'
+import { buildShareText } from '../lib/share'
+import { points } from '../lib/score'
+import { displayName } from '../lib/format'
+import Header from './Header'
 import Hud from './Hud'
-import TubeMap from './TubeMap'
-import ResultPanel from './ResultPanel'
+import PlayfieldMap from './PlayfieldMap'
+import OnboardingModal from './OnboardingModal'
+import IntroModal from './IntroModal'
+import ResultCard from './ResultCard'
+import StatsModal from './StatsModal'
 
 interface GameProps {
   graph: TubeGraph
@@ -22,64 +33,188 @@ interface GameProps {
   initialState?: GameState
 }
 
-export default function Game({
-  graph,
-  adj,
-  puzzle,
-  today,
-  initialState,
-}: GameProps) {
-  const { state, play, restart } = useGameState(puzzle, graph, adj, initialState)
-  const dateISO = today ?? puzzle.date
+/** "2026-06-06" -> "Sat 6 Jun" (falls back to the raw string if unparseable). */
+function prettyDate(iso: string): string {
+  const d = new Date(`${iso}T00:00:00`)
+  if (Number.isNaN(d.getTime())) return iso
+  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+}
 
-  const index = useMemo(() => stationIndex(graph), [graph])
-  const targetName = displayName(
-    index.get(puzzle.targetId)?.name ?? puzzle.targetId,
-  )
-  const startName = displayName(index.get(puzzle.startId)?.name ?? puzzle.startId)
+export default function Game({ graph, adj, puzzle, today, initialState }: GameProps) {
+  const { state, legalMoves, play, restart } = useGameState(puzzle, graph, adj, initialState)
+  const { stats, recordResult } = useStats()
+  const { seen, markSeen } = useOnboarding()
+  const { infoMap } = useStationInfo()
+
+  const dateISO = today ?? puzzle.date
+  const stationsById = useMemo(() => stationIndex(graph), [graph])
+
+  const currentLine = state.path.length ? state.path[state.path.length - 1].line : null
+  const currentLineName = currentLine
+    ? (graph.lines.find((l) => l.id === currentLine)?.name ?? null)
+    : null
+  const targetName = displayName(stationsById.get(puzzle.targetId)?.name ?? puzzle.targetId)
 
   const { bearingDeg, km } = useMemo(
     () => compass(graph, state.currentId, puzzle.targetId),
     [graph, state.currentId, puzzle.targetId],
   )
 
-  return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 p-4">
-      <header className="flex items-baseline justify-between">
-        <h1 className="text-2xl font-bold tracking-tight text-neutral-100">
-          Tube Race
-        </h1>
-        <span className="font-mono text-xs text-neutral-500">
-          {dateISO} · from {startName}
-        </span>
-      </header>
+  // Endpoint cards (start + destination) for the intro and result modals.
+  const endpoint = useCallback(
+    (id: string): { station: Station; info?: StationInfo } | null => {
+      const station = stationsById.get(id)
+      if (!station) return null
+      return { station, info: infoMap[id] }
+    },
+    [stationsById, infoMap],
+  )
+  const startCard = endpoint(puzzle.startId)
+  const destCard = endpoint(puzzle.targetId)
 
-      <Hud
-        targetName={targetName}
-        hops={state.path.length}
-        parHops={puzzle.par.hops}
-        changes={state.changes}
-        parChanges={puzzle.par.changes}
-        bearingDeg={bearingDeg}
-        km={km}
+  const [onboardingOpen, setOnboardingOpen] = useState(false)
+  const [introOpen, setIntroOpen] = useState(() => seen && !state.solved)
+  const [statsOpen, setStatsOpen] = useState(false)
+  const [resultOpen, setResultOpen] = useState(false)
+  const [showOptimal, setShowOptimal] = useState(false)
+
+  // First-run onboarding, then the daily intro card.
+  useEffect(() => {
+    if (!seen) setOnboardingOpen(true)
+  }, [seen])
+  const closeOnboarding = useCallback(() => {
+    setOnboardingOpen(false)
+    markSeen()
+    if (!state.solved) setIntroOpen(true)
+  }, [markSeen, state.solved])
+
+  // Record the result once per date when solved, then surface the result card.
+  const recordedRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!state.solved || recordedRef.current === dateISO) return
+    recordedRef.current = dateISO
+    const sc = score(state)
+    const scoreOverPar = Math.max(
+      0,
+      points(sc.hops, sc.changes) - points(sc.parHops, sc.parChanges),
+    )
+    recordResult({ date: dateISO, solved: true, scoreOverPar, optimal: sc.optimal })
+    setIntroOpen(false)
+    setResultOpen(true)
+  }, [state, dateISO, recordResult])
+
+  const sc = state.solved ? score(state) : null
+  const playerScore = sc ? points(sc.hops, sc.changes) : points(state.path.length, state.changes)
+  const parScore = points(puzzle.par.hops, puzzle.par.changes)
+  const shareText = sc
+    ? buildShareText({
+        dateISO,
+        solved: true,
+        score: points(sc.hops, sc.changes),
+        parScore,
+        stops: sc.hops,
+        parStops: sc.parHops,
+        changes: sc.changes,
+        parChanges: sc.parChanges,
+        streak: stats.curStreak,
+      })
+    : ''
+
+  const handlePlayAgain = useCallback(() => {
+    setResultOpen(false)
+    setShowOptimal(false)
+    recordedRef.current = null
+    restart()
+  }, [restart])
+
+  const handleShowOptimal = useCallback(() => {
+    setShowOptimal(true)
+    setResultOpen(false)
+  }, [])
+
+  return (
+    <div className="flex min-h-screen flex-col bg-stone text-ink">
+      <Header
+        date={prettyDate(dateISO)}
+        onHowToPlay={() => setOnboardingOpen(true)}
+        onStats={() => setStatsOpen(true)}
       />
 
-      <div className="relative">
-        <TubeMap graph={graph} adj={adj} state={state} onMove={play} />
-        {state.solved && (
-          <ResultPanel
-            state={state}
-            dateISO={dateISO}
-            targetName={targetName}
-            onRestart={restart}
-          />
-        )}
-      </div>
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-3 p-3 sm:p-4 lg:px-6">
+        <Hud
+          targetName={targetName}
+          currentLineId={currentLine}
+          currentLineName={currentLineName}
+          hops={state.path.length}
+          parHops={puzzle.par.hops}
+          changes={state.changes}
+          parChanges={puzzle.par.changes}
+          bearingDeg={bearingDeg}
+          km={km}
+        />
 
-      <p className="text-center text-xs text-neutral-600">
-        Only your surroundings are lit. Follow the compass to {targetName}; the
-        network uncovers as you explore. Tap a glowing station to move.
-      </p>
+        <div className="relative h-[62vh] max-h-[640px] min-h-[380px] w-full overflow-hidden rounded-2xl bg-map shadow-xl ring-1 ring-black/40">
+          <PlayfieldMap
+            graph={graph}
+            state={state}
+            legalMoves={legalMoves}
+            currentLine={currentLine}
+            targetId={puzzle.targetId}
+            stationsById={stationsById}
+            onMove={play}
+            showOptimal={showOptimal}
+            className="absolute inset-0 h-full w-full"
+          />
+        </div>
+      </main>
+
+      {/* When the result card is dismissed (e.g. to view the best route), keep a
+          way back to it and to a fresh game. */}
+      {state.solved && !resultOpen && (
+        <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center gap-2">
+          <button
+            onClick={() => setResultOpen(true)}
+            className="rounded-full bg-paper px-4 py-2 text-sm font-semibold text-ink shadow-lg ring-1 ring-black/10 transition hover:bg-stone"
+          >
+            View result
+          </button>
+          <button
+            onClick={handlePlayAgain}
+            className="rounded-full bg-progress px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+          >
+            Play again
+          </button>
+        </div>
+      )}
+
+      <OnboardingModal open={onboardingOpen} onClose={closeOnboarding} />
+      {startCard && destCard && (
+        <IntroModal
+          open={introOpen}
+          onClose={() => setIntroOpen(false)}
+          start={startCard}
+          destination={destCard}
+        />
+      )}
+      <StatsModal open={statsOpen} onClose={() => setStatsOpen(false)} stats={stats} />
+      <ResultCard
+        open={resultOpen}
+        solved={state.solved}
+        score={playerScore}
+        parScore={parScore}
+        stops={sc?.hops ?? state.path.length}
+        parStops={puzzle.par.hops}
+        changes={sc?.changes ?? state.changes}
+        parChanges={puzzle.par.changes}
+        optimal={sc?.optimal ?? false}
+        shareText={shareText}
+        streak={stats.curStreak}
+        start={startCard ?? undefined}
+        destination={destCard ?? undefined}
+        onShowOptimal={handleShowOptimal}
+        onPlayAgain={handlePlayAgain}
+        onClose={() => setResultOpen(false)}
+      />
     </div>
   )
 }

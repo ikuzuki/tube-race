@@ -1,0 +1,64 @@
+// Shared modal shell used by the onboarding, stats, and result dialogs so they
+// look and behave identically. Closes on Escape and overlay click; light
+// "paper" card on a dimmed scrim.
+
+import { useEffect, type ReactNode } from 'react'
+
+interface ModalProps {
+  open: boolean
+  onClose: () => void
+  title?: ReactNode
+  /** Hide the default close (X) button — e.g. for a forced first-run card. */
+  hideClose?: boolean
+  children: ReactNode
+}
+
+export default function Modal({ open, onClose, title, hideClose, children }: ModalProps) {
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [open, onClose])
+
+  if (!open) return null
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4 backdrop-blur-sm"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-paper p-6 text-ink shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {(title || !hideClose) && (
+          <div className="mb-4 flex items-start justify-between gap-4">
+            {title ? (
+              <h2 className="text-xl font-bold tracking-tight">{title}</h2>
+            ) : (
+              <span />
+            )}
+            {!hideClose && (
+              <button
+                onClick={onClose}
+                aria-label="Close"
+                className="-mr-1 -mt-1 grid h-8 w-8 place-items-center rounded-full text-ink-soft transition hover:bg-stone"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M6 6l12 12M18 6L6 18" />
+                </svg>
+              </button>
+            )}
+          </div>
+        )}
+        {children}
+      </div>
+    </div>
+  )
+}

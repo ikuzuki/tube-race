@@ -1,0 +1,2453 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-06-06",
+  "counts": {
+    "total": 272,
+    "withOpened": 271,
+    "withTraffic": 270
+  },
+  "stations": {
+    "940GZZBPSUST": {
+      "name": "Battersea Power Station Underground Station",
+      "openedYear": 2021,
+      "openedRank": 270,
+      "dailyTraffic": 23013,
+      "dailyTrafficRank": 76,
+      "funFact": "It is the only station on the London Underground network to include the word 'station' in its name.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Battersea_Power_Station_tube_station"
+    },
+    "940GZZLUACT": {
+      "name": "Acton Town Underground Station",
+      "openedYear": 1879,
+      "openedRank": 50,
+      "dailyTraffic": 13216,
+      "dailyTrafficRank": 131,
+      "funFact": "The new station was designed by Charles Holden in a modern European geometric style using brick, reinforced concrete and glass.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Acton_Town_tube_station"
+    },
+    "940GZZLUACY": {
+      "name": "Archway Underground Station",
+      "openedYear": 1907,
+      "openedRank": 148,
+      "dailyTraffic": 19555,
+      "dailyTrafficRank": 86,
+      "funFact": "It is located at the intersection of Holloway Road, Highgate Hill, Junction Road and Archway Road in Archway, North London, directly underneath the Vantage Point building.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Archway_tube_station"
+    },
+    "940GZZLUADE": {
+      "name": "Aldgate East Underground Station",
+      "openedYear": 1884,
+      "openedRank": 64,
+      "dailyTraffic": 29994,
+      "dailyTrafficRank": 59,
+      "funFact": "The station was opened on 6 October 1884 on a new route connecting the District Railway and Metropolitan Railway with Whitechapel and the East London Railway.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Aldgate_East_tube_station"
+    },
+    "940GZZLUAGL": {
+      "name": "Angel Underground Station",
+      "openedYear": 1901,
+      "openedRank": 103,
+      "dailyTraffic": 33586,
+      "dailyTrafficRank": 52,
+      "funFact": "The station has the longest escalators on the Underground network.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Angel_tube_station"
+    },
+    "940GZZLUALD": {
+      "name": "Aldgate Underground Station",
+      "openedYear": 1863,
+      "openedRank": 5,
+      "dailyTraffic": 18897,
+      "dailyTrafficRank": 91,
+      "funFact": "Aldgate was opened in 1876 with its entrance on Aldgate High Street.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Metropolitan_line"
+    },
+    "940GZZLUALP": {
+      "name": "Alperton Underground Station",
+      "openedYear": 1903,
+      "openedRank": 115,
+      "dailyTraffic": 7119,
+      "dailyTrafficRank": 198,
+      "funFact": "The station is located on Ealing Road (A4089), a short distance from the junction with Bridgewater Road (A4005), and is close to the Paddington branch of the Grand Union Canal.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Alperton_tube_station"
+    },
+    "940GZZLUAMS": {
+      "name": "Amersham Underground Station",
+      "openedYear": 1892,
+      "openedRank": 86,
+      "dailyTraffic": 4738,
+      "dailyTrafficRank": 230,
+      "funFact": "The station has the highest elevation on the entire London Underground network at 147 m (482 ft) above sea-level, higher than Big Ben tower.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Amersham_station"
+    },
+    "940GZZLUASG": {
+      "name": "Arnos Grove Underground Station",
+      "openedYear": 1932,
+      "openedRank": 201,
+      "dailyTraffic": 9024,
+      "dailyTrafficRank": 172,
+      "funFact": "The station was designed by architect Charles Holden, and has been described as a significant work of modern architecture.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Arnos_Grove_tube_station"
+    },
+    "940GZZLUASL": {
+      "name": "Arsenal Underground Station",
+      "openedYear": 1906,
+      "openedRank": 131,
+      "dailyTraffic": 6037,
+      "dailyTrafficRank": 208,
+      "funFact": "Originally known as Gillespie Road, the station was renamed in 1932 after Arsenal Football Club, who at the time played at the nearby Highbury Stadium.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Arsenal_tube_station"
+    },
+    "940GZZLUBBB": {
+      "name": "Bromley-by-Bow Underground Station",
+      "openedYear": 1902,
+      "openedRank": 106,
+      "dailyTraffic": 10213,
+      "dailyTrafficRank": 160,
+      "funFact": "The Fenchurch Street–Southend British Railways service was withdrawn in 1962, leaving abandoned platforms.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Bromley-by-Bow_tube_station"
+    },
+    "940GZZLUBBN": {
+      "name": "Barbican Underground Station",
+      "openedYear": 1865,
+      "openedRank": 16,
+      "dailyTraffic": 14207,
+      "dailyTrafficRank": 120,
+      "funFact": "Until 2009, Barbican was additionally served by Thameslink services to and from Moorgate.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Barbican_tube_station"
+    },
+    "940GZZLUBDS": {
+      "name": "Bounds Green Underground Station",
+      "openedYear": 1932,
+      "openedRank": 202,
+      "dailyTraffic": 11689,
+      "dailyTrafficRank": 146,
+      "funFact": "It is located at the junction of Bounds Green Road and Brownlow Road in Bounds Green in the London Borough of Haringey, north London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Bounds_Green_tube_station"
+    },
+    "940GZZLUBEC": {
+      "name": "Becontree Underground Station",
+      "openedYear": 1926,
+      "openedRank": 193,
+      "dailyTraffic": 7943,
+      "dailyTrafficRank": 186,
+      "funFact": "London–Southend services ceased to call at the station in the 1960s, leaving only two platforms in operation.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Becontree_tube_station"
+    },
+    "940GZZLUBKE": {
+      "name": "Barkingside Underground Station",
+      "openedYear": 1903,
+      "openedRank": 116,
+      "dailyTraffic": 3197,
+      "dailyTrafficRank": 255,
+      "funFact": "It is located on the eastern edge of Barkingside in east London, England.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Barkingside_tube_station"
+    },
+    "940GZZLUBKF": {
+      "name": "Blackfriars Underground Station",
+      "openedYear": 1886,
+      "openedRank": 71,
+      "dailyTraffic": 27264,
+      "dailyTrafficRank": 62,
+      "funFact": "Its platforms span the River Thames, the only station in London to do so, along the length of Blackfriars Railway Bridge, a short distance downstream from Blackfriars Bridge.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Blackfriars_tube_station"
+    },
+    "940GZZLUBKG": {
+      "name": "Barking Underground Station",
+      "openedYear": 1902,
+      "openedRank": 107,
+      "dailyTraffic": 41471,
+      "dailyTrafficRank": 38,
+      "funFact": "The station was opened by the London, Tilbury and Southend Railway on 13 April 1854 as the first station reached on the initial line from Forest Gate Junction.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Barking_station"
+    },
+    "940GZZLUBKH": {
+      "name": "Buckhurst Hill Underground Station",
+      "openedYear": 1948,
+      "openedRank": 243,
+      "dailyTraffic": 4893,
+      "dailyTrafficRank": 229,
+      "funFact": "It is on the Central line between Woodford and Loughton stations, and is in London fare zone 5.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Buckhurst_Hill_tube_station"
+    },
+    "940GZZLUBLG": {
+      "name": "Bethnal Green Underground Station",
+      "openedYear": 1946,
+      "openedRank": 230,
+      "dailyTraffic": 27880,
+      "dailyTrafficRank": 61,
+      "funFact": "On 3 March 1943, 173 people, including 62 children, were killed in a crush while attempting to enter the shelter, in what is believed to be the largest loss of civilian life in the UK during the Second World War.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Bethnal_Green_tube_station"
+    },
+    "940GZZLUBLM": {
+      "name": "Balham Underground Station",
+      "openedYear": 1941,
+      "openedRank": 229,
+      "dailyTraffic": 26927,
+      "dailyTrafficRank": 63,
+      "funFact": "It is located in central Balham in the London Borough of Wandsworth for London Underground and National Rail services.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Balham_station"
+    },
+    "940GZZLUBLR": {
+      "name": "Blackhorse Road Underground Station",
+      "openedYear": 1968,
+      "openedRank": 252,
+      "dailyTraffic": 24590,
+      "dailyTrafficRank": 69,
+      "funFact": "Above ground, the station is on the Suffragette line of the London Overground, 7 miles 21 chains (11.7 km) from St Pancras (measured via Kentish Town and Mortimer Street Junction).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Blackhorse_Road_station"
+    },
+    "940GZZLUBMY": {
+      "name": "Bermondsey Underground Station",
+      "openedYear": 1999,
+      "openedRank": 262,
+      "dailyTraffic": 18636,
+      "dailyTrafficRank": 93,
+      "funFact": "The station itself was designed by Ian Ritchie Architects.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Bermondsey_tube_station"
+    },
+    "940GZZLUBND": {
+      "name": "Bond Street Underground Station",
+      "openedYear": 1900,
+      "openedRank": 90,
+      "dailyTraffic": 102533,
+      "dailyTrafficRank": 12,
+      "funFact": "Entrances are on Oxford Street, near its junction with New Bond Street, and on Hanover Square.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Bond_Street_station"
+    },
+    "940GZZLUBNK": {
+      "name": "Bank Underground Station",
+      "dailyTraffic": 101919,
+      "dailyTrafficRank": 13,
+      "funFact": "One of the busiest on the London Underground network, the station complex was previously rated the Underground's worst station in passenger surveys.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Bank_tube_station"
+    },
+    "940GZZLUBOR": {
+      "name": "Borough Underground Station",
+      "openedYear": 1890,
+      "openedRank": 81,
+      "dailyTraffic": 11145,
+      "dailyTrafficRank": 150,
+      "funFact": "It is located in the Borough area of the London Borough of Southwark in central London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Borough_tube_station"
+    },
+    "940GZZLUBOS": {
+      "name": "Boston Manor Underground Station",
+      "openedYear": 1883,
+      "openedRank": 62,
+      "dailyTraffic": 3934,
+      "dailyTrafficRank": 247,
+      "funFact": "Opened in 1883 by the District Railway, it was reconstructed in 1932 to a Grade II-listed building.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Boston_Manor_tube_station"
+    },
+    "940GZZLUBSC": {
+      "name": "Barons Court Underground Station",
+      "openedYear": 1905,
+      "openedRank": 129,
+      "dailyTraffic": 14359,
+      "dailyTrafficRank": 116,
+      "funFact": "It is served by the District and Piccadilly lines, and is in London fare zone 2.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Barons_Court_tube_station"
+    },
+    "940GZZLUBST": {
+      "name": "Baker Street Underground Station",
+      "openedYear": 1863,
+      "openedRank": 6,
+      "dailyTraffic": 58102,
+      "dailyTrafficRank": 23,
+      "funFact": "It is one of the original stations of the Metropolitan Railway (MR), the world's first underground railway, opened on 10 January 1863.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Baker_Street_tube_station"
+    },
+    "940GZZLUBTK": {
+      "name": "Burnt Oak Underground Station",
+      "openedYear": 1924,
+      "openedRank": 188,
+      "dailyTraffic": 8394,
+      "dailyTrafficRank": 179,
+      "funFact": "It is located on Watling Avenue, off the A5 (the Edgware Road, originally a Roman road known as Watling Street).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Burnt_Oak_tube_station"
+    },
+    "940GZZLUBTX": {
+      "name": "Brent Cross Underground Station",
+      "openedYear": 1923,
+      "openedRank": 182,
+      "dailyTraffic": 5098,
+      "dailyTrafficRank": 222,
+      "funFact": "It is a Grade II listed building.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Brent_Cross_tube_station"
+    },
+    "940GZZLUBWR": {
+      "name": "Bow Road Underground Station",
+      "openedYear": 1902,
+      "openedRank": 108,
+      "dailyTraffic": 11391,
+      "dailyTrafficRank": 148,
+      "funFact": "The station was opened by the Whitechapel and Bow Railway on 11 June 1902 on a new route connecting the District Railway at Whitechapel with the London, Tilbury and Southend Railway to the east of the station.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Bow_Road_tube_station"
+    },
+    "940GZZLUBWT": {
+      "name": "Bayswater Underground Station",
+      "openedYear": 1868,
+      "openedRank": 24,
+      "dailyTraffic": 9986,
+      "dailyTrafficRank": 162,
+      "funFact": "It is in London fare zone 1.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Bayswater_tube_station"
+    },
+    "940GZZLUBXN": {
+      "name": "Brixton Underground Station",
+      "openedYear": 1971,
+      "openedRank": 256,
+      "dailyTraffic": 55256,
+      "dailyTrafficRank": 29,
+      "funFact": "It is known to have the largest London Underground roundel on the network.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Brixton_tube_station"
+    },
+    "940GZZLUBZP": {
+      "name": "Belsize Park Underground Station",
+      "openedYear": 1907,
+      "openedRank": 149,
+      "dailyTraffic": 13761,
+      "dailyTrafficRank": 126,
+      "funFact": "In July 2011 it became a Grade II listed building.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Belsize_Park_tube_station"
+    },
+    "940GZZLUCAL": {
+      "name": "Chalfont & Latimer Underground Station",
+      "openedYear": 1889,
+      "openedRank": 75,
+      "dailyTraffic": 4397,
+      "dailyTrafficRank": 238,
+      "funFact": "It also serves the Chiltern Railways line to Aylesbury.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Chalfont_%26_Latimer_station"
+    },
+    "940GZZLUCAR": {
+      "name": "Caledonian Road Underground Station",
+      "openedYear": 1906,
+      "openedRank": 132,
+      "dailyTraffic": 11929,
+      "dailyTrafficRank": 144,
+      "funFact": "The building was designed by Leslie Green.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Caledonian_Road_tube_station"
+    },
+    "940GZZLUCFM": {
+      "name": "Chalk Farm Underground Station",
+      "openedYear": 1907,
+      "openedRank": 150,
+      "dailyTraffic": 12418,
+      "dailyTrafficRank": 138,
+      "funFact": "For ticketing purposes, the station falls in London fare zone 2.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Chalk_Farm_tube_station"
+    },
+    "940GZZLUCGN": {
+      "name": "Covent Garden Underground Station",
+      "openedYear": 1907,
+      "openedRank": 151,
+      "dailyTraffic": 34449,
+      "dailyTrafficRank": 48,
+      "funFact": "The station is located at the corner of Long Acre and James Street and the street-level concourse is a Grade II listed building.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Covent_Garden_tube_station"
+    },
+    "940GZZLUCGT": {
+      "name": "Canning Town Underground Station",
+      "openedYear": 1999,
+      "openedRank": 263,
+      "dailyTraffic": 33778,
+      "dailyTrafficRank": 51,
+      "funFact": "On 11 November 2015, the Mayor of London announced that it would be rezoned to be on the boundary of London fare zone 2 and zone 3, having previously solely been zone 3.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Canning_Town_station"
+    },
+    "940GZZLUCHL": {
+      "name": "Chancery Lane Underground Station",
+      "openedYear": 1900,
+      "openedRank": 91,
+      "dailyTraffic": 21379,
+      "dailyTrafficRank": 83,
+      "funFact": "It opened in 1900 and takes its name from the nearby Chancery Lane.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Chancery_Lane_tube_station"
+    },
+    "940GZZLUCHX": {
+      "name": "Charing Cross Underground Station",
+      "openedYear": 1906,
+      "openedRank": 133,
+      "dailyTraffic": 39683,
+      "dailyTrafficRank": 40,
+      "funFact": "As of 2024, Charing Cross is the 37th busiest station on the London Underground with 16.51 million passengers using it per year.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Charing_Cross_tube_station"
+    },
+    "940GZZLUCKS": {
+      "name": "Cockfosters Underground Station",
+      "openedYear": 1933,
+      "openedRank": 211,
+      "dailyTraffic": 3973,
+      "dailyTrafficRank": 246,
+      "funFact": "It is located on Cockfosters Road (A111), which is approximately nine miles (14 km) from central London and serves Cockfosters.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Cockfosters_tube_station"
+    },
+    "940GZZLUCND": {
+      "name": "Colindale Underground Station",
+      "openedYear": 1924,
+      "openedRank": 189,
+      "dailyTraffic": 17300,
+      "dailyTrafficRank": 95,
+      "funFact": "It is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Colindale_tube_station"
+    },
+    "940GZZLUCPC": {
+      "name": "Clapham Common Underground Station",
+      "openedYear": 1900,
+      "openedRank": 92,
+      "dailyTraffic": 22028,
+      "dailyTrafficRank": 79,
+      "funFact": "It is in London fare zone 2.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Clapham_Common_tube_station"
+    },
+    "940GZZLUCPK": {
+      "name": "Canons Park Underground Station",
+      "openedYear": 1932,
+      "openedRank": 203,
+      "dailyTraffic": 5680,
+      "dailyTrafficRank": 215,
+      "funFact": "It is located at Canons Park of the London Borough of Harrow, north-west London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Canons_Park_tube_station"
+    },
+    "940GZZLUCPN": {
+      "name": "Clapham North Underground Station",
+      "openedYear": 1900,
+      "openedRank": 93,
+      "dailyTraffic": 14277,
+      "dailyTrafficRank": 118,
+      "funFact": "Clapham North and Clapham Common are the only below-ground stations on the network with narrow island platforms.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Clapham_North_tube_station"
+    },
+    "940GZZLUCPS": {
+      "name": "Clapham South Underground Station",
+      "openedYear": 1926,
+      "openedRank": 194,
+      "dailyTraffic": 17325,
+      "dailyTrafficRank": 94,
+      "funFact": "It is located at the corner of Balham Hill (A24) and Nightingale Lane, at the southern edge of Clapham Common.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Clapham_South_tube_station"
+    },
+    "940GZZLUCSD": {
+      "name": "Colliers Wood Underground Station",
+      "openedYear": 1926,
+      "openedRank": 195,
+      "dailyTraffic": 14629,
+      "dailyTrafficRank": 114,
+      "funFact": "The station is located at the corner of Colliers Wood High Street (A24) and Christchurch Road.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Colliers_Wood_tube_station"
+    },
+    "940GZZLUCSM": {
+      "name": "Chesham Underground Station",
+      "openedYear": 1889,
+      "openedRank": 76,
+      "dailyTraffic": 2649,
+      "dailyTrafficRank": 258,
+      "funFact": "The station, a Grade II listed building, is in London fare zone 9 (previously zone D).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Chesham_tube_station"
+    },
+    "940GZZLUCST": {
+      "name": "Cannon Street Underground Station",
+      "openedYear": 1884,
+      "openedRank": 65,
+      "dailyTraffic": 10526,
+      "dailyTrafficRank": 158,
+      "funFact": "The station runs services by Southeastern, mostly catering for commuters in southeast London and Kent, with occasional services further into the latter.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Cannon_Street_tube_station"
+    },
+    "940GZZLUCTN": {
+      "name": "Camden Town Underground Station",
+      "openedYear": 1907,
+      "openedRank": 152,
+      "dailyTraffic": 51523,
+      "dailyTrafficRank": 31,
+      "funFact": "It is particularly busy with visitors to the Camden markets at weekends, and, until 2019, was exit-only on Sundays to prevent overcrowding.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Camden_Town_tube_station"
+    },
+    "940GZZLUCWL": {
+      "name": "Chigwell Underground Station",
+      "openedYear": 1903,
+      "openedRank": 117,
+      "dailyTraffic": 910,
+      "dailyTrafficRank": 269,
+      "funFact": "It is located in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Chigwell_tube_station"
+    },
+    "940GZZLUCWP": {
+      "name": "Chiswick Park Underground Station",
+      "openedYear": 1879,
+      "openedRank": 51,
+      "dailyTraffic": 5683,
+      "dailyTrafficRank": 214,
+      "funFact": "It is located at the junction of Bollo Lane and Acton Lane about 150 m north of Chiswick High Road (A315) and is in London fare zone 3.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Chiswick_Park_tube_station"
+    },
+    "940GZZLUCWR": {
+      "name": "Canada Water Underground Station",
+      "openedYear": 1999,
+      "openedRank": 264,
+      "dailyTraffic": 26238,
+      "dailyTrafficRank": 64,
+      "funFact": "It takes its name from Canada Water, a lake which was created from a former dock in the Port of London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Canada_Water_station"
+    },
+    "940GZZLUCXY": {
+      "name": "Croxley Underground Station",
+      "openedYear": 1925,
+      "openedRank": 191,
+      "dailyTraffic": 2295,
+      "dailyTrafficRank": 262,
+      "funFact": "It is the only intermediate station on the branch, and is in London fare zone 7.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Croxley_tube_station"
+    },
+    "940GZZLUCYD": {
+      "name": "Chorleywood Underground Station",
+      "openedYear": 1899,
+      "openedRank": 89,
+      "dailyTraffic": 3987,
+      "dailyTrafficRank": 244,
+      "funFact": "The village of Chorleywood is in the Three Rivers district of Hertfordshire about 20 miles (32 km) from London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Chorleywood_station"
+    },
+    "940GZZLUCYF": {
+      "name": "Canary Wharf Underground Station",
+      "openedYear": 1999,
+      "openedRank": 265,
+      "dailyTraffic": 84564,
+      "dailyTrafficRank": 15,
+      "funFact": "Over 40 million people pass through the station each year, making it second busiest on the London Underground outside Central London after Stratford, and also the busiest that serves only a single line.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Canary_Wharf_tube_station"
+    },
+    "940GZZLUDBN": {
+      "name": "Debden Underground Station",
+      "openedYear": 1949,
+      "openedRank": 248,
+      "dailyTraffic": 5044,
+      "dailyTrafficRank": 226,
+      "funFact": "The station is located in Station Approach off Chigwell Lane (A1168).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Debden_tube_station"
+    },
+    "940GZZLUDGE": {
+      "name": "Dagenham East Underground Station",
+      "openedYear": 1902,
+      "openedRank": 109,
+      "dailyTraffic": 7248,
+      "dailyTrafficRank": 195,
+      "funFact": "The London–Southend service was withdrawn and the original platforms abandoned in 1962.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Dagenham_East_tube_station"
+    },
+    "940GZZLUDGY": {
+      "name": "Dagenham Heathway Underground Station",
+      "openedYear": 1932,
+      "openedRank": 204,
+      "dailyTraffic": 13227,
+      "dailyTrafficRank": 130,
+      "funFact": "It is 7.7 kilometres (4.8 mi) along the line from the eastern terminus at Upminster and 17.0 kilometres (10.6 mi) to Tower Hill in Central London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Dagenham_Heathway_tube_station"
+    },
+    "940GZZLUDOH": {
+      "name": "Dollis Hill Underground Station",
+      "openedYear": 1909,
+      "openedRank": 165,
+      "dailyTraffic": 8339,
+      "dailyTrafficRank": 181,
+      "funFact": "It is on the Jubilee line between Neasden and Willesden Green stations, and is in London fare zone 3.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Dollis_Hill_tube_station"
+    },
+    "940GZZLUEAC": {
+      "name": "Elephant & Castle Underground Station",
+      "openedYear": 1890,
+      "openedRank": 82,
+      "dailyTraffic": 39003,
+      "dailyTrafficRank": 41,
+      "funFact": "A girl born at the station in 1924 was the first baby to be born on the network.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Elephant_%26_Castle_tube_station"
+    },
+    "940GZZLUEAE": {
+      "name": "Eastcote Underground Station",
+      "openedYear": 1906,
+      "openedRank": 134,
+      "dailyTraffic": 5913,
+      "dailyTrafficRank": 210,
+      "funFact": "The station is located on Field End Road.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Eastcote_tube_station"
+    },
+    "940GZZLUEAN": {
+      "name": "East Acton Underground Station",
+      "openedYear": 1920,
+      "openedRank": 181,
+      "dailyTraffic": 8578,
+      "dailyTrafficRank": 178,
+      "funFact": "Wormwood Scrubs, Queen Charlotte's and Chelsea Hospital, Hammersmith Hospital, Wormwood Scrubs prison and Imperial College Hammersmith branch are accessible from the station.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/East_Acton_tube_station"
+    },
+    "940GZZLUEBY": {
+      "name": "Ealing Broadway Underground Station",
+      "openedYear": 1838,
+      "openedRank": 1,
+      "dailyTraffic": 42271,
+      "dailyTrafficRank": 37,
+      "funFact": "On the National Rail network, it is a through-station on the Great Western Main Line, 5 miles 56 chains (9.2 km) down the line from London Paddington, between Acton Main Line and West Ealing.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Ealing_Broadway_tube_station"
+    },
+    "940GZZLUECM": {
+      "name": "Ealing Common Underground Station",
+      "openedYear": 1879,
+      "openedRank": 52,
+      "dailyTraffic": 5356,
+      "dailyTrafficRank": 219,
+      "funFact": "The station is situated in Ealing on the Uxbridge Road (A4020), about 490 yards (450 m) east of the junction with Gunnersbury Avenue and Hanger Lane (A406, North Circular Road) and the Ealing Common open space the stati…",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Ealing_Common_tube_station"
+    },
+    "940GZZLUECT": {
+      "name": "Earl's Court Underground Station",
+      "openedYear": 1871,
+      "openedRank": 41,
+      "dailyTraffic": 43232,
+      "dailyTrafficRank": 35,
+      "funFact": "Earl's Court was the first tube station with escalators, which were added in 1911.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Earl%27s_Court_tube_station"
+    },
+    "940GZZLUEFY": {
+      "name": "East Finchley Underground Station",
+      "openedYear": 1867,
+      "openedRank": 21,
+      "dailyTraffic": 14241,
+      "dailyTrafficRank": 119,
+      "funFact": "As part of London Underground's only partially completed Northern Heights plan, the station was completely rebuilt with additional tracks in the late 1930s.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/East_Finchley_tube_station"
+    },
+    "940GZZLUEGW": {
+      "name": "Edgware Underground Station",
+      "openedYear": 1924,
+      "openedRank": 190,
+      "dailyTraffic": 11069,
+      "dailyTrafficRank": 153,
+      "funFact": "It is in London fare zone 5.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Edgware_tube_station"
+    },
+    "940GZZLUEHM": {
+      "name": "East Ham Underground Station",
+      "openedYear": 1902,
+      "openedRank": 110,
+      "dailyTraffic": 29554,
+      "dailyTrafficRank": 60,
+      "funFact": "British Railways service to Kentish Town was withdrawn in 1958 and the Fenchurch Street–Southend service was withdrawn in 1962, leaving abandoned platforms.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/East_Ham_tube_station"
+    },
+    "940GZZLUEMB": {
+      "name": "Embankment Underground Station",
+      "openedYear": 1870,
+      "openedRank": 39,
+      "dailyTraffic": 46716,
+      "dailyTrafficRank": 33,
+      "funFact": "The station is adjacent to Victoria Embankment Gardens and is close to Charing Cross station, Embankment Pier, Hungerford Bridge, Cleopatra's Needle, the Royal Air Force Memorial, the Savoy Chapel and Savoy Hotel and th…",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Embankment_tube_station"
+    },
+    "940GZZLUEPG": {
+      "name": "Epping Underground Station",
+      "openedYear": 1949,
+      "openedRank": 249,
+      "dailyTraffic": 8976,
+      "dailyTrafficRank": 173,
+      "funFact": "Situated in London fare zone 6, it is one of eight London Underground stations in the Epping Forest District.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Epping_tube_station"
+    },
+    "940GZZLUEPK": {
+      "name": "Elm Park Underground Station",
+      "openedYear": 1935,
+      "openedRank": 220,
+      "dailyTraffic": 6967,
+      "dailyTrafficRank": 201,
+      "funFact": "It is 4 kilometres (2.5 mi) along the line from the eastern terminus at Upminster and 20.7 kilometres (12.9 mi) from Tower Hill in Central London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Elm_Park_tube_station"
+    },
+    "940GZZLUEPY": {
+      "name": "East Putney Underground Station",
+      "openedYear": 1889,
+      "openedRank": 77,
+      "dailyTraffic": 15850,
+      "dailyTrafficRank": 102,
+      "funFact": "The entrance to the station is on Upper Richmond Road (A205).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/East_Putney_tube_station"
+    },
+    "940GZZLUERB": {
+      "name": "Edgware Road (Bakerloo) Underground Station",
+      "openedYear": 1907,
+      "openedRank": 153,
+      "dailyTraffic": 15552,
+      "dailyTrafficRank": 104,
+      "funFact": "The station is located on the north-east corner of the junction of Edgware Road, Harrow Road and Marylebone Road.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Edgware_Road_tube_station_%28Bakerloo_line%29"
+    },
+    "940GZZLUERC": {
+      "name": "Edgware Road (Circle Line) Underground Station",
+      "openedYear": 1863,
+      "openedRank": 7,
+      "dailyTraffic": 15552,
+      "dailyTrafficRank": 105,
+      "funFact": "There have been proposals in the past to rename one of the Edgware Road stations to avoid confusion.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Edgware_Road_tube_station_%28Circle%2C_District_and_Hammersmith_%26_City_lines%29"
+    },
+    "940GZZLUESQ": {
+      "name": "Euston Square Underground Station",
+      "openedYear": 1863,
+      "openedRank": 8,
+      "dailyTraffic": 30793,
+      "dailyTrafficRank": 56,
+      "funFact": "The multi-interchange Euston station is beyond Euston Square Gardens, which is situated 250 m (270 yards) east from this station on Euston Road.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Euston_Square_tube_station"
+    },
+    "940GZZLUEUS": {
+      "name": "Euston Underground Station",
+      "openedYear": 1907,
+      "openedRank": 154,
+      "dailyTraffic": 82096,
+      "dailyTrafficRank": 16,
+      "funFact": "Plans for High Speed 2 and Crossrail 2 both include proposals to modify the station to provide interchanges with the new services.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Euston_tube_station"
+    },
+    "940GZZLUFBY": {
+      "name": "Fulham Broadway Underground Station",
+      "openedYear": 1880,
+      "openedRank": 57,
+      "dailyTraffic": 18694,
+      "dailyTrafficRank": 92,
+      "funFact": "It is the nearest station to Stamford Bridge stadium, the home of Chelsea Football Club.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Fulham_Broadway_tube_station"
+    },
+    "940GZZLUFCN": {
+      "name": "Farringdon Underground Station",
+      "openedYear": 1863,
+      "openedRank": 9,
+      "dailyTraffic": 109782,
+      "dailyTrafficRank": 11,
+      "funFact": "Opened in 1863 as the terminus of the Metropolitan Railway, the world's first underground passenger railway, Farringdon is one of the oldest surviving underground railway stations in the world.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Farringdon_station"
+    },
+    "940GZZLUFLP": {
+      "name": "Fairlop Underground Station",
+      "openedYear": 1903,
+      "openedRank": 118,
+      "dailyTraffic": 2427,
+      "dailyTrafficRank": 259,
+      "funFact": "The station has been in London fare zone 4 since 2 January 2007.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Fairlop_tube_station"
+    },
+    "940GZZLUFPK": {
+      "name": "Finsbury Park Underground Station",
+      "openedYear": 1861,
+      "openedRank": 3,
+      "dailyTraffic": 56109,
+      "dailyTrafficRank": 25,
+      "funFact": "Finsbury Park () is an intermodal interchange station in North London for London Underground, National Rail and London Buses services.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Finsbury_Park_station"
+    },
+    "940GZZLUFYC": {
+      "name": "Finchley Central Underground Station",
+      "openedYear": 1940,
+      "openedRank": 224,
+      "dailyTraffic": 17148,
+      "dailyTrafficRank": 97,
+      "funFact": "The station was opened on 22 August 1867 as part of the Great Northern Railway's line between Finsbury Park and Edgware stations.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Finchley_Central_tube_station"
+    },
+    "940GZZLUFYR": {
+      "name": "Finchley Road Underground Station",
+      "openedYear": 1879,
+      "openedRank": 53,
+      "dailyTraffic": 19301,
+      "dailyTrafficRank": 89,
+      "funFact": "The station is in a cutting covered by a single glass and metal canopy and is the northernmost station below street level on the line.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Finchley_Road_tube_station"
+    },
+    "940GZZLUGBY": {
+      "name": "Gunnersbury Underground Station",
+      "openedYear": 1869,
+      "openedRank": 35,
+      "dailyTraffic": 11084,
+      "dailyTrafficRank": 152,
+      "funFact": "The station is located off Chiswick High Road (A315) and opened on 1 January 1869.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Gunnersbury_station"
+    },
+    "940GZZLUGDG": {
+      "name": "Goodge Street Underground Station",
+      "openedYear": 1907,
+      "openedRank": 155,
+      "dailyTraffic": 14010,
+      "dailyTrafficRank": 124,
+      "funFact": "It is located on Tottenham Court Road in Fitzrovia, in the London Borough of Camden.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Goodge_Street_tube_station"
+    },
+    "940GZZLUGFD": {
+      "name": "Greenford Underground Station",
+      "openedYear": 1904,
+      "openedRank": 125,
+      "dailyTraffic": 8957,
+      "dailyTrafficRank": 174,
+      "funFact": "It is the terminus of the National Rail Greenford branch line, 2 miles 40 chains (2.5 mi; 4.0 km) down the line from West Ealing and 9 miles 6 chains (9.1 mi; 14.6 km) measured from London Paddington.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Greenford_station"
+    },
+    "940GZZLUGGH": {
+      "name": "Grange Hill Underground Station",
+      "openedYear": 1948,
+      "openedRank": 244,
+      "dailyTraffic": 1088,
+      "dailyTrafficRank": 268,
+      "funFact": "It lies in the parish of Chigwell in the Epping Forest district of Essex.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Grange_Hill_tube_station"
+    },
+    "940GZZLUGGN": {
+      "name": "Golders Green Underground Station",
+      "openedYear": 1907,
+      "openedRank": 156,
+      "dailyTraffic": 16522,
+      "dailyTrafficRank": 99,
+      "funFact": "The station is located at the crossroads of Finchley Road (A598) and Golders Green Road/North End Road (A502).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Golders_Green_tube_station"
+    },
+    "940GZZLUGHK": {
+      "name": "Goldhawk Road Underground Station",
+      "openedYear": 1864,
+      "openedRank": 13,
+      "dailyTraffic": 4944,
+      "dailyTrafficRank": 228,
+      "funFact": "Although the line here was opened on 13 June 1864, a station was not opened at this location until 1 April 1914 when Shepherd's Bush station (now Shepherd's Bush Market) was moved from its original location between Uxbr…",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Goldhawk_Road_tube_station"
+    },
+    "940GZZLUGPK": {
+      "name": "Green Park Underground Station",
+      "openedYear": 1906,
+      "openedRank": 135,
+      "dailyTraffic": 77390,
+      "dailyTrafficRank": 17,
+      "funFact": "The station was opened in 1906 by the Great Northern, Piccadilly and Brompton Railway (GNP&BR) and was originally named Dover Street due to its location in that street.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Green_Park_tube_station"
+    },
+    "940GZZLUGPS": {
+      "name": "Great Portland Street Underground Station",
+      "openedYear": 1863,
+      "openedRank": 10,
+      "dailyTraffic": 14649,
+      "dailyTrafficRank": 113,
+      "funFact": "The station is a Grade II listed building.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Great_Portland_Street_tube_station"
+    },
+    "940GZZLUGTH": {
+      "name": "Gants Hill Underground Station",
+      "openedYear": 1947,
+      "openedRank": 232,
+      "dailyTraffic": 13097,
+      "dailyTrafficRank": 132,
+      "funFact": "It is the easternmost station to be below ground on the London Underground network and the busiest on the Hainault loop; it is located in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Gants_Hill_tube_station"
+    },
+    "940GZZLUGTR": {
+      "name": "Gloucester Road Underground Station",
+      "openedYear": 1868,
+      "openedRank": 25,
+      "dailyTraffic": 31106,
+      "dailyTrafficRank": 55,
+      "funFact": "A disused sub-surface platform features periodic art installations as part of Transport for London's Art on the Underground scheme.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Gloucester_Road_tube_station"
+    },
+    "940GZZLUHAI": {
+      "name": "Highbury & Islington Underground Station",
+      "openedYear": 1968,
+      "openedRank": 253,
+      "dailyTraffic": 38747,
+      "dailyTrafficRank": 42,
+      "funFact": "On the Northern City line, it is between Essex Road and Drayton Park, 2 miles 21 chains (3.6 km) down the line from Moorgate.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Highbury_%26_Islington_tube_station"
+    },
+    "940GZZLUHAW": {
+      "name": "Harrow & Wealdstone Underground Station",
+      "openedYear": 1906,
+      "openedRank": 136,
+      "dailyTraffic": 9699,
+      "dailyTrafficRank": 165,
+      "funFact": "It is one of the oldest stations in the London region still in existence.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Bakerloo_line"
+    },
+    "940GZZLUHBN": {
+      "name": "Holborn Underground Station",
+      "openedYear": 1906,
+      "openedRank": 137,
+      "dailyTraffic": 55455,
+      "dailyTrafficRank": 28,
+      "funFact": "While the two disused platforms are now closed to the public, they can be still be seen on a \"Hidden London\" guided tour held by London Transport Museum.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Holborn_tube_station"
+    },
+    "940GZZLUHBT": {
+      "name": "High Barnet Underground Station",
+      "openedYear": 1940,
+      "openedRank": 225,
+      "dailyTraffic": 8931,
+      "dailyTrafficRank": 175,
+      "funFact": "The station is situated 10.2 miles (16.4 km) north north-west of Charing Cross and is in London fare zone 5.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/High_Barnet_tube_station"
+    },
+    "940GZZLUHCH": {
+      "name": "Hornchurch Underground Station",
+      "openedYear": 1885,
+      "openedRank": 68,
+      "dailyTraffic": 4447,
+      "dailyTrafficRank": 237,
+      "funFact": "The London–Southend service was withdrawn from Hornchurch and the original platforms abandoned in 1962.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hornchurch_tube_station"
+    },
+    "940GZZLUHCL": {
+      "name": "Hendon Central Underground Station",
+      "openedYear": 1923,
+      "openedRank": 183,
+      "dailyTraffic": 14192,
+      "dailyTrafficRank": 122,
+      "funFact": "The station was opened along with Brent Cross (then called Brent) tube station on 19 November 1923 as the first stage of an extension of the Golders Green branch of the Charing Cross, Euston and Hampstead Railway.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hendon_Central_tube_station"
+    },
+    "940GZZLUHGD": {
+      "name": "Hillingdon Underground Station",
+      "openedYear": 1923,
+      "openedRank": 184,
+      "dailyTraffic": 3764,
+      "dailyTrafficRank": 251,
+      "funFact": "The station is in London fare zone 6.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hillingdon_tube_station"
+    },
+    "940GZZLUHGR": {
+      "name": "Hanger Lane Underground Station",
+      "openedYear": 1947,
+      "openedRank": 233,
+      "dailyTraffic": 6979,
+      "dailyTrafficRank": 200,
+      "funFact": "It is located on the border between west and north-west London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hanger_Lane_tube_station"
+    },
+    "940GZZLUHGT": {
+      "name": "Highgate Underground Station",
+      "openedYear": 1867,
+      "openedRank": 22,
+      "dailyTraffic": 12077,
+      "dailyTrafficRank": 140,
+      "funFact": "The station takes its name from nearby Highgate Village.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Highgate_tube_station"
+    },
+    "940GZZLUHLT": {
+      "name": "Hainault Underground Station",
+      "openedYear": 1903,
+      "openedRank": 119,
+      "dailyTraffic": 7838,
+      "dailyTrafficRank": 187,
+      "funFact": "It is on the Hainault loop of the Central line, between Fairlop and Grange Hill stations.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hainault_tube_station"
+    },
+    "940GZZLUHNX": {
+      "name": "Hatton Cross Underground Station",
+      "openedYear": 1975,
+      "openedRank": 259,
+      "dailyTraffic": 7815,
+      "dailyTrafficRank": 188,
+      "funFact": "It was named after the crossroads of the Great South West Road and Hatton Road.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hatton_Cross_tube_station"
+    },
+    "940GZZLUHOH": {
+      "name": "Harrow-on-the-Hill Underground Station",
+      "openedYear": 1880,
+      "openedRank": 58,
+      "dailyTraffic": 23111,
+      "dailyTrafficRank": 75,
+      "funFact": "It is 9 miles 18 chains (9.23 mi; 14.85 km) down the line from London Marylebone.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Harrow-on-the-Hill_station"
+    },
+    "940GZZLUHPC": {
+      "name": "Hyde Park Corner Underground Station",
+      "openedYear": 1906,
+      "openedRank": 138,
+      "dailyTraffic": 11396,
+      "dailyTrafficRank": 147,
+      "funFact": "It is located near Hyde Park Corner in Hyde Park, London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hyde_Park_Corner_tube_station"
+    },
+    "940GZZLUHPK": {
+      "name": "Holland Park Underground Station",
+      "openedYear": 1900,
+      "openedRank": 94,
+      "dailyTraffic": 7190,
+      "dailyTrafficRank": 196,
+      "funFact": "It is in London fare zone 2.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Holland_Park_tube_station"
+    },
+    "940GZZLUHR4": {
+      "name": "Heathrow Terminal 4 Underground Station",
+      "openedYear": 1998,
+      "openedRank": 261,
+      "dailyTraffic": 3980,
+      "dailyTrafficRank": 245,
+      "funFact": "Journeys to and from Heathrow Terminals 2 & 3 railway station and Heathrow Terminal 5 railway station are free of charge and can be used by passengers changing terminals at Heathrow.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Heathrow_Terminal_4_railway_station"
+    },
+    "940GZZLUHR5": {
+      "name": "Heathrow Terminal 5 Underground Station",
+      "openedYear": 2008,
+      "openedRank": 268,
+      "dailyTraffic": 9701,
+      "dailyTrafficRank": 164,
+      "funFact": "The London Underground section of the station is situated in London fare zone 6; it is the westernmost below-ground station on the network.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Heathrow_Terminal_5_station"
+    },
+    "940GZZLUHRC": {
+      "name": "Heathrow Terminals 2 & 3 Underground Station",
+      "openedYear": 1977,
+      "openedRank": 260,
+      "dailyTraffic": 14708,
+      "dailyTrafficRank": 112,
+      "funFact": "It is between Heathrow Terminal 5 and Hatton Cross stations.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Heathrow_Terminals_2_%26_3_tube_station"
+    },
+    "940GZZLUHSC": {
+      "name": "Hammersmith (H&C Line) Underground Station",
+      "openedYear": 1874,
+      "openedRank": 44,
+      "dailyTraffic": 55591,
+      "dailyTrafficRank": 26,
+      "funFact": "The two stations are separated by Hammersmith Broadway.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hammersmith_tube_station_%28District_and_Piccadilly_lines%29"
+    },
+    "940GZZLUHSD": {
+      "name": "Hammersmith (Dist&Picc Line) Underground Station",
+      "openedYear": 1874,
+      "openedRank": 45,
+      "dailyTraffic": 55591,
+      "dailyTrafficRank": 27,
+      "funFact": "The two stations are separated by Hammersmith Broadway.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hammersmith_tube_station_%28District_and_Piccadilly_lines%29"
+    },
+    "940GZZLUHSK": {
+      "name": "High Street Kensington Underground Station",
+      "openedYear": 1868,
+      "openedRank": 26,
+      "dailyTraffic": 25789,
+      "dailyTrafficRank": 66,
+      "funFact": "Kensington Arcade forms the entrance to the station.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/High_Street_Kensington_tube_station"
+    },
+    "940GZZLUHSN": {
+      "name": "Harlesden Underground Station",
+      "openedYear": 1912,
+      "openedRank": 168,
+      "dailyTraffic": 6757,
+      "dailyTrafficRank": 202,
+      "funFact": "It is on the Bakerloo line of the London Underground and the Lioness Line of the London Overground, between Stonebridge Park and Willesden Junction stations.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Harlesden_station"
+    },
+    "940GZZLUHTD": {
+      "name": "Hampstead Underground Station",
+      "openedYear": 1907,
+      "openedRank": 157,
+      "dailyTraffic": 10656,
+      "dailyTrafficRank": 157,
+      "funFact": "Because Hampstead is on a steep hill, the station's platforms are the deepest on the London Underground network, being 58.5 metres (192 ft) below ground level; and it has the deepest lift shaft on the Underground, at 55…",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hampstead_tube_station"
+    },
+    "940GZZLUHWC": {
+      "name": "Hounslow Central Underground Station",
+      "openedYear": 1886,
+      "openedRank": 72,
+      "dailyTraffic": 8221,
+      "dailyTrafficRank": 184,
+      "funFact": "The station is located on Lampton Road (A3005) about 500m north of Hounslow High Street and close to Lampton Park.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hounslow_Central_tube_station"
+    },
+    "940GZZLUHWE": {
+      "name": "Hounslow East Underground Station",
+      "openedYear": 1909,
+      "openedRank": 166,
+      "dailyTraffic": 9235,
+      "dailyTrafficRank": 169,
+      "funFact": "The station is located on Kingsley Road and is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hounslow_East_tube_station"
+    },
+    "940GZZLUHWT": {
+      "name": "Hounslow West Underground Station",
+      "openedYear": 1884,
+      "openedRank": 66,
+      "dailyTraffic": 7606,
+      "dailyTrafficRank": 190,
+      "funFact": "The station building was rebuilt to a design by Charles Holden in 1931.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Hounslow_West_tube_station"
+    },
+    "940GZZLUHWY": {
+      "name": "Holloway Road Underground Station",
+      "openedYear": 1906,
+      "openedRank": 139,
+      "dailyTraffic": 13990,
+      "dailyTrafficRank": 125,
+      "funFact": "The station is adjacent to the site of the former Holloway and Caledonian Road railway station.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Holloway_Road_tube_station"
+    },
+    "940GZZLUICK": {
+      "name": "Ickenham Underground Station",
+      "openedYear": 1905,
+      "openedRank": 130,
+      "dailyTraffic": 2339,
+      "dailyTrafficRank": 260,
+      "funFact": "It is in London fare zone 6.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Ickenham_tube_station"
+    },
+    "940GZZLUKBN": {
+      "name": "Kilburn Underground Station",
+      "openedYear": 1879,
+      "openedRank": 54,
+      "dailyTraffic": 15269,
+      "dailyTrafficRank": 108,
+      "funFact": "The station is located on the A5 Kilburn High Road or Shoot-up Hill, approximately 0.1 miles (0.16 km) north of Brondesbury station.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Kilburn_tube_station"
+    },
+    "940GZZLUKBY": {
+      "name": "Kingsbury Underground Station",
+      "openedYear": 1932,
+      "openedRank": 205,
+      "dailyTraffic": 9497,
+      "dailyTrafficRank": 167,
+      "funFact": "Although now only served by deep-level tube trains, the section of line serving the station is built to surface gauge, and trains to that larger LU loading gauge occasionally pass through.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Kingsbury_tube_station"
+    },
+    "940GZZLUKEN": {
+      "name": "Kenton Underground Station",
+      "openedYear": 1917,
+      "openedRank": 179,
+      "dailyTraffic": 4152,
+      "dailyTrafficRank": 241,
+      "funFact": "It also has an out-of-station interchange with Northwick Park tube station on the London Underground's Metropolitan line.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Kenton_station"
+    },
+    "940GZZLUKNB": {
+      "name": "Knightsbridge Underground Station",
+      "openedYear": 1906,
+      "openedRank": 140,
+      "dailyTraffic": 37173,
+      "dailyTrafficRank": 44,
+      "funFact": "It is located in the Royal Borough of Kensington and Chelsea.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Knightsbridge_tube_station"
+    },
+    "940GZZLUKNG": {
+      "name": "Kennington Underground Station",
+      "openedYear": 1890,
+      "openedRank": 83,
+      "dailyTraffic": 12693,
+      "dailyTrafficRank": 136,
+      "funFact": "It is located on Kennington Park Road in Kennington within the London Borough of Southwark.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Kennington_tube_station"
+    },
+    "940GZZLUKOY": {
+      "name": "Kensington (Olympia) Underground Station",
+      "openedYear": 1862,
+      "openedRank": 4,
+      "funFact": "The station was bombed during World War II and subsequently closed.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Kensington_%28Olympia%29_tube_station"
+    },
+    "940GZZLUKPK": {
+      "name": "Kilburn Park Underground Station",
+      "openedYear": 1915,
+      "openedRank": 173,
+      "dailyTraffic": 7172,
+      "dailyTrafficRank": 197,
+      "funFact": "The station is situated on Cambridge Avenue approximately 100 metres (300 ft) west of Kilburn High Road, shortly before it becomes Maida Vale, (A5).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Kilburn_Park_tube_station"
+    },
+    "940GZZLUKSH": {
+      "name": "Kentish Town Underground Station",
+      "openedYear": 1868,
+      "openedRank": 27,
+      "funFact": "It is the only station on the High Barnet branch with a direct interchange with a National Rail line.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Kentish_Town_tube_station"
+    },
+    "940GZZLUKSL": {
+      "name": "Kensal Green Underground Station",
+      "openedYear": 1916,
+      "openedRank": 178,
+      "dailyTraffic": 4978,
+      "dailyTrafficRank": 227,
+      "funFact": "It is located in College Road, close to the junction with Harrow Road.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Kensal_Green_station"
+    },
+    "940GZZLUKSX": {
+      "name": "King's Cross St. Pancras Underground Station",
+      "openedYear": 1863,
+      "openedRank": 11,
+      "dailyTraffic": 197601,
+      "dailyTrafficRank": 1,
+      "funFact": "The station was one of the first to open on the network.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/King%27s_Cross_St_Pancras_tube_station"
+    },
+    "940GZZLUKWG": {
+      "name": "Kew Gardens Underground Station",
+      "openedYear": 1869,
+      "openedRank": 36,
+      "dailyTraffic": 10787,
+      "dailyTrafficRank": 155,
+      "funFact": "Located in Kew in the London Borough of Richmond upon Thames, it first opened in 1869 and is now managed by London Underground.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Kew_Gardens_station_%28London%29"
+    },
+    "940GZZLULAD": {
+      "name": "Ladbroke Grove Underground Station",
+      "openedYear": 1864,
+      "openedRank": 14,
+      "dailyTraffic": 15751,
+      "dailyTrafficRank": 103,
+      "funFact": "The station is set in The Royal Borough of Kensington and Chelsea.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Ladbroke_Grove_tube_station"
+    },
+    "940GZZLULBN": {
+      "name": "Lambeth North Underground Station",
+      "openedYear": 1906,
+      "openedRank": 141,
+      "dailyTraffic": 7368,
+      "dailyTrafficRank": 193,
+      "funFact": "In 2017, it was ranked the least-used Underground station in zone 1.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Lambeth_North_tube_station"
+    },
+    "940GZZLULGN": {
+      "name": "Loughton Underground Station",
+      "openedYear": 1948,
+      "openedRank": 245,
+      "dailyTraffic": 7541,
+      "dailyTrafficRank": 191,
+      "funFact": "The station is entirely above ground, and platforms are accessed by staircases which rise from ground level.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Loughton_tube_station"
+    },
+    "940GZZLULGT": {
+      "name": "Lancaster Gate Underground Station",
+      "openedYear": 1900,
+      "openedRank": 95,
+      "dailyTraffic": 8691,
+      "dailyTrafficRank": 177,
+      "funFact": "It is located near Lancaster Gate on Bayswater Road in Paddington, to the north of Kensington Gardens, adjacent to the Royal Lancaster Hotel.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Lancaster_Gate_tube_station"
+    },
+    "940GZZLULNB": {
+      "name": "London Bridge Underground Station",
+      "openedYear": 1900,
+      "openedRank": 96,
+      "dailyTraffic": 150044,
+      "dailyTrafficRank": 6,
+      "funFact": "It is one of two main line termini in London to the south of the River Thames (the other being Waterloo) and is the fourth-busiest station in London, handling over 50 million passengers a year.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/London_Bridge_tube_station"
+    },
+    "940GZZLULRD": {
+      "name": "Latimer Road Underground Station",
+      "openedYear": 1868,
+      "openedRank": 28,
+      "dailyTraffic": 5348,
+      "dailyTrafficRank": 220,
+      "funFact": "It is in London fare zone 2.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Latimer_Road_tube_station"
+    },
+    "940GZZLULSQ": {
+      "name": "Leicester Square Underground Station",
+      "openedYear": 1906,
+      "openedRank": 142,
+      "dailyTraffic": 75013,
+      "dailyTrafficRank": 18,
+      "funFact": "It is located on Charing Cross Road, a short distance to the east of Leicester Square itself.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Leicester_Square_tube_station"
+    },
+    "940GZZLULVT": {
+      "name": "Liverpool Street Underground Station",
+      "openedYear": 1875,
+      "openedRank": 47,
+      "dailyTraffic": 156785,
+      "dailyTrafficRank": 5,
+      "funFact": "During the First World War, an air raid on the station killed 16 on site, and 146 others in nearby areas.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Liverpool_Street_tube_station"
+    },
+    "940GZZLULYN": {
+      "name": "Leyton Underground Station",
+      "openedYear": 1947,
+      "openedRank": 234,
+      "dailyTraffic": 23541,
+      "dailyTrafficRank": 71,
+      "funFact": "It is located on Leyton High Road, adjacent to the A12.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Leyton_tube_station"
+    },
+    "940GZZLULYS": {
+      "name": "Leytonstone Underground Station",
+      "openedYear": 1947,
+      "openedRank": 235,
+      "dailyTraffic": 19057,
+      "dailyTrafficRank": 90,
+      "funFact": "The station is located at the boundary of London fare zone 3 and 4, close to Whipps Cross University Hospital.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Leytonstone_tube_station"
+    },
+    "940GZZLUMBA": {
+      "name": "Marble Arch Underground Station",
+      "openedYear": 1900,
+      "openedRank": 97,
+      "dailyTraffic": 23534,
+      "dailyTrafficRank": 72,
+      "funFact": "It is located near the Marble Arch in the City of Westminster.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Marble_Arch_tube_station"
+    },
+    "940GZZLUMDN": {
+      "name": "Morden Underground Station",
+      "openedYear": 1926,
+      "openedRank": 196,
+      "dailyTraffic": 22640,
+      "dailyTrafficRank": 77,
+      "funFact": "The station was one of the first modernist designs produced for the London Underground by Charles Holden.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Morden_tube_station"
+    },
+    "940GZZLUMED": {
+      "name": "Mile End Underground Station",
+      "openedYear": 1902,
+      "openedRank": 111,
+      "dailyTraffic": 30536,
+      "dailyTrafficRank": 58,
+      "funFact": "The station was opened by the Whitechapel and Bow Railway on 2 June 1902 on a new route connecting the District Railway at Whitechapel with the London, Tilbury and Southend Railway to the east of Bow Road.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Mile_End_tube_station"
+    },
+    "940GZZLUMGT": {
+      "name": "Moorgate Underground Station",
+      "openedYear": 1865,
+      "openedRank": 17,
+      "dailyTraffic": 63918,
+      "dailyTrafficRank": 21,
+      "funFact": "The station was opened as Moorgate Street in 1865 by the Metropolitan Railway.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Moorgate_station"
+    },
+    "940GZZLUMHL": {
+      "name": "Mill Hill East Underground Station",
+      "openedYear": 1867,
+      "openedRank": 23,
+      "dailyTraffic": 4377,
+      "dailyTrafficRank": 239,
+      "funFact": "The station was opened in 1867 as part of the Great Northern Railway's line between Finsbury Park and Edgware stations.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Mill_Hill_East_tube_station"
+    },
+    "940GZZLUMMT": {
+      "name": "Monument Underground Station",
+      "openedYear": 1884,
+      "openedRank": 67,
+      "dailyTraffic": 101919,
+      "dailyTrafficRank": 14,
+      "funFact": "One of the busiest on the London Underground network, the station complex was previously rated the Underground's worst station in passenger surveys.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Monument_tube_station"
+    },
+    "940GZZLUMPK": {
+      "name": "Moor Park Underground Station",
+      "openedYear": 1910,
+      "openedRank": 167,
+      "dailyTraffic": 2216,
+      "dailyTrafficRank": 264,
+      "funFact": "It is located in the Three Rivers district of Hertfordshire, serving those living on the Moor Park estate, and also on the neighbouring Eastbury and South Oxhey estates.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Moor_Park_tube_station"
+    },
+    "940GZZLUMRH": {
+      "name": "Manor House Underground Station",
+      "openedYear": 1932,
+      "openedRank": 206,
+      "dailyTraffic": 16336,
+      "dailyTrafficRank": 100,
+      "funFact": "It straddles the border between the London Boroughs of Hackney and Haringey, the postal address and three of the entrances being in the former, and one entrance in the latter.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Manor_House_tube_station"
+    },
+    "940GZZLUMSH": {
+      "name": "Mansion House Underground Station",
+      "openedYear": 1871,
+      "openedRank": 42,
+      "dailyTraffic": 11993,
+      "dailyTrafficRank": 142,
+      "funFact": "It opened in 1871 as the eastern terminus of the Metropolitan District Railway.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Mansion_House_tube_station"
+    },
+    "940GZZLUMTC": {
+      "name": "Mornington Crescent Underground Station",
+      "openedYear": 1907,
+      "openedRank": 158,
+      "dailyTraffic": 8129,
+      "dailyTrafficRank": 185,
+      "funFact": "The surface building was designed by the Underground Electric Railways Company of London's (UERL's) architect Leslie Green in the Modern Style (British Art Nouveau style).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Mornington_Crescent_tube_station"
+    },
+    "940GZZLUMVL": {
+      "name": "Maida Vale Underground Station",
+      "openedYear": 1915,
+      "openedRank": 174,
+      "dailyTraffic": 7347,
+      "dailyTrafficRank": 194,
+      "funFact": "The station is a Grade II listed building being of architectural and historic interest.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Maida_Vale_tube_station"
+    },
+    "940GZZLUMYB": {
+      "name": "Marylebone Underground Station",
+      "openedYear": 1907,
+      "openedRank": 159,
+      "dailyTraffic": 22518,
+      "dailyTrafficRank": 78,
+      "funFact": "As of 2020, it is the only main London terminus to host only diesel trains, as none of the National Rail lines into it are electrified.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Marylebone_tube_station"
+    },
+    "940GZZLUNAN": {
+      "name": "North Acton Underground Station",
+      "openedYear": 1923,
+      "openedRank": 185,
+      "dailyTraffic": 15486,
+      "dailyTrafficRank": 106,
+      "funFact": "The station is on the boundary of London fare zone 2 and zone 3.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/North_Acton_tube_station"
+    },
+    "940GZZLUNBP": {
+      "name": "Newbury Park Underground Station",
+      "openedYear": 1903,
+      "openedRank": 120,
+      "dailyTraffic": 9237,
+      "dailyTrafficRank": 168,
+      "funFact": "Lifts were fully installed at Newbury Park in November 2018 to provide step-free access to the station, approximately 10 years after TfL abandoned the project.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Newbury_Park_tube_station"
+    },
+    "940GZZLUNDN": {
+      "name": "Neasden Underground Station",
+      "openedYear": 1880,
+      "openedRank": 59,
+      "dailyTraffic": 7029,
+      "dailyTrafficRank": 199,
+      "funFact": "The Chiltern Main Line/London to Aylesbury Line runs to the west of the station.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Neasden_tube_station"
+    },
+    "940GZZLUNEN": {
+      "name": "North Ealing Underground Station",
+      "openedYear": 1903,
+      "openedRank": 121,
+      "dailyTraffic": 1659,
+      "dailyTrafficRank": 267,
+      "funFact": "There is even a primary school named North Ealing within Pitshanger.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/North_Ealing_tube_station"
+    },
+    "940GZZLUNFD": {
+      "name": "Northfields Underground Station",
+      "openedYear": 1908,
+      "openedRank": 162,
+      "dailyTraffic": 7623,
+      "dailyTrafficRank": 189,
+      "funFact": "The station is located on Northfield Avenue (B452), and is in London fare zone 3.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Northfields_tube_station"
+    },
+    "940GZZLUNGW": {
+      "name": "North Greenwich Underground Station",
+      "openedYear": 1999,
+      "openedRank": 266,
+      "dailyTraffic": 63486,
+      "dailyTrafficRank": 22,
+      "funFact": "It is adjacent to The O2 (originally the Millennium Dome) at the northern end of the Greenwich Peninsula, on the south bank of the Thames, and is the easternmost below-ground station on the line.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/North_Greenwich_tube_station"
+    },
+    "940GZZLUNHA": {
+      "name": "North Harrow Underground Station",
+      "openedYear": 1915,
+      "openedRank": 175,
+      "dailyTraffic": 3832,
+      "dailyTrafficRank": 249,
+      "funFact": "The station is in London fare zone 5.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/North_Harrow_tube_station"
+    },
+    "940GZZLUNHG": {
+      "name": "Notting Hill Gate Underground Station",
+      "openedYear": 1868,
+      "openedRank": 29,
+      "dailyTraffic": 33180,
+      "dailyTrafficRank": 54,
+      "funFact": "It is located on the street called Notting Hill Gate.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Notting_Hill_Gate_tube_station"
+    },
+    "940GZZLUNHT": {
+      "name": "Northolt Underground Station",
+      "openedYear": 1948,
+      "openedRank": 246,
+      "dailyTraffic": 10786,
+      "dailyTrafficRank": 156,
+      "funFact": "It is in London fare zone 5.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Northolt_tube_station"
+    },
+    "940GZZLUNKP": {
+      "name": "Northwick Park Underground Station",
+      "openedYear": 1923,
+      "openedRank": 186,
+      "dailyTraffic": 9188,
+      "dailyTrafficRank": 170,
+      "funFact": "The station takes its name from the nearby public park, Northwick Park.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Northwick_Park_tube_station"
+    },
+    "940GZZLUNOW": {
+      "name": "Northwood Underground Station",
+      "openedYear": 1887,
+      "openedRank": 73,
+      "dailyTraffic": 5924,
+      "dailyTrafficRank": 209,
+      "funFact": "The line serves as the sole continuous link between the town of Northwood and London, key for a region known as Metro-Land.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Northwood_tube_station"
+    },
+    "940GZZLUNWH": {
+      "name": "Northwood Hills Underground Station",
+      "openedYear": 1933,
+      "openedRank": 212,
+      "dailyTraffic": 3859,
+      "dailyTrafficRank": 248,
+      "funFact": "It is in London fare zone 6.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Northwood_Hills_tube_station"
+    },
+    "940GZZLUNWY": {
+      "name": "North Wembley Underground Station",
+      "openedYear": 1912,
+      "openedRank": 169,
+      "dailyTraffic": 3551,
+      "dailyTrafficRank": 253,
+      "funFact": "The station is located on the south side of East Lane, part of the London Borough of Brent, serving residents of North Wembley and western parts of Wembley Park.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/North_Wembley_station"
+    },
+    "940GZZLUOAK": {
+      "name": "Oakwood Underground Station",
+      "openedYear": 1933,
+      "openedRank": 213,
+      "dailyTraffic": 6321,
+      "dailyTrafficRank": 205,
+      "funFact": "The station is located on the edge of the Oakwood area of Enfield (N14) and is situated at the junction of Bramley Road (A110) and Chase Road (the other end of Chase Road is close to Southgate tube station).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Oakwood_tube_station"
+    },
+    "940GZZLUODS": {
+      "name": "Old Street Underground Station",
+      "openedYear": 1901,
+      "openedRank": 104,
+      "dailyTraffic": 43416,
+      "dailyTrafficRank": 34,
+      "funFact": "The National Rail station is on the Northern City Line, between Moorgate and Essex Road stations.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Old_Street_station"
+    },
+    "940GZZLUOSY": {
+      "name": "Osterley Underground Station",
+      "openedYear": 1934,
+      "openedRank": 216,
+      "dailyTraffic": 4590,
+      "dailyTrafficRank": 232,
+      "funFact": "The station is located on Great West Road (A4), close to the National Trust-owned Osterley Park.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Osterley_tube_station"
+    },
+    "940GZZLUOVL": {
+      "name": "Oval Underground Station",
+      "openedYear": 1890,
+      "openedRank": 84,
+      "dailyTraffic": 15386,
+      "dailyTrafficRank": 107,
+      "funFact": "The station opened on 18 December 1890 as part of the City and South London Railway and is named after The Oval cricket ground, recognised as the first international cricket ground and home of Surrey County Cricket Club…",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Oval_tube_station"
+    },
+    "940GZZLUOXC": {
+      "name": "Oxford Circus Underground Station",
+      "openedYear": 1900,
+      "openedRank": 98,
+      "dailyTraffic": 140017,
+      "dailyTrafficRank": 8,
+      "funFact": "As of 2024, it was the fourth-busiest station on the London Underground; and as such access to the station is frequently restricted at peak times.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Oxford_Circus_tube_station"
+    },
+    "940GZZLUPAC": {
+      "name": "Paddington Underground Station",
+      "openedYear": 1838,
+      "openedRank": 2,
+      "dailyTraffic": 133004,
+      "dailyTrafficRank": 9,
+      "funFact": "The main line station opened in 1854 and was designed by Isambard Kingdom Brunel.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/London_Paddington_station"
+    },
+    "940GZZLUPAH": {
+      "name": "Paddington (H&C Line)-Underground",
+      "openedYear": 1863,
+      "openedRank": 12,
+      "dailyTraffic": 133004,
+      "dailyTrafficRank": 10,
+      "funFact": "It is located adjacent to the north side of Paddington mainline station and has entrances from within the mainline station and from Paddington Basin.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Paddington_tube_station_%28Circle_and_Hammersmith_%26_City_lines%29"
+    },
+    "940GZZLUPCC": {
+      "name": "Piccadilly Circus Underground Station",
+      "openedYear": 1906,
+      "openedRank": 143,
+      "dailyTraffic": 73260,
+      "dailyTrafficRank": 19,
+      "funFact": "It is located directly beneath Piccadilly Circus itself, with entrances at every corner.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Piccadilly_Circus_tube_station"
+    },
+    "940GZZLUPCO": {
+      "name": "Pimlico Underground Station",
+      "openedYear": 1972,
+      "openedRank": 258,
+      "dailyTraffic": 19418,
+      "dailyTrafficRank": 87,
+      "funFact": "The station is the only one on the line without an interchange to any other railway line or Underground line, and is the deepest beneath sea level.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Pimlico_tube_station"
+    },
+    "940GZZLUPKR": {
+      "name": "Park Royal Underground Station",
+      "openedYear": 1931,
+      "openedRank": 200,
+      "dailyTraffic": 4533,
+      "dailyTrafficRank": 234,
+      "funFact": "The station is situated on the south side of the east–west Western Avenue (A40), surrounded by residential Ealing and industrial Park Royal.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Park_Royal_tube_station"
+    },
+    "940GZZLUPLW": {
+      "name": "Plaistow Underground Station",
+      "openedYear": 1902,
+      "openedRank": 112,
+      "dailyTraffic": 12010,
+      "dailyTrafficRank": 141,
+      "funFact": "The Fenchurch Street–Southend British Railways service was withdrawn in 1962, leaving abandoned platforms.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Plaistow_tube_station"
+    },
+    "940GZZLUPNR": {
+      "name": "Pinner Underground Station",
+      "openedYear": 1885,
+      "openedRank": 69,
+      "dailyTraffic": 6093,
+      "dailyTrafficRank": 207,
+      "funFact": "This change is only needed on Mondays to Fridays during peak hours.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Pinner_tube_station"
+    },
+    "940GZZLUPRD": {
+      "name": "Preston Road Underground Station",
+      "openedYear": 1908,
+      "openedRank": 163,
+      "dailyTraffic": 6640,
+      "dailyTrafficRank": 203,
+      "funFact": "The station is served by \"all stations\" trains only (northbound fast and semi-fast trains do not stop at stations between Wembley Park and Harrow-on-the-Hill).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Preston_Road_tube_station"
+    },
+    "940GZZLUPSG": {
+      "name": "Parsons Green Underground Station",
+      "openedYear": 1880,
+      "openedRank": 60,
+      "dailyTraffic": 15257,
+      "dailyTrafficRank": 109,
+      "funFact": "There are entrances on Parsons Green Lane and in Beaconsfield Walk.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Parsons_Green_tube_station"
+    },
+    "940GZZLUPVL": {
+      "name": "Perivale Underground Station",
+      "openedYear": 1947,
+      "openedRank": 236,
+      "dailyTraffic": 4719,
+      "dailyTrafficRank": 231,
+      "funFact": "It is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Perivale_tube_station"
+    },
+    "940GZZLUPYB": {
+      "name": "Putney Bridge Underground Station",
+      "openedYear": 1880,
+      "openedRank": 61,
+      "dailyTraffic": 13723,
+      "dailyTrafficRank": 127,
+      "funFact": "It is between Parsons Green and East Putney stations and is in London fare zone 2.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Putney_Bridge_tube_station"
+    },
+    "940GZZLUQBY": {
+      "name": "Queensbury Underground Station",
+      "openedYear": 1934,
+      "openedRank": 217,
+      "dailyTraffic": 8387,
+      "dailyTrafficRank": 180,
+      "funFact": "It is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Queensbury_tube_station"
+    },
+    "940GZZLUQPS": {
+      "name": "Queen's Park Underground Station",
+      "openedYear": 1915,
+      "openedRank": 176,
+      "dailyTraffic": 11982,
+      "dailyTrafficRank": 143,
+      "funFact": "The station lies at the southern end of Salusbury Road, near the south-east corner of the public park from which the area now known as Queen's Park has taken its modern name.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Queen%27s_Park_station_%28England%29"
+    },
+    "940GZZLUQWY": {
+      "name": "Queensway Underground Station",
+      "openedYear": 1900,
+      "openedRank": 99,
+      "dailyTraffic": 16855,
+      "dailyTrafficRank": 98,
+      "funFact": "It is located at the junction of Queensway and Bayswater Road, and is opposite the north-west corner of Kensington Gardens.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Queensway_tube_station"
+    },
+    "940GZZLURBG": {
+      "name": "Redbridge Underground Station",
+      "openedYear": 1947,
+      "openedRank": 237,
+      "dailyTraffic": 5495,
+      "dailyTrafficRank": 217,
+      "funFact": "It is on the Hainault Loop of the Central line between Wanstead and Gants Hill stations, and is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Redbridge_tube_station"
+    },
+    "940GZZLURGP": {
+      "name": "Regent's Park Underground Station",
+      "openedYear": 1906,
+      "openedRank": 144,
+      "dailyTraffic": 6295,
+      "dailyTrafficRank": 206,
+      "funFact": "Its access is on Marylebone Road, within Park Crescent, in London fare zone 1, in which zone it is the second-least used station, with 3.5 million entries or exits in 2015.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Regent%27s_Park_tube_station"
+    },
+    "940GZZLURKW": {
+      "name": "Rickmansworth Underground Station",
+      "openedYear": 1887,
+      "openedRank": 74,
+      "dailyTraffic": 5072,
+      "dailyTrafficRank": 223,
+      "funFact": "It is one of the few London Underground stations beyond Greater London and as a consequence is in London fare zone 7.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Rickmansworth_station"
+    },
+    "940GZZLURMD": {
+      "name": "Richmond Underground Station",
+      "openedYear": 1869,
+      "openedRank": 37,
+      "dailyTraffic": 24316,
+      "dailyTrafficRank": 70,
+      "funFact": "National Rail services operated by South Western Railway on the Waterloo to Reading Line are routed through Richmond, which is between North Sheen and St Margarets stations, 9 miles 57 chains (15.6 km) down the line fro…",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Richmond_station_%28London%29"
+    },
+    "940GZZLURSG": {
+      "name": "Ruislip Gardens Underground Station",
+      "openedYear": 1934,
+      "openedRank": 218,
+      "dailyTraffic": 2210,
+      "dailyTrafficRank": 265,
+      "funFact": "It is in London fare zone 5.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Ruislip_Gardens_tube_station"
+    },
+    "940GZZLURSM": {
+      "name": "Ruislip Manor Underground Station",
+      "openedYear": 1904,
+      "openedRank": 126,
+      "dailyTraffic": 3825,
+      "dailyTrafficRank": 250,
+      "funFact": "The station is located on Victoria Road, where the line crosses on a bridge: there are two curved entrances, with access to the platforms being by stairways.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Ruislip_Manor_tube_station"
+    },
+    "940GZZLURSP": {
+      "name": "Ruislip Underground Station",
+      "openedYear": 1904,
+      "openedRank": 127,
+      "dailyTraffic": 4010,
+      "dailyTrafficRank": 243,
+      "funFact": "The station is located on Station Approach, and is in London fare zone 6.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Ruislip_tube_station"
+    },
+    "940GZZLURSQ": {
+      "name": "Russell Square Underground Station",
+      "openedYear": 1906,
+      "openedRank": 145,
+      "dailyTraffic": 21432,
+      "dailyTrafficRank": 82,
+      "funFact": "The station is the work of London architect Leslie Green and is example of the Modern Style (British Art Nouveau style).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Russell_Square_tube_station"
+    },
+    "940GZZLURVP": {
+      "name": "Ravenscourt Park Underground Station",
+      "openedYear": 1877,
+      "openedRank": 49,
+      "dailyTraffic": 7445,
+      "dailyTrafficRank": 192,
+      "funFact": "It takes its name from the nearby Ravenscourt Park and is in London fare zone 2.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Ravenscourt_Park_tube_station"
+    },
+    "940GZZLURVY": {
+      "name": "Roding Valley Underground Station",
+      "openedYear": 1936,
+      "openedRank": 221,
+      "dailyTraffic": 733,
+      "dailyTrafficRank": 270,
+      "funFact": "It is situated in Buckhurst Hill in the Epping Forest district of Essex.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Roding_Valley_tube_station"
+    },
+    "940GZZLURYL": {
+      "name": "Rayners Lane Underground Station",
+      "openedYear": 1906,
+      "openedRank": 146,
+      "dailyTraffic": 9152,
+      "dailyTrafficRank": 171,
+      "funFact": "It lies amid a 1930s development, originally named Harrow Garden Village.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Rayners_Lane_tube_station"
+    },
+    "940GZZLURYO": {
+      "name": "Royal Oak Underground Station",
+      "openedYear": 1871,
+      "openedRank": 43,
+      "dailyTraffic": 5859,
+      "dailyTrafficRank": 212,
+      "funFact": "The station is named after a nearby public house, \"The Royal Oak\" (later \"The Railway Tap\" and now \"The Porchester\").",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Royal_Oak_tube_station"
+    },
+    "940GZZLUSBC": {
+      "name": "Shepherd's Bush (Central) Underground Station",
+      "openedYear": 1900,
+      "openedRank": 100,
+      "dailyTraffic": 33900,
+      "dailyTrafficRank": 50,
+      "funFact": "It is located in the district of Shepherd's Bush in the London Borough of Hammersmith and Fulham.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Shepherd%27s_Bush_tube_station"
+    },
+    "940GZZLUSBM": {
+      "name": "Shepherd's Bush Market Underground Station",
+      "openedYear": 1864,
+      "openedRank": 15,
+      "dailyTraffic": 8813,
+      "dailyTrafficRank": 176,
+      "funFact": "Shepherd's Bush Market, from which the station takes its name, is an open-air market which runs parallel to the railway line.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Shepherd%27s_Bush_Market_tube_station"
+    },
+    "940GZZLUSEA": {
+      "name": "South Ealing Underground Station",
+      "openedYear": 1883,
+      "openedRank": 63,
+      "dailyTraffic": 4558,
+      "dailyTrafficRank": 233,
+      "funFact": "The station is located on South Ealing Road, and is in London fare zone 3.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/South_Ealing_tube_station"
+    },
+    "940GZZLUSFB": {
+      "name": "Stamford Brook Underground Station",
+      "openedYear": 1912,
+      "openedRank": 170,
+      "dailyTraffic": 5848,
+      "dailyTrafficRank": 213,
+      "funFact": "The station takes its name from Stamford Brook, a tributary of the River Thames that is now predominantly underground.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Stamford_Brook_tube_station"
+    },
+    "940GZZLUSFS": {
+      "name": "Southfields Underground Station",
+      "openedYear": 1889,
+      "openedRank": 78,
+      "dailyTraffic": 12962,
+      "dailyTrafficRank": 134,
+      "funFact": "The station is located on Wimbledon Park Road at the junction with Augustus Road and Replingham Road.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Southfields_tube_station"
+    },
+    "940GZZLUSGN": {
+      "name": "Stepney Green Underground Station",
+      "openedYear": 1902,
+      "openedRank": 113,
+      "dailyTraffic": 14065,
+      "dailyTrafficRank": 123,
+      "funFact": "The station was opened by the Whitechapel and Bow Railway on 2 June 1902, on a new route connecting the District Railway at Whitechapel with the London, Tilbury and Southend Railway to the east of Bow Road.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Stepney_Green_tube_station"
+    },
+    "940GZZLUSGP": {
+      "name": "Stonebridge Park Underground Station",
+      "openedYear": 1912,
+      "openedRank": 171,
+      "dailyTraffic": 6537,
+      "dailyTrafficRank": 204,
+      "funFact": "The station is located on Argenta Way, and is named after the nearby junction connecting the North Circular Road (A406) with the Harrow Road (A404).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Stonebridge_Park_station"
+    },
+    "940GZZLUSGT": {
+      "name": "Southgate Underground Station",
+      "openedYear": 1933,
+      "openedRank": 214,
+      "dailyTraffic": 10815,
+      "dailyTrafficRank": 154,
+      "funFact": "It is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Southgate_tube_station"
+    },
+    "940GZZLUSHH": {
+      "name": "South Harrow Underground Station",
+      "openedYear": 1903,
+      "openedRank": 122,
+      "dailyTraffic": 5596,
+      "dailyTrafficRank": 216,
+      "funFact": "The station is located on Northolt Road (A312).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/South_Harrow_tube_station"
+    },
+    "940GZZLUSJP": {
+      "name": "St. James's Park Underground Station",
+      "openedYear": 1868,
+      "openedRank": 30,
+      "dailyTraffic": 26121,
+      "dailyTrafficRank": 65,
+      "funFact": "It is located near St James's Park in the City of Westminster, England.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/St_James%27s_Park_tube_station"
+    },
+    "940GZZLUSJW": {
+      "name": "St. John's Wood Underground Station",
+      "openedYear": 1939,
+      "openedRank": 222,
+      "dailyTraffic": 16083,
+      "dailyTrafficRank": 101,
+      "funFact": "It is located in St John's Wood in the City of Westminster, north-west London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/St_John%27s_Wood_tube_station"
+    },
+    "940GZZLUSKS": {
+      "name": "South Kensington Underground Station",
+      "openedYear": 1868,
+      "openedRank": 31,
+      "dailyTraffic": 71476,
+      "dailyTrafficRank": 20,
+      "funFact": "Parts of the sub-surface station and the Exhibition Road pedestrian tunnel are Grade II listed.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/South_Kensington_tube_station"
+    },
+    "940GZZLUSKT": {
+      "name": "South Kenton Underground Station",
+      "openedYear": 1933,
+      "openedRank": 215,
+      "dailyTraffic": 2248,
+      "dailyTrafficRank": 263,
+      "funFact": "It is located between The Link in the Sudbury Court Estate of North Wembley, and Windermere Grove in Kenton, in the Wembley postal area. it is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/South_Kenton_station"
+    },
+    "940GZZLUSKW": {
+      "name": "Stockwell Underground Station",
+      "openedYear": 1890,
+      "openedRank": 85,
+      "dailyTraffic": 20222,
+      "dailyTrafficRank": 85,
+      "funFact": "The station opened on 4 November 1890 as the southern terminus of the City and South London Railway, the first successful deep-level tube in London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Stockwell_tube_station"
+    },
+    "940GZZLUSNB": {
+      "name": "Snaresbrook Underground Station",
+      "openedYear": 1947,
+      "openedRank": 238,
+      "dailyTraffic": 5068,
+      "dailyTrafficRank": 224,
+      "funFact": "It is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Snaresbrook_tube_station"
+    },
+    "940GZZLUSPU": {
+      "name": "St. Paul's Underground Station",
+      "openedYear": 1900,
+      "openedRank": 101,
+      "dailyTraffic": 25176,
+      "dailyTrafficRank": 67,
+      "funFact": "The station, which takes its name from the nearby St Paul's Cathedral, is on the Central line between Chancery Lane and Bank stations.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/St_Paul%27s_tube_station"
+    },
+    "940GZZLUSRP": {
+      "name": "South Ruislip Underground Station",
+      "openedYear": 1908,
+      "openedRank": 164,
+      "dailyTraffic": 4119,
+      "dailyTrafficRank": 242,
+      "funFact": "The station is owned, managed and staffed by London Underground.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/South_Ruislip_station"
+    },
+    "940GZZLUSSQ": {
+      "name": "Sloane Square Underground Station",
+      "openedYear": 1868,
+      "openedRank": 32,
+      "dailyTraffic": 36045,
+      "dailyTrafficRank": 47,
+      "funFact": "The entrance to the station is located on the east side of Sloane Square (A3217).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Sloane_Square_tube_station"
+    },
+    "940GZZLUSTD": {
+      "name": "Stratford Underground Station",
+      "openedYear": 1946,
+      "openedRank": 231,
+      "dailyTraffic": 148976,
+      "dailyTrafficRank": 7,
+      "funFact": "National Rail services also operate on the West Anglia Main Line and the Great Eastern Main Line, 4 miles 3 chains (6.5 km) from Liverpool Street.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Stratford_tube_station"
+    },
+    "940GZZLUSTM": {
+      "name": "Stanmore Underground Station",
+      "openedYear": 1932,
+      "openedRank": 207,
+      "dailyTraffic": 8227,
+      "dailyTrafficRank": 183,
+      "funFact": "The station is located on the south side of London Road (part of the A410), and is in London fare zone 5.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Stanmore_tube_station"
+    },
+    "940GZZLUSUH": {
+      "name": "Sudbury Hill Underground Station",
+      "openedYear": 1903,
+      "openedRank": 123,
+      "dailyTraffic": 4470,
+      "dailyTrafficRank": 236,
+      "funFact": "The station is located on Greenford Road (A4127) north of the junction with Whitton Avenue, on the border between the London Boroughs of Harrow and Ealing.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Sudbury_Hill_tube_station"
+    },
+    "940GZZLUSUT": {
+      "name": "Sudbury Town Underground Station",
+      "openedYear": 1903,
+      "openedRank": 124,
+      "dailyTraffic": 4260,
+      "dailyTrafficRank": 240,
+      "funFact": "It is located on the border between the London Boroughs of Brent and Ealing, with its main entrance on Station Approach in Sudbury.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Sudbury_Town_tube_station"
+    },
+    "940GZZLUSVS": {
+      "name": "Seven Sisters Underground Station",
+      "openedYear": 1906,
+      "openedRank": 147,
+      "dailyTraffic": 33330,
+      "dailyTrafficRank": 53,
+      "funFact": "The station is 350 metres (1,150 ft) walk away from South Tottenham station on the Suffragette line of the Overground, forming an official out-of-station interchange.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Seven_Sisters_tube_station"
+    },
+    "940GZZLUSWC": {
+      "name": "Swiss Cottage Underground Station",
+      "openedYear": 1939,
+      "openedRank": 223,
+      "dailyTraffic": 14347,
+      "dailyTrafficRank": 117,
+      "funFact": "It lies in London fare zone 2, and is located at the junction of Finchley Road, Avenue Road and College Crescent.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Swiss_Cottage_tube_station"
+    },
+    "940GZZLUSWF": {
+      "name": "South Woodford Underground Station",
+      "openedYear": 1947,
+      "openedRank": 239,
+      "dailyTraffic": 11100,
+      "dailyTrafficRank": 151,
+      "funFact": "It is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/South_Woodford_tube_station"
+    },
+    "940GZZLUSWK": {
+      "name": "Southwark Underground Station",
+      "openedYear": 1999,
+      "openedRank": 267,
+      "dailyTraffic": 23312,
+      "dailyTrafficRank": 73,
+      "funFact": "It is located in the London Borough of Southwark at the corner of Blackfriars Road and The Cut.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Southwark_tube_station"
+    },
+    "940GZZLUSWN": {
+      "name": "South Wimbledon Underground Station",
+      "openedYear": 1926,
+      "openedRank": 197,
+      "dailyTraffic": 9888,
+      "dailyTrafficRank": 163,
+      "funFact": "The station is located at the corner of Merton High Street (A238) and Morden Road (A219).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/South_Wimbledon_tube_station"
+    },
+    "940GZZLUTAW": {
+      "name": "Totteridge & Whetstone Underground Station",
+      "openedYear": 1940,
+      "openedRank": 226,
+      "dailyTraffic": 5450,
+      "dailyTrafficRank": 218,
+      "funFact": "Located on the eastern edge of Whetstone in the London Borough of Barnet, it serves both Whetstone and neighbouring Totteridge to the west.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Totteridge_%26_Whetstone_tube_station"
+    },
+    "940GZZLUTBC": {
+      "name": "Tooting Bec Underground Station",
+      "openedYear": 1926,
+      "openedRank": 198,
+      "dailyTraffic": 17165,
+      "dailyTrafficRank": 96,
+      "funFact": "It is located on the junction of Trinity Road (heading north-west), Upper Tooting Road (south-west), Balham High Road (north-east), Tooting Bec Road (south-east) and Stapleton Road (also south-east).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Tooting_Bec_tube_station"
+    },
+    "940GZZLUTBY": {
+      "name": "Tooting Broadway Underground Station",
+      "openedYear": 1926,
+      "openedRank": 199,
+      "dailyTraffic": 33966,
+      "dailyTrafficRank": 49,
+      "funFact": "The station is located on the corner of Tooting High Street (A24) and Mitcham Road (A217).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Tooting_Broadway_tube_station"
+    },
+    "940GZZLUTCR": {
+      "name": "Tottenham Court Road Underground Station",
+      "openedYear": 1900,
+      "openedRank": 102,
+      "dailyTraffic": 160894,
+      "dailyTrafficRank": 4,
+      "funFact": "The London Underground station is served by the Central and Northern lines.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Tottenham_Court_Road_station"
+    },
+    "940GZZLUTFP": {
+      "name": "Tufnell Park Underground Station",
+      "openedYear": 1907,
+      "openedRank": 160,
+      "dailyTraffic": 13359,
+      "dailyTrafficRank": 129,
+      "funFact": "It is located in the Tufnell Park neighbourhood.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Tufnell_Park_tube_station"
+    },
+    "940GZZLUTHB": {
+      "name": "Theydon Bois Underground Station",
+      "openedYear": 1949,
+      "openedRank": 250,
+      "dailyTraffic": 2012,
+      "dailyTrafficRank": 266,
+      "funFact": "It is in London fare zone 6.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Theydon_Bois_tube_station"
+    },
+    "940GZZLUTMH": {
+      "name": "Tottenham Hale Underground Station",
+      "openedYear": 1968,
+      "openedRank": 254,
+      "dailyTraffic": 36274,
+      "dailyTrafficRank": 46,
+      "funFact": "On the National Rail network it is on the Lea Valley Lines section of the West Anglia Main Line, 6 miles (9.7 km) from London Liverpool Street, and is served by Greater Anglia and Stansted Express.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Tottenham_Hale_tube_station"
+    },
+    "940GZZLUTMP": {
+      "name": "Temple Underground Station",
+      "openedYear": 1870,
+      "openedRank": 40,
+      "dailyTraffic": 19314,
+      "dailyTrafficRank": 88,
+      "funFact": "The station was opened on 30 May 1870 with the name The Temple, from the Temple area in the vicinity of Temple Church, and from the Inner Temple and the Middle Temple, two of the four Inns of Court of London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Temple_tube_station"
+    },
+    "940GZZLUTNG": {
+      "name": "Turnham Green Underground Station",
+      "openedYear": 1869,
+      "openedRank": 38,
+      "dailyTraffic": 12776,
+      "dailyTrafficRank": 135,
+      "funFact": "It is about 200 m (220 yd) north of Chiswick High Road (A315), and as well as Central Chiswick the station serves the Bedford Park area.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Turnham_Green_tube_station"
+    },
+    "940GZZLUTPN": {
+      "name": "Turnpike Lane Underground Station",
+      "openedYear": 1932,
+      "openedRank": 208,
+      "dailyTraffic": 21778,
+      "dailyTrafficRank": 80,
+      "funFact": "It is named after Turnpike Lane in the London Borough of Haringey in North London, England.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Turnpike_Lane_tube_station"
+    },
+    "940GZZLUTWH": {
+      "name": "Tower Hill Underground Station",
+      "openedYear": 1967,
+      "openedRank": 251,
+      "dailyTraffic": 41002,
+      "dailyTrafficRank": 39,
+      "funFact": "The station is a short distance from Tower Gateway station for the Docklands Light Railway, Fenchurch Street station for National Rail mainline services, and Tower Millennium Pier for River Services.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Tower_Hill_tube_station"
+    },
+    "940GZZLUUPB": {
+      "name": "Upminster Bridge Underground Station",
+      "openedYear": 1934,
+      "openedRank": 219,
+      "dailyTraffic": 2298,
+      "dailyTrafficRank": 261,
+      "funFact": "It is 1.2 km (0.75 miles) along the line from the eastern terminus at Upminster and 22 km (14 miles) from Tower Hill in Central London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Upminster_Bridge_tube_station"
+    },
+    "940GZZLUUPK": {
+      "name": "Upton Park Underground Station",
+      "openedYear": 1902,
+      "openedRank": 114,
+      "dailyTraffic": 23264,
+      "dailyTrafficRank": 74,
+      "funFact": "The Fenchurch Street–Southend British Railways service was withdrawn in 1962, leaving abandoned platforms.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Upton_Park_tube_station"
+    },
+    "940GZZLUUPM": {
+      "name": "Upminster Underground Station",
+      "openedYear": 1885,
+      "openedRank": 70,
+      "dailyTraffic": 13080,
+      "dailyTrafficRank": 133,
+      "funFact": "It is on the London, Tilbury and Southend line, 15 miles 20 chains (24.5 km) down the line from Fenchurch Street in Central London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Upminster_station"
+    },
+    "940GZZLUUPY": {
+      "name": "Upney Underground Station",
+      "openedYear": 1932,
+      "openedRank": 209,
+      "dailyTraffic": 5899,
+      "dailyTrafficRank": 211,
+      "funFact": "It is 11.0 kilometres (6.8 mi) along the line from the eastern terminus at Upminster and 13.7 kilometres (8.5 mi) to Tower Hill in central London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Upney_tube_station"
+    },
+    "940GZZLUUXB": {
+      "name": "Uxbridge Underground Station",
+      "openedYear": 1904,
+      "openedRank": 128,
+      "dailyTraffic": 14848,
+      "dailyTrafficRank": 111,
+      "funFact": "The next station towards Central London is Hillingdon.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Uxbridge_tube_station"
+    },
+    "940GZZLUVIC": {
+      "name": "Victoria Underground Station",
+      "openedYear": 1868,
+      "openedRank": 33,
+      "dailyTraffic": 163213,
+      "dailyTrafficRank": 3,
+      "funFact": "The first tube station was constructed in 1868 by the District Railway, extended to serve the Outer Circle and Middle Circle services during the 19th century.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Victoria_tube_station"
+    },
+    "940GZZLUVXL": {
+      "name": "Vauxhall Underground Station",
+      "openedYear": 1971,
+      "openedRank": 257,
+      "dailyTraffic": 56906,
+      "dailyTrafficRank": 24,
+      "funFact": "The mainline station is run by the South Western Railway and is the first stop on the South West Main Line from London Waterloo towards Clapham Junction and the south-west.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Vauxhall_tube_station"
+    },
+    "940GZZLUWAF": {
+      "name": "Watford Underground Station",
+      "openedYear": 1925,
+      "openedRank": 192,
+      "dailyTraffic": 4530,
+      "dailyTrafficRank": 235,
+      "funFact": "The station is in London fare zone 7.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Watford_tube_station"
+    },
+    "940GZZLUWBN": {
+      "name": "West Brompton Underground Station",
+      "openedYear": 1866,
+      "openedRank": 18,
+      "dailyTraffic": 14195,
+      "dailyTrafficRank": 121,
+      "funFact": "The station is situated immediately south of the demolished Earls Court Exhibition Centre and west of Brompton Cemetery in the Royal Borough of Kensington and Chelsea.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/West_Brompton_station"
+    },
+    "940GZZLUWCY": {
+      "name": "White City Underground Station",
+      "openedYear": 1947,
+      "openedRank": 240,
+      "dailyTraffic": 21618,
+      "dailyTrafficRank": 81,
+      "funFact": "The station is in a deep brick-sided cutting – and is designed in a similar way to Harrow-on-the-Hill station.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/White_City_tube_station"
+    },
+    "940GZZLUWFN": {
+      "name": "West Finchley Underground Station",
+      "openedYear": 1940,
+      "openedRank": 227,
+      "dailyTraffic": 3553,
+      "dailyTrafficRank": 252,
+      "funFact": "It is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/West_Finchley_tube_station"
+    },
+    "940GZZLUWHM": {
+      "name": "West Ham Underground Station",
+      "openedYear": 1901,
+      "openedRank": 105,
+      "dailyTraffic": 14627,
+      "dailyTrafficRank": 115,
+      "funFact": "It is on the London, Tilbury and Southend line, 4 miles 8 chains (6.6 km) down the line from Fenchurch Street in Central London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/West_Ham_station"
+    },
+    "940GZZLUWHP": {
+      "name": "West Hampstead Underground Station",
+      "openedYear": 1879,
+      "openedRank": 55,
+      "dailyTraffic": 20248,
+      "dailyTrafficRank": 84,
+      "funFact": "It is located on West End Lane between Broadhurst Gardens and Blackburn Road, and is in London fare zone 2.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/West_Hampstead_tube_station"
+    },
+    "940GZZLUWHW": {
+      "name": "West Harrow Underground Station",
+      "openedYear": 1913,
+      "openedRank": 172,
+      "dailyTraffic": 2749,
+      "dailyTrafficRank": 257,
+      "funFact": "It is in London fare zone 5.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/West_Harrow_tube_station"
+    },
+    "940GZZLUWIG": {
+      "name": "Willesden Green Underground Station",
+      "openedYear": 1879,
+      "openedRank": 56,
+      "dailyTraffic": 14867,
+      "dailyTrafficRank": 110,
+      "funFact": "It is located on Walm Lane in Willesden, London.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Willesden_Green_tube_station"
+    },
+    "940GZZLUWIM": {
+      "name": "Wimbledon Underground Station",
+      "openedYear": 1889,
+      "openedRank": 79,
+      "dailyTraffic": 30750,
+      "dailyTrafficRank": 57,
+      "funFact": "Platforms 6 and 7 are adjacent to the fast tracks intended for express and outer suburban South Western Railway services, but most of these services only call at Wimbledon during the Wimbledon Tennis Championships or on…",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Wimbledon_tube_station"
+    },
+    "940GZZLUWIP": {
+      "name": "Wimbledon Park Underground Station",
+      "openedYear": 1889,
+      "openedRank": 80,
+      "dailyTraffic": 5046,
+      "dailyTrafficRank": 225,
+      "funFact": "The station is located on Arthur Road close to the junction with Melrose Avenue close to the eastern side of Wimbledon Park.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Wimbledon_Park_tube_station"
+    },
+    "940GZZLUWJN": {
+      "name": "Willesden Junction Underground Station",
+      "openedYear": 1866,
+      "openedRank": 19,
+      "dailyTraffic": 11838,
+      "dailyTrafficRank": 145,
+      "funFact": "The station is located close to the Old Oak Lane conservation area in the East Acton ward.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Willesden_Junction_station"
+    },
+    "940GZZLUWKA": {
+      "name": "Warwick Avenue Underground Station",
+      "openedYear": 1915,
+      "openedRank": 177,
+      "dailyTraffic": 8272,
+      "dailyTrafficRank": 182,
+      "funFact": "It is in London fare zone 2.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Warwick_Avenue_tube_station"
+    },
+    "940GZZLUWKN": {
+      "name": "West Kensington Underground Station",
+      "openedYear": 1874,
+      "openedRank": 46,
+      "dailyTraffic": 10311,
+      "dailyTrafficRank": 159,
+      "funFact": "It is located on North End Road (B317) close to its junction with West Cromwell Road/Talgarth Road (A4).",
+      "wikiUrl": "https://en.wikipedia.org/wiki/West_Kensington_tube_station"
+    },
+    "940GZZLUWLA": {
+      "name": "Wood Lane Underground Station",
+      "openedYear": 2008,
+      "openedRank": 269,
+      "dailyTraffic": 13449,
+      "dailyTrafficRank": 128,
+      "funFact": "Although it is on a line which has been in operation since 1864, the station is new, having opened on 12 October 2008 – the first station to be built on an existing Tube line for over 70 years.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Wood_Lane_tube_station"
+    },
+    "940GZZLUWLO": {
+      "name": "Waterloo Underground Station",
+      "openedYear": 1898,
+      "openedRank": 88,
+      "dailyTraffic": 192684,
+      "dailyTrafficRank": 2,
+      "funFact": "It is located beneath Waterloo National Rail station.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Waterloo_tube_station"
+    },
+    "940GZZLUWOF": {
+      "name": "Woodford Underground Station",
+      "openedYear": 1947,
+      "openedRank": 241,
+      "dailyTraffic": 12308,
+      "dailyTrafficRank": 139,
+      "funFact": "It is located in the town of Woodford in the London Borough of Redbridge.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Woodford_tube_station"
+    },
+    "940GZZLUWOG": {
+      "name": "Wood Green Underground Station",
+      "openedYear": 1932,
+      "openedRank": 210,
+      "dailyTraffic": 24899,
+      "dailyTrafficRank": 68,
+      "funFact": "It is also the closest tube station to Alexandra Palace.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Wood_Green_tube_station"
+    },
+    "940GZZLUWOP": {
+      "name": "Woodside Park Underground Station",
+      "openedYear": 1940,
+      "openedRank": 228,
+      "dailyTraffic": 10020,
+      "dailyTrafficRank": 161,
+      "funFact": "Woodside Park is the last station in an alphabetical list of London Underground stations.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Woodside_Park_tube_station"
+    },
+    "940GZZLUWPL": {
+      "name": "Whitechapel Underground Station",
+      "openedYear": 1876,
+      "openedRank": 48,
+      "dailyTraffic": 47814,
+      "dailyTrafficRank": 32,
+      "funFact": "The station is located behind a street market of the same name and opposite Tower Hamlets Town Hall.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Whitechapel_station"
+    },
+    "940GZZLUWRP": {
+      "name": "West Ruislip Underground Station",
+      "openedYear": 1948,
+      "openedRank": 247,
+      "dailyTraffic": 3321,
+      "dailyTrafficRank": 254,
+      "funFact": "It is served by London Underground and National Rail.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/West_Ruislip_station"
+    },
+    "940GZZLUWRR": {
+      "name": "Warren Street Underground Station",
+      "openedYear": 1907,
+      "openedRank": 161,
+      "dailyTraffic": 38566,
+      "dailyTrafficRank": 43,
+      "funFact": "It is located at the intersection of Tottenham Court Road and Euston Road in the northernmost part of Fitzrovia,  and named after adjoining Warren Street.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Warren_Street_tube_station"
+    },
+    "940GZZLUWSD": {
+      "name": "Wanstead Underground Station",
+      "openedYear": 1947,
+      "openedRank": 242,
+      "dailyTraffic": 5338,
+      "dailyTrafficRank": 221,
+      "funFact": "It is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Wanstead_tube_station"
+    },
+    "940GZZLUWSM": {
+      "name": "Westminster Underground Station",
+      "openedYear": 1868,
+      "openedRank": 34,
+      "dailyTraffic": 52528,
+      "dailyTrafficRank": 30,
+      "funFact": "The station is located at the corner of Bridge Street and Victoria Embankment and is close to the Houses of Parliament, Big Ben, Westminster Abbey, Parliament Square, Whitehall, Westminster Bridge, and the London Eye.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Westminster_tube_station"
+    },
+    "940GZZLUWSP": {
+      "name": "Westbourne Park Underground Station",
+      "openedYear": 1866,
+      "openedRank": 20,
+      "dailyTraffic": 9671,
+      "dailyTrafficRank": 166,
+      "funFact": "It is located in the Notting Hill area of the Royal Borough of Kensington and Chelsea.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Westbourne_Park_tube_station"
+    },
+    "940GZZLUWTA": {
+      "name": "West Acton Underground Station",
+      "openedYear": 1923,
+      "openedRank": 187,
+      "dailyTraffic": 2898,
+      "dailyTrafficRank": 256,
+      "funFact": "The station is a Grade II listed building.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/West_Acton_tube_station"
+    },
+    "940GZZLUWWL": {
+      "name": "Walthamstow Central Underground Station",
+      "openedYear": 1968,
+      "openedRank": 255,
+      "dailyTraffic": 36574,
+      "dailyTrafficRank": 45,
+      "funFact": "Walthamstow Central also serves as the closest tube station to Walthamstow Market, the longest outdoor market in Europe.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Walthamstow_Central_tube_station"
+    },
+    "940GZZLUWYC": {
+      "name": "Wembley Central Underground Station",
+      "openedYear": 1917,
+      "openedRank": 180,
+      "dailyTraffic": 12600,
+      "dailyTrafficRank": 137,
+      "funFact": "It is situated on the east-west High Road and is near to both Wembley Stadium and Wembley Arena.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Wembley_Central_station"
+    },
+    "940GZZLUWYP": {
+      "name": "Wembley Park Underground Station",
+      "openedYear": 1893,
+      "openedRank": 87,
+      "dailyTraffic": 42496,
+      "dailyTrafficRank": 36,
+      "funFact": "It is served by the Jubilee and Metropolitan lines, and is in London fare zone 4.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Wembley_Park_tube_station"
+    },
+    "940GZZNEUGST": {
+      "name": "Nine Elms Underground Station",
+      "openedYear": 2021,
+      "openedRank": 271,
+      "dailyTraffic": 11256,
+      "dailyTrafficRank": 149,
+      "funFact": "The station serves the rapidly growing area, New Covent Garden Market and the Embassy of the United States.",
+      "wikiUrl": "https://en.wikipedia.org/wiki/Nine_Elms_tube_station"
+    }
+  }
+}
