@@ -7,6 +7,7 @@ title so a single handler can serve the whole station set.
 
 from __future__ import annotations
 
+import io
 import json
 from pathlib import Path
 from typing import Any
@@ -17,13 +18,16 @@ import pytest
 import respx
 
 from tube_pipeline.enrich import (
+    STATION_USAGE_URL,
     WIKIDATA_SPARQL_URL,
     WIKIPEDIA_SUMMARY_URL,
     GraphStation,
+    StationUsageClient,
     WikidataClient,
     WikidataStation,
     WikipediaClient,
     _assign_ranks,
+    _coerce_float,
     _daily_from_annual,
     _resolve_article,
     _retry_after_seconds,
@@ -36,7 +40,9 @@ from tube_pipeline.enrich import (
     match_candidate,
     normalise_name,
     parse_opened_year,
+    parse_station_usage,
     parse_wkt_point,
+    usage_match_keys,
 )
 from tube_pipeline.models import StationInfoFile
 
@@ -550,6 +556,291 @@ def test_enrich_stations_dump_matches_camelcase_schema() -> None:
     # No traffic for this station -> the key is omitted entirely.
     assert "dailyTraffic" not in oval
     assert "dailyTrafficRank" not in oval
+
+
+# --------------------------------------------------------------------------- #
+# TfL station usage: name mapping, XLSX parser, client (no network)            #
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize(
+    ("raw", "expected"),
+    [
+        ("Acton Town", ("acton town",)),
+        # TfL appends a mode token to co-located hubs; it is stripped.
+        ("Euston LU", ("euston",)),
+        ("Paddington TfL", ("paddington",)),
+        ("Victoria LU", ("victoria",)),
+        # St. expansion still applies via normalise_name.
+        ("King's Cross St. Pancras", ("kings cross saint pancras",)),
+        # Structural aliases: one row -> several / renamed graph keys.
+        ("Bank and Monument", ("bank", "monument")),
+        ("Heathrow Terminals 123", ("heathrow terminals 2 and 3",)),
+    ],
+)
+def test_usage_match_keys(raw: str, expected: tuple[str, ...]) -> None:
+    """Usage-file names map to the graph match key(s) they should populate."""
+    assert usage_match_keys(raw) == expected
+
+
+@pytest.mark.parametrize(
+    ("value", "expected"),
+    [
+        (1234, 1234.0),
+        (1234.5, 1234.5),
+        ("1,234,567", 1234567.0),
+        ("  890 ", 890.0),
+        ("---", None),
+        (None, None),
+        (True, None),  # bools are ints in Python but never a count
+    ],
+)
+def test_coerce_float(value: Any, expected: float | None) -> None:
+    """Cells coerce to float where numeric; placeholders/None/bool yield None."""
+    assert _coerce_float(value) == expected
+
+
+# A tiny workbook that mirrors the real Annual Station Counts geometry: a few
+# title rows, a group-label row, then the Mode/Station/.../En-Ex header. The
+# annualised column is told apart from the weekly/12-week columns by its group
+# label, exactly as in the live file.
+_USAGE_GROUP_ROW: list[Any] = [None, None, None, None, "Weekly", "12-week", "Annualised"]
+_USAGE_HEADER_ROW: list[Any] = [
+    "Mode",
+    "MNLC",
+    "Station",
+    "Source",
+    "En/Ex",
+    "En/Ex",
+    "En/Ex",
+]
+
+
+def _sample_usage_xlsx(data_rows: list[list[Any]]) -> bytes:
+    """Build an in-memory Annual Station Counts-shaped workbook.
+
+    Parameters
+    ----------
+    data_rows : list of list
+        Rows beneath the header, each ``[mode, mnlc, station, source, weekly,
+        twelve_week, annualised]``.
+
+    Returns
+    -------
+    bytes
+        The ``.xlsx`` file contents.
+    """
+    from openpyxl import Workbook
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "ACxx"
+    ws.append(["COUNTS (LU/LO/DLR/TfL)"])  # title row
+    ws.append(["(C) Copyright Transport for London"])  # title row
+    ws.append([])  # spacer
+    ws.append(_USAGE_GROUP_ROW)
+    ws.append(_USAGE_HEADER_ROW)
+    for row in data_rows:
+        ws.append(row)
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    return buffer.getvalue()
+
+
+def test_parse_station_usage_extracts_lu_annualised() -> None:
+    """Only LU rows with a numeric annualised total are kept, keyed by match key."""
+    data = _sample_usage_xlsx(
+        [
+            ["LU", "500", "Acton Town", "Gateline", 100_000, 1_200_000, 4_823_835],
+            ["LU", "502", "Euston LU", "Gateline", 90_000, 1_000_000, 29_965_071],
+            # National Rail row for the same name: ignored (mode != LU).
+            ["NR", "999", "Euston", "Gateline", 80_000, 900_000, 99_999_999],
+            # No-data placeholder: skipped.
+            ["LU", "777", "Kentish Town", "Gateline", "---", "---", "---"],
+        ]
+    )
+    usage = parse_station_usage(data)
+    assert usage == {
+        "acton town": 4_823_835.0,
+        "euston": 29_965_071.0,
+    }
+    assert "kentish town" not in usage
+
+
+def test_parse_station_usage_combined_row_feeds_two_stations() -> None:
+    """The combined 'Bank and Monument' row populates both graph keys."""
+    data = _sample_usage_xlsx(
+        [["LU", "542", "Bank and Monument", "Gateline", 700_000, 8_000_000, 37_200_346]]
+    )
+    usage = parse_station_usage(data)
+    assert usage["bank"] == 37_200_346.0
+    assert usage["monument"] == 37_200_346.0
+
+
+def test_parse_station_usage_keeps_larger_on_key_collision() -> None:
+    """When two rows map to one key the larger annual figure wins."""
+    data = _sample_usage_xlsx(
+        [
+            ["LU", "1", "Paddington", "Gateline", 1, 1, 10_000_000],
+            ["LU", "2", "Paddington TfL", "Gateline", 1, 1, 48_546_460],
+        ]
+    )
+    usage = parse_station_usage(data)
+    assert usage["paddington"] == 48_546_460.0
+
+
+def test_parse_station_usage_rejects_non_xlsx() -> None:
+    """Non-XLSX bytes raise ValueError rather than returning empty."""
+    with pytest.raises(ValueError, match="readable XLSX"):
+        parse_station_usage(b"this is not a spreadsheet")
+
+
+def test_parse_station_usage_no_header_returns_empty() -> None:
+    """A workbook without a Mode/Station header yields an empty mapping."""
+    from openpyxl import Workbook
+
+    wb = Workbook()
+    wb.active.append(["something", "else"])
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    assert parse_station_usage(buffer.getvalue()) == {}
+
+
+@respx.mock
+def test_station_usage_client_downloads_and_parses() -> None:
+    """The client GETs the workbook and returns the parsed usage mapping."""
+    data = _sample_usage_xlsx(
+        [["LU", "500", "Acton Town", "Gateline", 100_000, 1_200_000, 4_823_835]]
+    )
+    respx.get(STATION_USAGE_URL).mock(return_value=httpx.Response(200, content=data))
+    with StationUsageClient(client=httpx.Client()) as client:
+        usage = client.fetch_usage()
+    assert usage == {"acton town": 4_823_835.0}
+
+
+@respx.mock
+def test_station_usage_client_raises_on_http_error() -> None:
+    """A non-2xx download fails loud (HTTPStatusError) rather than silent empty."""
+    respx.get(STATION_USAGE_URL).mock(return_value=httpx.Response(503, text="down"))
+    with (
+        StationUsageClient(client=httpx.Client()) as client,
+        pytest.raises(httpx.HTTPStatusError),
+    ):
+        client.fetch_usage()
+
+
+# --------------------------------------------------------------------------- #
+# Traffic source preference (TfL over Wikidata) in build_station_infos         #
+# --------------------------------------------------------------------------- #
+
+
+@respx.mock
+def test_build_station_infos_prefers_tfl_usage_over_wikidata() -> None:
+    """TfL usage overrides Wikidata patronage for daily traffic where present."""
+    graph_stations = [
+        GraphStation(id="oval", name="Oval Underground Station", lat=51.48185, lon=-0.112439),
+    ]
+    candidates = [
+        WikidataStation(
+            qid="Q1",
+            name="Oval",
+            lat=51.4819,
+            lon=-0.1125,
+            opened_year=1890,
+            annual_patronage=6_935_000.0,  # would be ~19k/day; TfL must win
+            article_title="Oval tube station",
+        )
+    ]
+    _route_wikipedia({"Oval tube station": "Oval is a station."})
+    usage = {"oval": 7_300_000.0}  # 20000/day
+    with WikipediaClient(client=httpx.Client(), delay_s=0.0) as wiki:
+        infos = build_station_infos(graph_stations, candidates, wiki, usage=usage)
+    assert infos["oval"].daily_traffic == 20_000
+
+
+@respx.mock
+def test_build_station_infos_falls_back_to_wikidata_without_usage() -> None:
+    """With no TfL figure for a station, Wikidata patronage still supplies it."""
+    graph_stations = [
+        GraphStation(id="oval", name="Oval Underground Station", lat=51.48185, lon=-0.112439),
+    ]
+    candidates = [
+        WikidataStation(
+            qid="Q1",
+            name="Oval",
+            lat=51.4819,
+            lon=-0.1125,
+            opened_year=1890,
+            annual_patronage=7_300_000.0,
+            article_title="Oval tube station",
+        )
+    ]
+    _route_wikipedia({"Oval tube station": "Oval is a station."})
+    with WikipediaClient(client=httpx.Client(), delay_s=0.0) as wiki:
+        infos = build_station_infos(graph_stations, candidates, wiki, usage={})
+    assert infos["oval"].daily_traffic == 20_000
+
+
+@respx.mock
+def test_enrich_stations_uses_usage_client_for_traffic_and_ranks() -> None:
+    """End to end with a usage client: TfL drives traffic and its rank."""
+    rows = [
+        _sparql_binding(
+            "Q1",
+            "Oval",
+            "Point(-0.112439 51.48185)",
+            opened="1890-12-18T00:00:00Z",
+            article="https://en.wikipedia.org/wiki/Oval_tube_station",
+        ),
+        _sparql_binding(
+            "Q2",
+            "Baker Street",
+            "Point(-0.15713 51.522883)",
+            opened="1863-01-10T00:00:00Z",
+            article="https://en.wikipedia.org/wiki/Baker_Street_tube_station",
+        ),
+    ]
+    respx.get(WIKIDATA_SPARQL_URL).mock(
+        return_value=httpx.Response(200, json=_sparql_payload(rows))
+    )
+    _route_wikipedia(
+        {
+            "Oval tube station": "Oval is a London Underground station. Trailing.",
+            "Baker Street tube station": "Baker Street is a station. Trailing.",
+        }
+    )
+    usage_xlsx = _sample_usage_xlsx(
+        [
+            ["LU", "1", "Oval", "Gateline", 1, 1, 3_650_000],  # 10000/day
+            ["LU", "2", "Baker Street", "Gateline", 1, 1, 7_300_000],  # 20000/day
+        ]
+    )
+    respx.get(STATION_USAGE_URL).mock(return_value=httpx.Response(200, content=usage_xlsx))
+    graph_stations = [
+        GraphStation(id="oval", name="Oval Underground Station", lat=51.48185, lon=-0.112439),
+        GraphStation(
+            id="baker", name="Baker Street Underground Station", lat=51.522883, lon=-0.15713
+        ),
+    ]
+    with (
+        WikidataClient(client=httpx.Client()) as wd,
+        WikipediaClient(client=httpx.Client(), delay_s=0.0) as wp,
+        StationUsageClient(client=httpx.Client()) as us,
+    ):
+        result = enrich_stations(
+            graph_stations,
+            wikidata=wd,
+            wikipedia=wp,
+            generated_at="2026-06-06",
+            usage_client=us,
+        )
+
+    assert result.counts.with_traffic == 2
+    assert result.stations["oval"].daily_traffic == 10_000
+    assert result.stations["baker"].daily_traffic == 20_000
+    # Baker Street busier -> rank 1.
+    assert result.stations["baker"].daily_traffic_rank == 1
+    assert result.stations["oval"].daily_traffic_rank == 2
 
 
 # --------------------------------------------------------------------------- #

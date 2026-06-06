@@ -1,6 +1,7 @@
 // Stats panel: lifetime headline numbers plus a histogram of how far over par
-// the player's solved games landed. Tube-styled bars, wrapped in the shared
-// Modal. Presentational — the Stats record arrives as a prop.
+// the player's solved games landed, measured by weighted SCORE (stops +
+// 4*changes — see lib/score). Tube-styled bars, wrapped in the shared Modal.
+// Presentational — the Stats record arrives as a prop.
 
 import Modal from './Modal'
 import { BUCKETS, type Stats } from '../lib/stats'
@@ -28,7 +29,7 @@ export default function StatsModal({ open, onClose, stats }: StatsModalProps) {
       </div>
 
       <h3 className="mt-6 mb-2 text-xs font-semibold uppercase tracking-wider text-ink-soft">
-        Stops over par
+        Score over par
       </h3>
       {stats.solved === 0 ? (
         <p className="text-sm text-ink-soft">

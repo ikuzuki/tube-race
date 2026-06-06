@@ -1,15 +1,30 @@
 // End-of-game result dialog. Calm and celebratory rather than loud: the outcome
-// headline, stops and changes against par, an "Optimal!" badge when the run was
-// perfect, the current streak, and the share + play-again actions. The share
-// button copies the spoiler-free grid to the clipboard. Presentational — state
-// arrives as props.
+// headline, the weighted SCORE against par as the hero number (score =
+// stops + 4*changes, the single comparable metric — see lib/score), an
+// "Optimal!" badge when the run matched or beat par, stops/changes as the
+// breakdown, the current streak, and the share + show-best-route + play-again
+// actions. The share button copies the spoiler-free grid to the clipboard.
+// Optionally shows the day's start/destination trivia cards. Presentational —
+// state arrives as props.
 
 import { useEffect, useState } from 'react'
 import Modal from './Modal'
+import StationInfoCard from './StationInfoCard'
+import type { Station } from '../engine'
+import type { StationInfo } from '../lib/stationInfo'
+
+interface Endpoint {
+  station: Station
+  info?: StationInfo
+}
 
 interface ResultCardProps {
   open: boolean
   solved: boolean
+  /** Weighted score for the run = stops + 4*changes. The hero number. */
+  score: number
+  /** Weighted score of the optimal route (par). */
+  parScore: number
   stops: number
   parStops: number
   changes: number
@@ -18,6 +33,12 @@ interface ResultCardProps {
   /** Pre-built spoiler-free share text (see lib/share). */
   shareText: string
   streak: number
+  /** Optional day's start station + trivia. */
+  start?: Endpoint
+  /** Optional day's destination station + trivia. */
+  destination?: Endpoint
+  /** Reveal the optimal route on the map. Omit to hide the button. */
+  onShowOptimal?: () => void
   onPlayAgain: () => void
   onClose: () => void
 }
@@ -25,6 +46,8 @@ interface ResultCardProps {
 export default function ResultCard({
   open,
   solved,
+  score,
+  parScore,
   stops,
   parStops,
   changes,
@@ -32,6 +55,9 @@ export default function ResultCard({
   optimal,
   shareText,
   streak,
+  start,
+  destination,
+  onShowOptimal,
   onPlayAgain,
   onClose,
 }: ResultCardProps) {
@@ -75,7 +101,9 @@ export default function ResultCard({
           : 'No worries — the line was tricky today. Here is the par you were chasing.'}
       </p>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
+      <ScoreHero score={score} parScore={parScore} overPar={!optimal && solved} />
+
+      <div className="mt-3 grid grid-cols-2 gap-3">
         <ResultStat label="Stops" value={stops} par={parStops} overPar={stops > parStops} />
         <ResultStat label="Changes" value={changes} par={parChanges} overPar={changes > parChanges} />
       </div>
@@ -86,6 +114,19 @@ export default function ResultCard({
           {streak === 0 ? 'No streak yet' : `${streak} day streak`}
         </span>
       </div>
+
+      {(start || destination) && (
+        <div className="mt-3 flex flex-col gap-3">
+          {start && <StationInfoCard roleLabel="Start" station={start.station} info={start.info} />}
+          {destination && (
+            <StationInfoCard
+              roleLabel="Destination"
+              station={destination.station}
+              info={destination.info}
+            />
+          )}
+        </div>
+      )}
 
       <div className="mt-5 flex gap-2">
         <button
@@ -109,7 +150,43 @@ export default function ResultCard({
           Play again
         </button>
       </div>
+
+      {onShowOptimal && (
+        <button
+          type="button"
+          onClick={onShowOptimal}
+          className="mt-2 w-full rounded-xl border border-stone-200 bg-paper px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-stone focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress"
+        >
+          Show best route
+        </button>
+      )}
     </Modal>
+  )
+}
+
+interface ScoreHeroProps {
+  score: number
+  parScore: number
+  overPar: boolean
+}
+
+/** The hero metric on the result card: weighted score against par. */
+function ScoreHero({ score, parScore, overPar }: ScoreHeroProps) {
+  return (
+    <div
+      className="mt-4 rounded-xl border border-stone-200 bg-paper px-4 py-3 text-center"
+      aria-label={`Score ${score}, par ${parScore}`}
+    >
+      <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-ink-soft">
+        Score
+      </span>
+      <p className="mt-1 leading-none tabular-nums">
+        <span className={`text-4xl font-extrabold ${overPar ? 'text-warn' : 'text-ink'}`}>
+          {score}
+        </span>
+        <span className="ml-1.5 text-lg font-semibold text-ink-soft">/ {parScore} par</span>
+      </p>
+    </div>
   )
 }
 

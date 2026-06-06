@@ -4,13 +4,15 @@
   "counts": {
     "total": 272,
     "withOpened": 271,
-    "withTraffic": 8
+    "withTraffic": 270
   },
   "stations": {
     "940GZZBPSUST": {
       "name": "Battersea Power Station Underground Station",
       "openedYear": 2021,
       "openedRank": 270,
+      "dailyTraffic": 23013,
+      "dailyTrafficRank": 76,
       "funFact": "Battersea Power Station is a London Underground station in Battersea, London, which forms the terminus of the Northern line extension to Battersea.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Battersea_Power_Station_tube_station"
     },
@@ -18,6 +20,8 @@
       "name": "Acton Town Underground Station",
       "openedYear": 1879,
       "openedRank": 50,
+      "dailyTraffic": 13216,
+      "dailyTrafficRank": 131,
       "funFact": "Acton Town is a London Underground station in Acton, West London, in the London Borough of Ealing, close to its boundary with the London Borough of Hounslow.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Acton_Town_tube_station"
     },
@@ -25,6 +29,8 @@
       "name": "Archway Underground Station",
       "openedYear": 1907,
       "openedRank": 148,
+      "dailyTraffic": 19555,
+      "dailyTrafficRank": 86,
       "funFact": "Archway is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Archway_tube_station"
     },
@@ -32,6 +38,8 @@
       "name": "Aldgate East Underground Station",
       "openedYear": 1884,
       "openedRank": 64,
+      "dailyTraffic": 29994,
+      "dailyTrafficRank": 59,
       "funFact": "Aldgate East is a London Underground station located on Whitechapel High Street in the Whitechapel neighbourhood of the London Borough of Tower Hamlets, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Aldgate_East_tube_station"
     },
@@ -39,6 +47,8 @@
       "name": "Angel Underground Station",
       "openedYear": 1901,
       "openedRank": 103,
+      "dailyTraffic": 33586,
+      "dailyTrafficRank": 52,
       "funFact": "Angel is a London Underground station, located in the Angel area of the London Borough of Islington.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Angel_tube_station"
     },
@@ -46,6 +56,8 @@
       "name": "Aldgate Underground Station",
       "openedYear": 1863,
       "openedRank": 5,
+      "dailyTraffic": 18897,
+      "dailyTrafficRank": 91,
       "funFact": "The Metropolitan line, colloquially known as the Met, is a London Underground line between Aldgate in the City of London and Amersham and Chesham in Buckinghamshire, with branches to Watford in Hertfordshire and Uxbridg…",
       "wikiUrl": "https://en.wikipedia.org/wiki/Metropolitan_line"
     },
@@ -53,6 +65,8 @@
       "name": "Alperton Underground Station",
       "openedYear": 1903,
       "openedRank": 115,
+      "dailyTraffic": 7119,
+      "dailyTrafficRank": 198,
       "funFact": "Alperton is a London Underground station in Alperton, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Alperton_tube_station"
     },
@@ -60,6 +74,8 @@
       "name": "Amersham Underground Station",
       "openedYear": 1892,
       "openedRank": 86,
+      "dailyTraffic": 4738,
+      "dailyTrafficRank": 230,
       "funFact": "Amersham is a London Underground and National Rail station in the market town of Amersham, Buckinghamshire, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Amersham_station"
     },
@@ -67,6 +83,8 @@
       "name": "Arnos Grove Underground Station",
       "openedYear": 1932,
       "openedRank": 201,
+      "dailyTraffic": 9024,
+      "dailyTrafficRank": 172,
       "funFact": "Arnos Grove is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Arnos_Grove_tube_station"
     },
@@ -74,6 +92,8 @@
       "name": "Arsenal Underground Station",
       "openedYear": 1906,
       "openedRank": 131,
+      "dailyTraffic": 6037,
+      "dailyTrafficRank": 208,
       "funFact": "Arsenal is a London Underground station, located in Highbury, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Arsenal_tube_station"
     },
@@ -81,6 +101,8 @@
       "name": "Bromley-by-Bow Underground Station",
       "openedYear": 1902,
       "openedRank": 106,
+      "dailyTraffic": 10213,
+      "dailyTrafficRank": 160,
       "funFact": "Bromley-by-Bow is a London Underground station located on the Blackwall Tunnel Northern Approach in the Bromley-by-Bow neighbourhood of the London Borough of Tower Hamlets, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Bromley-by-Bow_tube_station"
     },
@@ -88,8 +110,8 @@
       "name": "Barbican Underground Station",
       "openedYear": 1865,
       "openedRank": 16,
-      "dailyTraffic": 32795,
-      "dailyTrafficRank": 3,
+      "dailyTraffic": 14207,
+      "dailyTrafficRank": 120,
       "funFact": "Barbican is a London Underground station situated near the Barbican Estate, on the edge of the ward of Farringdon Within, City of London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Barbican_tube_station"
     },
@@ -97,6 +119,8 @@
       "name": "Bounds Green Underground Station",
       "openedYear": 1932,
       "openedRank": 202,
+      "dailyTraffic": 11689,
+      "dailyTrafficRank": 146,
       "funFact": "Bounds Green is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Bounds_Green_tube_station"
     },
@@ -104,6 +128,8 @@
       "name": "Becontree Underground Station",
       "openedYear": 1926,
       "openedRank": 193,
+      "dailyTraffic": 7943,
+      "dailyTrafficRank": 186,
       "funFact": "Becontree is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Becontree_tube_station"
     },
@@ -111,6 +137,8 @@
       "name": "Barkingside Underground Station",
       "openedYear": 1903,
       "openedRank": 116,
+      "dailyTraffic": 3197,
+      "dailyTrafficRank": 255,
       "funFact": "Barkingside is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Barkingside_tube_station"
     },
@@ -118,6 +146,8 @@
       "name": "Blackfriars Underground Station",
       "openedYear": 1886,
       "openedRank": 71,
+      "dailyTraffic": 27264,
+      "dailyTrafficRank": 62,
       "funFact": "Blackfriars, also known as London Blackfriars, is a central London railway station and connected London Underground station in the City of London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Blackfriars_tube_station"
     },
@@ -125,6 +155,8 @@
       "name": "Barking Underground Station",
       "openedYear": 1902,
       "openedRank": 107,
+      "dailyTraffic": 41471,
+      "dailyTrafficRank": 38,
       "funFact": "Barking is an interchange station in the town of Barking in the London Borough of Barking and Dagenham, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Barking_station"
     },
@@ -132,6 +164,8 @@
       "name": "Buckhurst Hill Underground Station",
       "openedYear": 1948,
       "openedRank": 243,
+      "dailyTraffic": 4893,
+      "dailyTrafficRank": 229,
       "funFact": "Buckhurst Hill is a London Underground station, serving the suburban town of Buckhurst Hill, in the Epping Forest District of Essex, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Buckhurst_Hill_tube_station"
     },
@@ -139,6 +173,8 @@
       "name": "Bethnal Green Underground Station",
       "openedYear": 1946,
       "openedRank": 230,
+      "dailyTraffic": 27880,
+      "dailyTrafficRank": 61,
       "funFact": "Bethnal Green is a London Underground station in Bethnal Green, London, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Bethnal_Green_tube_station"
     },
@@ -146,6 +182,8 @@
       "name": "Balham Underground Station",
       "openedYear": 1941,
       "openedRank": 229,
+      "dailyTraffic": 26927,
+      "dailyTrafficRank": 63,
       "funFact": "Balham is an interchange station in south-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Balham_station"
     },
@@ -153,6 +191,8 @@
       "name": "Blackhorse Road Underground Station",
       "openedYear": 1968,
       "openedRank": 252,
+      "dailyTraffic": 24590,
+      "dailyTrafficRank": 69,
       "funFact": "Blackhorse Road is an interchange station, located at the junction of Blackhorse Road/Blackhorse Lane with Forest Road in Walthamstow, London for London Underground and London Overground services.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Blackhorse_Road_station"
     },
@@ -160,6 +200,8 @@
       "name": "Bermondsey Underground Station",
       "openedYear": 1999,
       "openedRank": 262,
+      "dailyTraffic": 18636,
+      "dailyTrafficRank": 93,
       "funFact": "Bermondsey is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Bermondsey_tube_station"
     },
@@ -167,11 +209,15 @@
       "name": "Bond Street Underground Station",
       "openedYear": 1900,
       "openedRank": 90,
+      "dailyTraffic": 102533,
+      "dailyTrafficRank": 12,
       "funFact": "Bond Street is an interchange station in Mayfair, in the West End of London for London Underground and Elizabeth line services.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Bond_Street_station"
     },
     "940GZZLUBNK": {
       "name": "Bank Underground Station",
+      "dailyTraffic": 101919,
+      "dailyTrafficRank": 13,
       "funFact": "Bank and Monument are two interlinked stations in the City of London that form a public transport complex served by five lines of the London Underground as well as the Docklands Light Railway (DLR).",
       "wikiUrl": "https://en.wikipedia.org/wiki/Bank_tube_station"
     },
@@ -179,6 +225,8 @@
       "name": "Borough Underground Station",
       "openedYear": 1890,
       "openedRank": 81,
+      "dailyTraffic": 11145,
+      "dailyTrafficRank": 150,
       "funFact": "Borough is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Borough_tube_station"
     },
@@ -186,6 +234,8 @@
       "name": "Boston Manor Underground Station",
       "openedYear": 1883,
       "openedRank": 62,
+      "dailyTraffic": 3934,
+      "dailyTrafficRank": 247,
       "funFact": "Boston Manor is a London Underground station in Brentford, at the boundary of the boroughs of Hounslow and Ealing.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Boston_Manor_tube_station"
     },
@@ -193,6 +243,8 @@
       "name": "Barons Court Underground Station",
       "openedYear": 1905,
       "openedRank": 129,
+      "dailyTraffic": 14359,
+      "dailyTrafficRank": 116,
       "funFact": "Barons Court is a London Underground station in West Kensington in the London Borough of Hammersmith and Fulham.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Barons_Court_tube_station"
     },
@@ -200,6 +252,8 @@
       "name": "Baker Street Underground Station",
       "openedYear": 1863,
       "openedRank": 6,
+      "dailyTraffic": 58102,
+      "dailyTrafficRank": 23,
       "funFact": "Baker Street is a London Underground station, located at the junction of Baker Street and Marylebone Road in the City of Westminster.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Baker_Street_tube_station"
     },
@@ -207,6 +261,8 @@
       "name": "Burnt Oak Underground Station",
       "openedYear": 1924,
       "openedRank": 188,
+      "dailyTraffic": 8394,
+      "dailyTrafficRank": 179,
       "funFact": "Burnt Oak is a London Underground station in Burnt Oak, a suburb of north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Burnt_Oak_tube_station"
     },
@@ -214,6 +270,8 @@
       "name": "Brent Cross Underground Station",
       "openedYear": 1923,
       "openedRank": 182,
+      "dailyTraffic": 5098,
+      "dailyTrafficRank": 222,
       "funFact": "Brent Cross is a London Underground station, located on Highfield Avenue in the Golders Green area of north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Brent_Cross_tube_station"
     },
@@ -221,6 +279,8 @@
       "name": "Bow Road Underground Station",
       "openedYear": 1902,
       "openedRank": 108,
+      "dailyTraffic": 11391,
+      "dailyTrafficRank": 148,
       "funFact": "Bow Road is a London Underground station located on Bow Road in the Bow neighbourhood of the London Borough of Tower Hamlets, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Bow_Road_tube_station"
     },
@@ -228,6 +288,8 @@
       "name": "Bayswater Underground Station",
       "openedYear": 1868,
       "openedRank": 24,
+      "dailyTraffic": 9986,
+      "dailyTrafficRank": 162,
       "funFact": "Bayswater is a London Underground station, located in the Bayswater area of the City of Westminster.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Bayswater_tube_station"
     },
@@ -235,6 +297,8 @@
       "name": "Brixton Underground Station",
       "openedYear": 1971,
       "openedRank": 256,
+      "dailyTraffic": 55256,
+      "dailyTrafficRank": 29,
       "funFact": "Brixton is a London Underground station, located on Brixton Road in Brixton in the London Borough of Lambeth, south London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Brixton_tube_station"
     },
@@ -242,6 +306,8 @@
       "name": "Belsize Park Underground Station",
       "openedYear": 1907,
       "openedRank": 149,
+      "dailyTraffic": 13761,
+      "dailyTrafficRank": 126,
       "funFact": "Belsize Park is a London Underground station in Belsize Park, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Belsize_Park_tube_station"
     },
@@ -249,6 +315,8 @@
       "name": "Chalfont & Latimer Underground Station",
       "openedYear": 1889,
       "openedRank": 75,
+      "dailyTraffic": 4397,
+      "dailyTrafficRank": 238,
       "funFact": "Chalfont & Latimer is a London Underground and National Rail station in London fare zone 8 on the Metropolitan line, in Buckinghamshire.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Chalfont_%26_Latimer_station"
     },
@@ -256,6 +324,8 @@
       "name": "Caledonian Road Underground Station",
       "openedYear": 1906,
       "openedRank": 132,
+      "dailyTraffic": 11929,
+      "dailyTrafficRank": 144,
       "funFact": "Caledonian Road is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Caledonian_Road_tube_station"
     },
@@ -263,6 +333,8 @@
       "name": "Chalk Farm Underground Station",
       "openedYear": 1907,
       "openedRank": 150,
+      "dailyTraffic": 12418,
+      "dailyTrafficRank": 138,
       "funFact": "Chalk Farm is a London Underground station near Camden Town in the London Borough of Camden.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Chalk_Farm_tube_station"
     },
@@ -270,6 +342,8 @@
       "name": "Covent Garden Underground Station",
       "openedYear": 1907,
       "openedRank": 151,
+      "dailyTraffic": 34449,
+      "dailyTrafficRank": 48,
       "funFact": "Covent Garden is a London Underground station, serving Covent Garden and its surrounding area in the West End of London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Covent_Garden_tube_station"
     },
@@ -277,6 +351,8 @@
       "name": "Canning Town Underground Station",
       "openedYear": 1999,
       "openedRank": 263,
+      "dailyTraffic": 33778,
+      "dailyTrafficRank": 51,
       "funFact": "Canning Town is an interchange station located in Canning Town, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Canning_Town_station"
     },
@@ -284,6 +360,8 @@
       "name": "Chancery Lane Underground Station",
       "openedYear": 1900,
       "openedRank": 91,
+      "dailyTraffic": 21379,
+      "dailyTrafficRank": 83,
       "funFact": "Chancery Lane is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Chancery_Lane_tube_station"
     },
@@ -291,6 +369,8 @@
       "name": "Charing Cross Underground Station",
       "openedYear": 1906,
       "openedRank": 133,
+      "dailyTraffic": 39683,
+      "dailyTrafficRank": 40,
       "funFact": "Charing Cross is a London Underground station at Charing Cross in the City of Westminster.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Charing_Cross_tube_station"
     },
@@ -298,6 +378,8 @@
       "name": "Cockfosters Underground Station",
       "openedYear": 1933,
       "openedRank": 211,
+      "dailyTraffic": 3973,
+      "dailyTrafficRank": 246,
       "funFact": "Cockfosters is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Cockfosters_tube_station"
     },
@@ -305,6 +387,8 @@
       "name": "Colindale Underground Station",
       "openedYear": 1924,
       "openedRank": 189,
+      "dailyTraffic": 17300,
+      "dailyTrafficRank": 95,
       "funFact": "Colindale is a London Underground station in Colindale, a suburb of north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Colindale_tube_station"
     },
@@ -312,6 +396,8 @@
       "name": "Clapham Common Underground Station",
       "openedYear": 1900,
       "openedRank": 92,
+      "dailyTraffic": 22028,
+      "dailyTrafficRank": 79,
       "funFact": "Clapham Common is a London Underground station in Clapham within the London Borough of Lambeth.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Clapham_Common_tube_station"
     },
@@ -319,6 +405,8 @@
       "name": "Canons Park Underground Station",
       "openedYear": 1932,
       "openedRank": 203,
+      "dailyTraffic": 5680,
+      "dailyTrafficRank": 215,
       "funFact": "Canons Park is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Canons_Park_tube_station"
     },
@@ -326,6 +414,8 @@
       "name": "Clapham North Underground Station",
       "openedYear": 1900,
       "openedRank": 93,
+      "dailyTraffic": 14277,
+      "dailyTrafficRank": 118,
       "funFact": "Clapham North is a London Underground station in Clapham, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Clapham_North_tube_station"
     },
@@ -333,6 +423,8 @@
       "name": "Clapham South Underground Station",
       "openedYear": 1926,
       "openedRank": 194,
+      "dailyTraffic": 17325,
+      "dailyTrafficRank": 94,
       "funFact": "Clapham South is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Clapham_South_tube_station"
     },
@@ -340,6 +432,8 @@
       "name": "Colliers Wood Underground Station",
       "openedYear": 1926,
       "openedRank": 195,
+      "dailyTraffic": 14629,
+      "dailyTrafficRank": 114,
       "funFact": "Colliers Wood is a London Underground station in Colliers Wood, south-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Colliers_Wood_tube_station"
     },
@@ -347,6 +441,8 @@
       "name": "Chesham Underground Station",
       "openedYear": 1889,
       "openedRank": 76,
+      "dailyTraffic": 2649,
+      "dailyTrafficRank": 258,
       "funFact": "Chesham tube station is a London Underground station in the market town of Chesham in Buckinghamshire, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Chesham_tube_station"
     },
@@ -354,8 +450,8 @@
       "name": "Cannon Street Underground Station",
       "openedYear": 1884,
       "openedRank": 65,
-      "dailyTraffic": 25726,
-      "dailyTrafficRank": 5,
+      "dailyTraffic": 10526,
+      "dailyTrafficRank": 158,
       "funFact": "Cannon Street station, also known as London Cannon Street, is a central London railway terminus and connected London Underground station in London fare zone 1 located on Cannon Street in the City of London and managed b…",
       "wikiUrl": "https://en.wikipedia.org/wiki/Cannon_Street_tube_station"
     },
@@ -363,6 +459,8 @@
       "name": "Camden Town Underground Station",
       "openedYear": 1907,
       "openedRank": 152,
+      "dailyTraffic": 51523,
+      "dailyTrafficRank": 31,
       "funFact": "Camden Town is a London Underground station in Camden Town, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Camden_Town_tube_station"
     },
@@ -370,6 +468,8 @@
       "name": "Chigwell Underground Station",
       "openedYear": 1903,
       "openedRank": 117,
+      "dailyTraffic": 910,
+      "dailyTrafficRank": 269,
       "funFact": "Chigwell is a London Underground station in the town of Chigwell in the Epping Forest district of Essex.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Chigwell_tube_station"
     },
@@ -377,6 +477,8 @@
       "name": "Chiswick Park Underground Station",
       "openedYear": 1879,
       "openedRank": 51,
+      "dailyTraffic": 5683,
+      "dailyTrafficRank": 214,
       "funFact": "Chiswick Park is a London Underground station in the Acton Green district of Chiswick in West London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Chiswick_Park_tube_station"
     },
@@ -384,6 +486,8 @@
       "name": "Canada Water Underground Station",
       "openedYear": 1999,
       "openedRank": 264,
+      "dailyTraffic": 26238,
+      "dailyTrafficRank": 64,
       "funFact": "Canada Water is an interchange station in London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Canada_Water_station"
     },
@@ -391,6 +495,8 @@
       "name": "Croxley Underground Station",
       "openedYear": 1925,
       "openedRank": 191,
+      "dailyTraffic": 2295,
+      "dailyTrafficRank": 262,
       "funFact": "Croxley is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Croxley_tube_station"
     },
@@ -398,6 +504,8 @@
       "name": "Chorleywood Underground Station",
       "openedYear": 1899,
       "openedRank": 89,
+      "dailyTraffic": 3987,
+      "dailyTrafficRank": 244,
       "funFact": "Chorleywood is a London Underground and National Rail station in London fare zone 7 on the Metropolitan line.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Chorleywood_station"
     },
@@ -405,6 +513,8 @@
       "name": "Canary Wharf Underground Station",
       "openedYear": 1999,
       "openedRank": 265,
+      "dailyTraffic": 84564,
+      "dailyTrafficRank": 15,
       "funFact": "Canary Wharf is a London Underground station at Canary Wharf.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Canary_Wharf_tube_station"
     },
@@ -412,6 +522,8 @@
       "name": "Debden Underground Station",
       "openedYear": 1949,
       "openedRank": 248,
+      "dailyTraffic": 5044,
+      "dailyTrafficRank": 226,
       "funFact": "Debden is a London Underground station, serving the Debden area of Loughton in the Epping Forest District of Essex.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Debden_tube_station"
     },
@@ -419,6 +531,8 @@
       "name": "Dagenham East Underground Station",
       "openedYear": 1902,
       "openedRank": 109,
+      "dailyTraffic": 7248,
+      "dailyTrafficRank": 195,
       "funFact": "Dagenham East is a London Underground station in Dagenham in the London Borough of Barking and Dagenham, east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Dagenham_East_tube_station"
     },
@@ -426,6 +540,8 @@
       "name": "Dagenham Heathway Underground Station",
       "openedYear": 1932,
       "openedRank": 204,
+      "dailyTraffic": 13227,
+      "dailyTrafficRank": 130,
       "funFact": "Dagenham Heathway is a London Underground station in Dagenham in the London Borough of Barking and Dagenham, east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Dagenham_Heathway_tube_station"
     },
@@ -433,6 +549,8 @@
       "name": "Dollis Hill Underground Station",
       "openedYear": 1909,
       "openedRank": 165,
+      "dailyTraffic": 8339,
+      "dailyTrafficRank": 181,
       "funFact": "Dollis Hill is a London Underground station at Dollis Hill, near to Willesden and Gladstone Park in the London Borough of Brent.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Dollis_Hill_tube_station"
     },
@@ -440,6 +558,8 @@
       "name": "Elephant & Castle Underground Station",
       "openedYear": 1890,
       "openedRank": 82,
+      "dailyTraffic": 39003,
+      "dailyTrafficRank": 41,
       "funFact": "Elephant & Castle is a London Underground station in the London Borough of Southwark in Central London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Elephant_%26_Castle_tube_station"
     },
@@ -447,6 +567,8 @@
       "name": "Eastcote Underground Station",
       "openedYear": 1906,
       "openedRank": 134,
+      "dailyTraffic": 5913,
+      "dailyTrafficRank": 210,
       "funFact": "Eastcote is a London Underground station in Eastcote in West London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Eastcote_tube_station"
     },
@@ -454,6 +576,8 @@
       "name": "East Acton Underground Station",
       "openedYear": 1920,
       "openedRank": 181,
+      "dailyTraffic": 8578,
+      "dailyTrafficRank": 178,
       "funFact": "East Acton is a London Underground station, located in East Acton in the London Borough of Hammersmith and Fulham.",
       "wikiUrl": "https://en.wikipedia.org/wiki/East_Acton_tube_station"
     },
@@ -461,6 +585,8 @@
       "name": "Ealing Broadway Underground Station",
       "openedYear": 1838,
       "openedRank": 1,
+      "dailyTraffic": 42271,
+      "dailyTrafficRank": 37,
       "funFact": "Ealing Broadway is a major single-level interchange station located in Ealing, in the London Borough of Ealing, West London for London Underground services and Elizabeth line services on the National Rail Great Western…",
       "wikiUrl": "https://en.wikipedia.org/wiki/Ealing_Broadway_tube_station"
     },
@@ -468,6 +594,8 @@
       "name": "Ealing Common Underground Station",
       "openedYear": 1879,
       "openedRank": 52,
+      "dailyTraffic": 5356,
+      "dailyTrafficRank": 219,
       "funFact": "Ealing Common is a London Underground station, located in the London Borough of Ealing.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Ealing_Common_tube_station"
     },
@@ -475,6 +603,8 @@
       "name": "Earl's Court Underground Station",
       "openedYear": 1871,
       "openedRank": 41,
+      "dailyTraffic": 43232,
+      "dailyTrafficRank": 35,
       "funFact": "Earl's Court is a Grade II listed London Underground station in Earl's Court, London, on the District and Piccadilly lines.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Earl%27s_Court_tube_station"
     },
@@ -482,6 +612,8 @@
       "name": "East Finchley Underground Station",
       "openedYear": 1867,
       "openedRank": 21,
+      "dailyTraffic": 14241,
+      "dailyTrafficRank": 119,
       "funFact": "East Finchley is a London Underground station in East Finchley in the London Borough of Barnet.",
       "wikiUrl": "https://en.wikipedia.org/wiki/East_Finchley_tube_station"
     },
@@ -489,6 +621,8 @@
       "name": "Edgware Underground Station",
       "openedYear": 1924,
       "openedRank": 190,
+      "dailyTraffic": 11069,
+      "dailyTrafficRank": 153,
       "funFact": "Edgware is a London Underground station in Edgware, in the London Borough of Barnet.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Edgware_tube_station"
     },
@@ -496,6 +630,8 @@
       "name": "East Ham Underground Station",
       "openedYear": 1902,
       "openedRank": 110,
+      "dailyTraffic": 29554,
+      "dailyTrafficRank": 60,
       "funFact": "East Ham is a London Underground station located on High Street North in the East Ham neighbourhood of the London Borough of Newham, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/East_Ham_tube_station"
     },
@@ -503,6 +639,8 @@
       "name": "Embankment Underground Station",
       "openedYear": 1870,
       "openedRank": 39,
+      "dailyTraffic": 46716,
+      "dailyTrafficRank": 33,
       "funFact": "Embankment is a London Underground station in the City of Westminster, known by various names during its history.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Embankment_tube_station"
     },
@@ -510,6 +648,8 @@
       "name": "Epping Underground Station",
       "openedYear": 1949,
       "openedRank": 249,
+      "dailyTraffic": 8976,
+      "dailyTrafficRank": 173,
       "funFact": "Epping is a London Underground station in the suburban town of Epping in Essex, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Epping_tube_station"
     },
@@ -517,6 +657,8 @@
       "name": "Elm Park Underground Station",
       "openedYear": 1935,
       "openedRank": 220,
+      "dailyTraffic": 6967,
+      "dailyTrafficRank": 201,
       "funFact": "Elm Park is a London Underground station in the Elm Park neighbourhood of the London Borough of Havering, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Elm_Park_tube_station"
     },
@@ -524,6 +666,8 @@
       "name": "East Putney Underground Station",
       "openedYear": 1889,
       "openedRank": 77,
+      "dailyTraffic": 15850,
+      "dailyTrafficRank": 102,
       "funFact": "East Putney is a London Underground station in Putney in the London Borough of Wandsworth.",
       "wikiUrl": "https://en.wikipedia.org/wiki/East_Putney_tube_station"
     },
@@ -531,8 +675,8 @@
       "name": "Edgware Road (Bakerloo) Underground Station",
       "openedYear": 1907,
       "openedRank": 153,
-      "dailyTraffic": 12658,
-      "dailyTrafficRank": 7,
+      "dailyTraffic": 15552,
+      "dailyTrafficRank": 104,
       "funFact": "Edgware Road is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Edgware_Road_tube_station_%28Bakerloo_line%29"
     },
@@ -540,6 +684,8 @@
       "name": "Edgware Road (Circle Line) Underground Station",
       "openedYear": 1863,
       "openedRank": 7,
+      "dailyTraffic": 15552,
+      "dailyTrafficRank": 105,
       "funFact": "Edgware Road is a London Underground station on the Circle, District and Hammersmith & City lines, located on the corner of Chapel Street and Cabbell Street, within London fare zone 1.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Edgware_Road_tube_station_%28Circle%2C_District_and_Hammersmith_%26_City_lines%29"
     },
@@ -547,6 +693,8 @@
       "name": "Euston Square Underground Station",
       "openedYear": 1863,
       "openedRank": 8,
+      "dailyTraffic": 30793,
+      "dailyTrafficRank": 56,
       "funFact": "Euston Square is a London Underground station, located at the corner of Euston Road and Gower Street, just north of University College London (UCL) – its main (south) entrance faces the tower of University College Hospi…",
       "wikiUrl": "https://en.wikipedia.org/wiki/Euston_Square_tube_station"
     },
@@ -554,6 +702,8 @@
       "name": "Euston Underground Station",
       "openedYear": 1907,
       "openedRank": 154,
+      "dailyTraffic": 82096,
+      "dailyTrafficRank": 16,
       "funFact": "Euston is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Euston_tube_station"
     },
@@ -561,6 +711,8 @@
       "name": "Fulham Broadway Underground Station",
       "openedYear": 1880,
       "openedRank": 57,
+      "dailyTraffic": 18694,
+      "dailyTrafficRank": 92,
       "funFact": "Fulham Broadway is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Fulham_Broadway_tube_station"
     },
@@ -568,6 +720,8 @@
       "name": "Farringdon Underground Station",
       "openedYear": 1863,
       "openedRank": 9,
+      "dailyTraffic": 109782,
+      "dailyTrafficRank": 11,
       "funFact": "Farringdon is an interchange station located in Clerkenwell in the London Borough of Islington, just outside the boundary of the City of London for London Underground, Elizabeth line and National Rail services.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Farringdon_station"
     },
@@ -575,6 +729,8 @@
       "name": "Fairlop Underground Station",
       "openedYear": 1903,
       "openedRank": 118,
+      "dailyTraffic": 2427,
+      "dailyTrafficRank": 259,
       "funFact": "Fairlop is a London Underground station in Fairlop in east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Fairlop_tube_station"
     },
@@ -582,6 +738,8 @@
       "name": "Finsbury Park Underground Station",
       "openedYear": 1861,
       "openedRank": 3,
+      "dailyTraffic": 56109,
+      "dailyTrafficRank": 25,
       "funFact": "Finsbury Park is an intermodal interchange station in North London for London Underground, National Rail and London Buses services.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Finsbury_Park_station"
     },
@@ -589,6 +747,8 @@
       "name": "Finchley Central Underground Station",
       "openedYear": 1940,
       "openedRank": 224,
+      "dailyTraffic": 17148,
+      "dailyTrafficRank": 97,
       "funFact": "Finchley Central is a London Underground station, located in the Church End area of Finchley.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Finchley_Central_tube_station"
     },
@@ -596,6 +756,8 @@
       "name": "Finchley Road Underground Station",
       "openedYear": 1879,
       "openedRank": 53,
+      "dailyTraffic": 19301,
+      "dailyTrafficRank": 89,
       "funFact": "Finchley Road is a London Underground station at the corner of Finchley Road and Canfield Gardens in the London Borough of Camden, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Finchley_Road_tube_station"
     },
@@ -603,6 +765,8 @@
       "name": "Gunnersbury Underground Station",
       "openedYear": 1869,
       "openedRank": 35,
+      "dailyTraffic": 11084,
+      "dailyTrafficRank": 152,
       "funFact": "Gunnersbury is an interchange station in Gunnersbury, London, situated on the District line of the London Underground and the Mildmay line of the London Overground.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Gunnersbury_station"
     },
@@ -610,6 +774,8 @@
       "name": "Goodge Street Underground Station",
       "openedYear": 1907,
       "openedRank": 155,
+      "dailyTraffic": 14010,
+      "dailyTrafficRank": 124,
       "funFact": "Goodge Street is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Goodge_Street_tube_station"
     },
@@ -617,6 +783,8 @@
       "name": "Greenford Underground Station",
       "openedYear": 1904,
       "openedRank": 125,
+      "dailyTraffic": 8957,
+      "dailyTrafficRank": 174,
       "funFact": "Greenford is a London Underground and National Rail station in Greenford, Greater London, and is owned and managed by London Underground.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Greenford_station"
     },
@@ -624,6 +792,8 @@
       "name": "Grange Hill Underground Station",
       "openedYear": 1948,
       "openedRank": 244,
+      "dailyTraffic": 1088,
+      "dailyTrafficRank": 268,
       "funFact": "Grange Hill is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Grange_Hill_tube_station"
     },
@@ -631,6 +801,8 @@
       "name": "Golders Green Underground Station",
       "openedYear": 1907,
       "openedRank": 156,
+      "dailyTraffic": 16522,
+      "dailyTrafficRank": 99,
       "funFact": "Golders Green is a London Underground station in Golders Green, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Golders_Green_tube_station"
     },
@@ -638,6 +810,8 @@
       "name": "Goldhawk Road Underground Station",
       "openedYear": 1864,
       "openedRank": 13,
+      "dailyTraffic": 4944,
+      "dailyTrafficRank": 228,
       "funFact": "Goldhawk Road is a London Underground station located in the London Borough of Hammersmith and Fulham, on the south side of Goldhawk Road, about 250 metres (820 ft) west of Shepherd's Bush Green.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Goldhawk_Road_tube_station"
     },
@@ -645,6 +819,8 @@
       "name": "Green Park Underground Station",
       "openedYear": 1906,
       "openedRank": 135,
+      "dailyTraffic": 77390,
+      "dailyTrafficRank": 17,
       "funFact": "Green Park is a London Underground station in Central London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Green_Park_tube_station"
     },
@@ -652,6 +828,8 @@
       "name": "Great Portland Street Underground Station",
       "openedYear": 1863,
       "openedRank": 10,
+      "dailyTraffic": 14649,
+      "dailyTrafficRank": 113,
       "funFact": "Great Portland Street is a London Underground station, located in Great Portland Street, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Great_Portland_Street_tube_station"
     },
@@ -659,6 +837,8 @@
       "name": "Gants Hill Underground Station",
       "openedYear": 1947,
       "openedRank": 232,
+      "dailyTraffic": 13097,
+      "dailyTrafficRank": 132,
       "funFact": "Gants Hill is a London Underground station in the largely residential Gants Hill district of Ilford, in east London, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Gants_Hill_tube_station"
     },
@@ -666,6 +846,8 @@
       "name": "Gloucester Road Underground Station",
       "openedYear": 1868,
       "openedRank": 25,
+      "dailyTraffic": 31106,
+      "dailyTrafficRank": 55,
       "funFact": "Gloucester Road is a London Underground station in Kensington, West London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Gloucester_Road_tube_station"
     },
@@ -673,6 +855,8 @@
       "name": "Highbury & Islington Underground Station",
       "openedYear": 1968,
       "openedRank": 253,
+      "dailyTraffic": 38747,
+      "dailyTrafficRank": 42,
       "funFact": "Highbury & Islington is an interchange station in the London Borough of Islington, north London for London Underground, London Overground and National Rail services.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Highbury_%26_Islington_tube_station"
     },
@@ -680,6 +864,8 @@
       "name": "Harrow & Wealdstone Underground Station",
       "openedYear": 1906,
       "openedRank": 136,
+      "dailyTraffic": 9699,
+      "dailyTrafficRank": 165,
       "funFact": "The Bakerloo line is a London Underground line which runs between Harrow & Wealdstone in suburban north-west London and Elephant & Castle in south London, via the West End.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Bakerloo_line"
     },
@@ -687,6 +873,8 @@
       "name": "Holborn Underground Station",
       "openedYear": 1906,
       "openedRank": 137,
+      "dailyTraffic": 55455,
+      "dailyTrafficRank": 28,
       "funFact": "Holborn is a London Underground station in Holborn, Central London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Holborn_tube_station"
     },
@@ -694,6 +882,8 @@
       "name": "High Barnet Underground Station",
       "openedYear": 1940,
       "openedRank": 225,
+      "dailyTraffic": 8931,
+      "dailyTrafficRank": 175,
       "funFact": "High Barnet is a London Underground station, and former railway station, located in Chipping Barnet, North London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/High_Barnet_tube_station"
     },
@@ -701,6 +891,8 @@
       "name": "Hornchurch Underground Station",
       "openedYear": 1885,
       "openedRank": 68,
+      "dailyTraffic": 4447,
+      "dailyTrafficRank": 237,
       "funFact": "Hornchurch is a London Underground station in the town of Hornchurch in the London Borough of Havering, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hornchurch_tube_station"
     },
@@ -708,6 +900,8 @@
       "name": "Hendon Central Underground Station",
       "openedYear": 1923,
       "openedRank": 183,
+      "dailyTraffic": 14192,
+      "dailyTrafficRank": 122,
       "funFact": "Hendon Central is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hendon_Central_tube_station"
     },
@@ -715,6 +909,8 @@
       "name": "Hillingdon Underground Station",
       "openedYear": 1923,
       "openedRank": 184,
+      "dailyTraffic": 3764,
+      "dailyTrafficRank": 251,
       "funFact": "Hillingdon is a London Underground station in North Hillingdon in the London Borough of Hillingdon, West London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hillingdon_tube_station"
     },
@@ -722,6 +918,8 @@
       "name": "Hanger Lane Underground Station",
       "openedYear": 1947,
       "openedRank": 233,
+      "dailyTraffic": 6979,
+      "dailyTrafficRank": 200,
       "funFact": "Hanger Lane is a London Underground station in Hanger Hill, Ealing.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hanger_Lane_tube_station"
     },
@@ -729,6 +927,8 @@
       "name": "Highgate Underground Station",
       "openedYear": 1867,
       "openedRank": 22,
+      "dailyTraffic": 12077,
+      "dailyTrafficRank": 140,
       "funFact": "Highgate is a London Underground station and a former railway station on Archway Road, in the London Borough of Haringey.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Highgate_tube_station"
     },
@@ -736,6 +936,8 @@
       "name": "Hainault Underground Station",
       "openedYear": 1903,
       "openedRank": 119,
+      "dailyTraffic": 7838,
+      "dailyTrafficRank": 187,
       "funFact": "Hainault is a London Underground station, located in Hainault in east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hainault_tube_station"
     },
@@ -743,6 +945,8 @@
       "name": "Hatton Cross Underground Station",
       "openedYear": 1975,
       "openedRank": 259,
+      "dailyTraffic": 7815,
+      "dailyTrafficRank": 188,
       "funFact": "Hatton Cross is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hatton_Cross_tube_station"
     },
@@ -750,6 +954,8 @@
       "name": "Harrow-on-the-Hill Underground Station",
       "openedYear": 1880,
       "openedRank": 58,
+      "dailyTraffic": 23111,
+      "dailyTrafficRank": 75,
       "funFact": "Harrow-on-the-Hill is an interchange railway station in Harrow, served by suburban London Underground services on the Metropolitan line and commuter National Rail services on the London–Aylesbury line.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Harrow-on-the-Hill_station"
     },
@@ -757,6 +963,8 @@
       "name": "Hyde Park Corner Underground Station",
       "openedYear": 1906,
       "openedRank": 138,
+      "dailyTraffic": 11396,
+      "dailyTrafficRank": 147,
       "funFact": "Hyde Park Corner is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hyde_Park_Corner_tube_station"
     },
@@ -764,6 +972,8 @@
       "name": "Holland Park Underground Station",
       "openedYear": 1900,
       "openedRank": 94,
+      "dailyTraffic": 7190,
+      "dailyTrafficRank": 196,
       "funFact": "Holland Park is a London Underground station, located on Holland Park Avenue.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Holland_Park_tube_station"
     },
@@ -771,6 +981,8 @@
       "name": "Heathrow Terminal 4 Underground Station",
       "openedYear": 1998,
       "openedRank": 261,
+      "dailyTraffic": 3980,
+      "dailyTrafficRank": 245,
       "funFact": "Heathrow Terminal 4 is a railway station at Heathrow Terminal 4 served by the Elizabeth line.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Heathrow_Terminal_4_railway_station"
     },
@@ -778,6 +990,8 @@
       "name": "Heathrow Terminal 5 Underground Station",
       "openedYear": 2008,
       "openedRank": 268,
+      "dailyTraffic": 9701,
+      "dailyTrafficRank": 164,
       "funFact": "Heathrow Terminal 5 is a shared railway and London Underground station at Heathrow Airport serving Heathrow Terminal 5.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Heathrow_Terminal_5_station"
     },
@@ -785,6 +999,8 @@
       "name": "Heathrow Terminals 2 & 3 Underground Station",
       "openedYear": 1977,
       "openedRank": 260,
+      "dailyTraffic": 14708,
+      "dailyTrafficRank": 112,
       "funFact": "Heathrow Terminals 2 & 3 is a London Underground station at Heathrow Airport on the Heathrow branch of the Piccadilly line, which serves Heathrow Terminals 2 and 3.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Heathrow_Terminals_2_%26_3_tube_station"
     },
@@ -792,6 +1008,8 @@
       "name": "Hammersmith (H&C Line) Underground Station",
       "openedYear": 1874,
       "openedRank": 44,
+      "dailyTraffic": 55591,
+      "dailyTrafficRank": 26,
       "funFact": "Hammersmith is a London Underground station in Hammersmith, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hammersmith_tube_station_%28District_and_Piccadilly_lines%29"
     },
@@ -799,6 +1017,8 @@
       "name": "Hammersmith (Dist&Picc Line) Underground Station",
       "openedYear": 1874,
       "openedRank": 45,
+      "dailyTraffic": 55591,
+      "dailyTrafficRank": 27,
       "funFact": "Hammersmith is a London Underground station in Hammersmith, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hammersmith_tube_station_%28District_and_Piccadilly_lines%29"
     },
@@ -806,6 +1026,8 @@
       "name": "High Street Kensington Underground Station",
       "openedYear": 1868,
       "openedRank": 26,
+      "dailyTraffic": 25789,
+      "dailyTrafficRank": 66,
       "funFact": "High Street Kensington is a London Underground station on Kensington High Street, Kensington.",
       "wikiUrl": "https://en.wikipedia.org/wiki/High_Street_Kensington_tube_station"
     },
@@ -813,6 +1035,8 @@
       "name": "Harlesden Underground Station",
       "openedYear": 1912,
       "openedRank": 168,
+      "dailyTraffic": 6757,
+      "dailyTrafficRank": 202,
       "funFact": "Harlesden is an interchange station on Acton Lane, in north-west London, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Harlesden_station"
     },
@@ -820,6 +1044,8 @@
       "name": "Hampstead Underground Station",
       "openedYear": 1907,
       "openedRank": 157,
+      "dailyTraffic": 10656,
+      "dailyTrafficRank": 157,
       "funFact": "Hampstead is a London Underground station in Hampstead.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hampstead_tube_station"
     },
@@ -827,6 +1053,8 @@
       "name": "Hounslow Central Underground Station",
       "openedYear": 1886,
       "openedRank": 72,
+      "dailyTraffic": 8221,
+      "dailyTrafficRank": 184,
       "funFact": "Hounslow Central is a London Underground station in Hounslow in West London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hounslow_Central_tube_station"
     },
@@ -834,6 +1062,8 @@
       "name": "Hounslow East Underground Station",
       "openedYear": 1909,
       "openedRank": 166,
+      "dailyTraffic": 9235,
+      "dailyTrafficRank": 169,
       "funFact": "Hounslow East is a London Underground station in Hounslow, in the London Borough of Hounslow.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hounslow_East_tube_station"
     },
@@ -841,6 +1071,8 @@
       "name": "Hounslow West Underground Station",
       "openedYear": 1884,
       "openedRank": 66,
+      "dailyTraffic": 7606,
+      "dailyTrafficRank": 190,
       "funFact": "Hounslow West is a London Underground station in locality of Hounslow West in the London Borough of Hounslow.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Hounslow_West_tube_station"
     },
@@ -848,6 +1080,8 @@
       "name": "Holloway Road Underground Station",
       "openedYear": 1906,
       "openedRank": 139,
+      "dailyTraffic": 13990,
+      "dailyTrafficRank": 125,
       "funFact": "Holloway Road is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Holloway_Road_tube_station"
     },
@@ -855,6 +1089,8 @@
       "name": "Ickenham Underground Station",
       "openedYear": 1905,
       "openedRank": 130,
+      "dailyTraffic": 2339,
+      "dailyTrafficRank": 260,
       "funFact": "Ickenham is a London Underground station, located in Ickenham in the London Borough of Hillingdon.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Ickenham_tube_station"
     },
@@ -862,8 +1098,8 @@
       "name": "Kilburn Underground Station",
       "openedYear": 1879,
       "openedRank": 54,
-      "dailyTraffic": 23616,
-      "dailyTrafficRank": 6,
+      "dailyTraffic": 15269,
+      "dailyTrafficRank": 108,
       "funFact": "Kilburn is a London Underground station in Kilburn, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Kilburn_tube_station"
     },
@@ -871,6 +1107,8 @@
       "name": "Kingsbury Underground Station",
       "openedYear": 1932,
       "openedRank": 205,
+      "dailyTraffic": 9497,
+      "dailyTrafficRank": 167,
       "funFact": "Kingsbury is a London Underground station in Kingsbury, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Kingsbury_tube_station"
     },
@@ -878,6 +1116,8 @@
       "name": "Kenton Underground Station",
       "openedYear": 1917,
       "openedRank": 179,
+      "dailyTraffic": 4152,
+      "dailyTrafficRank": 241,
       "funFact": "Kenton is an interchange station situated on Kenton Road in Kenton, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Kenton_station"
     },
@@ -885,6 +1125,8 @@
       "name": "Knightsbridge Underground Station",
       "openedYear": 1906,
       "openedRank": 140,
+      "dailyTraffic": 37173,
+      "dailyTrafficRank": 44,
       "funFact": "Knightsbridge is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Knightsbridge_tube_station"
     },
@@ -892,6 +1134,8 @@
       "name": "Kennington Underground Station",
       "openedYear": 1890,
       "openedRank": 83,
+      "dailyTraffic": 12693,
+      "dailyTrafficRank": 136,
       "funFact": "Kennington is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Kennington_tube_station"
     },
@@ -906,8 +1150,8 @@
       "name": "Kilburn Park Underground Station",
       "openedYear": 1915,
       "openedRank": 173,
-      "dailyTraffic": 9397,
-      "dailyTrafficRank": 8,
+      "dailyTraffic": 7172,
+      "dailyTrafficRank": 197,
       "funFact": "Kilburn Park is a London Underground station, located at Kilburn in the London Borough of Brent.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Kilburn_Park_tube_station"
     },
@@ -922,6 +1166,8 @@
       "name": "Kensal Green Underground Station",
       "openedYear": 1916,
       "openedRank": 178,
+      "dailyTraffic": 4978,
+      "dailyTrafficRank": 227,
       "funFact": "Kensal Green is an interchange station in Kensal Green, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Kensal_Green_station"
     },
@@ -929,6 +1175,8 @@
       "name": "King's Cross St. Pancras Underground Station",
       "openedYear": 1863,
       "openedRank": 11,
+      "dailyTraffic": 197601,
+      "dailyTrafficRank": 1,
       "funFact": "King's Cross St Pancras is a London Underground station on Euston Road in the London Borough of Camden, Central London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/King%27s_Cross_St_Pancras_tube_station"
     },
@@ -936,6 +1184,8 @@
       "name": "Kew Gardens Underground Station",
       "openedYear": 1869,
       "openedRank": 36,
+      "dailyTraffic": 10787,
+      "dailyTrafficRank": 155,
       "funFact": "Kew Gardens is a Grade II–listed interchange station on the District line of the London Underground and the Mildmay line of the London Overground.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Kew_Gardens_station_%28London%29"
     },
@@ -943,6 +1193,8 @@
       "name": "Ladbroke Grove Underground Station",
       "openedYear": 1864,
       "openedRank": 14,
+      "dailyTraffic": 15751,
+      "dailyTrafficRank": 103,
       "funFact": "Ladbroke Grove is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Ladbroke_Grove_tube_station"
     },
@@ -950,6 +1202,8 @@
       "name": "Lambeth North Underground Station",
       "openedYear": 1906,
       "openedRank": 141,
+      "dailyTraffic": 7368,
+      "dailyTrafficRank": 193,
       "funFact": "Lambeth North is a London Underground station in the district of Lambeth, located at the junction of Westminster Bridge Road and Baylis Road.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Lambeth_North_tube_station"
     },
@@ -957,6 +1211,8 @@
       "name": "Loughton Underground Station",
       "openedYear": 1948,
       "openedRank": 245,
+      "dailyTraffic": 7541,
+      "dailyTrafficRank": 191,
       "funFact": "Loughton  is a London Underground station, serving the suburban town of Loughton in the Epping Forest District of Essex.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Loughton_tube_station"
     },
@@ -964,6 +1220,8 @@
       "name": "Lancaster Gate Underground Station",
       "openedYear": 1900,
       "openedRank": 95,
+      "dailyTraffic": 8691,
+      "dailyTrafficRank": 177,
       "funFact": "Lancaster Gate is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Lancaster_Gate_tube_station"
     },
@@ -971,6 +1229,8 @@
       "name": "London Bridge Underground Station",
       "openedYear": 1900,
       "openedRank": 96,
+      "dailyTraffic": 150044,
+      "dailyTrafficRank": 6,
       "funFact": "London Bridge is a central London railway terminus and connected London Underground station in Southwark, south-east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/London_Bridge_tube_station"
     },
@@ -978,6 +1238,8 @@
       "name": "Latimer Road Underground Station",
       "openedYear": 1868,
       "openedRank": 28,
+      "dailyTraffic": 5348,
+      "dailyTrafficRank": 220,
       "funFact": "Latimer Road is a London Underground station in North Kensington, in the Royal Borough of Kensington and Chelsea.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Latimer_Road_tube_station"
     },
@@ -985,6 +1247,8 @@
       "name": "Leicester Square Underground Station",
       "openedYear": 1906,
       "openedRank": 142,
+      "dailyTraffic": 75013,
+      "dailyTrafficRank": 18,
       "funFact": "Leicester Square is a London Underground station in the West End of London, within walking distance of Theatreland and Chinatown, as well as the southern reaches of Soho.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Leicester_Square_tube_station"
     },
@@ -992,6 +1256,8 @@
       "name": "Liverpool Street Underground Station",
       "openedYear": 1875,
       "openedRank": 47,
+      "dailyTraffic": 156785,
+      "dailyTrafficRank": 5,
       "funFact": "Liverpool Street station, also known as London Liverpool Street, is a major central London railway terminus and connected London Underground station in the north-eastern corner of the City of London, in the ward of Bish…",
       "wikiUrl": "https://en.wikipedia.org/wiki/Liverpool_Street_tube_station"
     },
@@ -999,6 +1265,8 @@
       "name": "Leyton Underground Station",
       "openedYear": 1947,
       "openedRank": 234,
+      "dailyTraffic": 23541,
+      "dailyTrafficRank": 71,
       "funFact": "Leyton is a London Underground station in Leyton, in the London Borough of Waltham Forest, east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Leyton_tube_station"
     },
@@ -1006,6 +1274,8 @@
       "name": "Leytonstone Underground Station",
       "openedYear": 1947,
       "openedRank": 235,
+      "dailyTraffic": 19057,
+      "dailyTrafficRank": 90,
       "funFact": "Leytonstone is a London Underground station in Leytonstone, in the London Borough of Waltham Forest, east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Leytonstone_tube_station"
     },
@@ -1013,6 +1283,8 @@
       "name": "Marble Arch Underground Station",
       "openedYear": 1900,
       "openedRank": 97,
+      "dailyTraffic": 23534,
+      "dailyTrafficRank": 72,
       "funFact": "Marble Arch is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Marble_Arch_tube_station"
     },
@@ -1020,6 +1292,8 @@
       "name": "Morden Underground Station",
       "openedYear": 1926,
       "openedRank": 196,
+      "dailyTraffic": 22640,
+      "dailyTrafficRank": 77,
       "funFact": "Morden is a London Underground station in Morden in the London Borough of Merton.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Morden_tube_station"
     },
@@ -1027,6 +1301,8 @@
       "name": "Mile End Underground Station",
       "openedYear": 1902,
       "openedRank": 111,
+      "dailyTraffic": 30536,
+      "dailyTrafficRank": 58,
       "funFact": "Mile End is a London Underground station located on Mile End Road in the Mile End neighbourhood of the London Borough of Tower Hamlets, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Mile_End_tube_station"
     },
@@ -1034,6 +1310,8 @@
       "name": "Moorgate Underground Station",
       "openedYear": 1865,
       "openedRank": 17,
+      "dailyTraffic": 63918,
+      "dailyTrafficRank": 21,
       "funFact": "Moorgate is a central London railway terminus and connected London Underground station on Moorgate in the City of London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Moorgate_station"
     },
@@ -1041,6 +1319,8 @@
       "name": "Mill Hill East Underground Station",
       "openedYear": 1867,
       "openedRank": 23,
+      "dailyTraffic": 4377,
+      "dailyTrafficRank": 239,
       "funFact": "Mill Hill East is a London Underground station, located in Mill Hill in the London Borough of Barnet, north London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Mill_Hill_East_tube_station"
     },
@@ -1048,6 +1328,8 @@
       "name": "Monument Underground Station",
       "openedYear": 1884,
       "openedRank": 67,
+      "dailyTraffic": 101919,
+      "dailyTrafficRank": 14,
       "funFact": "Bank and Monument are two interlinked stations in the City of London that form a public transport complex served by five lines of the London Underground as well as the Docklands Light Railway (DLR).",
       "wikiUrl": "https://en.wikipedia.org/wiki/Monument_tube_station"
     },
@@ -1055,6 +1337,8 @@
       "name": "Moor Park Underground Station",
       "openedYear": 1910,
       "openedRank": 167,
+      "dailyTraffic": 2216,
+      "dailyTrafficRank": 264,
       "funFact": "Moor Park is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Moor_Park_tube_station"
     },
@@ -1062,6 +1346,8 @@
       "name": "Manor House Underground Station",
       "openedYear": 1932,
       "openedRank": 206,
+      "dailyTraffic": 16336,
+      "dailyTrafficRank": 100,
       "funFact": "Manor House is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Manor_House_tube_station"
     },
@@ -1069,6 +1355,8 @@
       "name": "Mansion House Underground Station",
       "openedYear": 1871,
       "openedRank": 42,
+      "dailyTraffic": 11993,
+      "dailyTrafficRank": 142,
       "funFact": "Mansion House is a London Underground station in the City of London which takes its name from Mansion House, the official residence of the Lord Mayor of London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Mansion_House_tube_station"
     },
@@ -1076,6 +1364,8 @@
       "name": "Mornington Crescent Underground Station",
       "openedYear": 1907,
       "openedRank": 158,
+      "dailyTraffic": 8129,
+      "dailyTrafficRank": 185,
       "funFact": "Mornington Crescent is a London Underground station in Somers Town in north-west London, named after the nearby street.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Mornington_Crescent_tube_station"
     },
@@ -1083,6 +1373,8 @@
       "name": "Maida Vale Underground Station",
       "openedYear": 1915,
       "openedRank": 174,
+      "dailyTraffic": 7347,
+      "dailyTrafficRank": 194,
       "funFact": "Maida Vale is a London Underground station in Maida Vale, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Maida_Vale_tube_station"
     },
@@ -1090,6 +1382,8 @@
       "name": "Marylebone Underground Station",
       "openedYear": 1907,
       "openedRank": 159,
+      "dailyTraffic": 22518,
+      "dailyTrafficRank": 78,
       "funFact": "Marylebone station is a Central London railway terminus and connected London Underground station in the Marylebone area of the City of Westminster.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Marylebone_tube_station"
     },
@@ -1097,6 +1391,8 @@
       "name": "North Acton Underground Station",
       "openedYear": 1923,
       "openedRank": 185,
+      "dailyTraffic": 15486,
+      "dailyTrafficRank": 106,
       "funFact": "North Acton is a London Underground station in North Acton in the London Borough of Ealing.",
       "wikiUrl": "https://en.wikipedia.org/wiki/North_Acton_tube_station"
     },
@@ -1104,6 +1400,8 @@
       "name": "Newbury Park Underground Station",
       "openedYear": 1903,
       "openedRank": 120,
+      "dailyTraffic": 9237,
+      "dailyTrafficRank": 168,
       "funFact": "Newbury Park is a London Underground station in Newbury Park, Ilford.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Newbury_Park_tube_station"
     },
@@ -1111,6 +1409,8 @@
       "name": "Neasden Underground Station",
       "openedYear": 1880,
       "openedRank": 59,
+      "dailyTraffic": 7029,
+      "dailyTrafficRank": 199,
       "funFact": "Neasden is a London Underground station in Neasden, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Neasden_tube_station"
     },
@@ -1118,6 +1418,8 @@
       "name": "North Ealing Underground Station",
       "openedYear": 1903,
       "openedRank": 121,
+      "dailyTraffic": 1659,
+      "dailyTrafficRank": 267,
       "funFact": "North Ealing is a London Underground station in west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/North_Ealing_tube_station"
     },
@@ -1125,6 +1427,8 @@
       "name": "Northfields Underground Station",
       "openedYear": 1908,
       "openedRank": 162,
+      "dailyTraffic": 7623,
+      "dailyTrafficRank": 189,
       "funFact": "Northfields is a London Underground station in Northfields, in the London Borough of Ealing.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Northfields_tube_station"
     },
@@ -1132,6 +1436,8 @@
       "name": "North Greenwich Underground Station",
       "openedYear": 1999,
       "openedRank": 266,
+      "dailyTraffic": 63486,
+      "dailyTrafficRank": 22,
       "funFact": "North Greenwich is a London Underground station at the northernmost tip of the Royal Borough of Greenwich.",
       "wikiUrl": "https://en.wikipedia.org/wiki/North_Greenwich_tube_station"
     },
@@ -1139,6 +1445,8 @@
       "name": "North Harrow Underground Station",
       "openedYear": 1915,
       "openedRank": 175,
+      "dailyTraffic": 3832,
+      "dailyTrafficRank": 249,
       "funFact": "North Harrow is a London Underground station situated in North Harrow, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/North_Harrow_tube_station"
     },
@@ -1146,6 +1454,8 @@
       "name": "Notting Hill Gate Underground Station",
       "openedYear": 1868,
       "openedRank": 29,
+      "dailyTraffic": 33180,
+      "dailyTrafficRank": 54,
       "funFact": "Notting Hill Gate is a London Underground station near Notting Hill, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Notting_Hill_Gate_tube_station"
     },
@@ -1153,6 +1463,8 @@
       "name": "Northolt Underground Station",
       "openedYear": 1948,
       "openedRank": 246,
+      "dailyTraffic": 10786,
+      "dailyTrafficRank": 156,
       "funFact": "Northolt is a London Underground station, located in Northolt in the London Borough of Ealing.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Northolt_tube_station"
     },
@@ -1160,6 +1472,8 @@
       "name": "Northwick Park Underground Station",
       "openedYear": 1923,
       "openedRank": 186,
+      "dailyTraffic": 9188,
+      "dailyTrafficRank": 170,
       "funFact": "Northwick Park is a London Underground station in Kenton in the London Borough of Brent on the Metropolitan line.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Northwick_Park_tube_station"
     },
@@ -1167,6 +1481,8 @@
       "name": "Northwood Underground Station",
       "openedYear": 1887,
       "openedRank": 73,
+      "dailyTraffic": 5924,
+      "dailyTrafficRank": 209,
       "funFact": "Northwood is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Northwood_tube_station"
     },
@@ -1174,6 +1490,8 @@
       "name": "Northwood Hills Underground Station",
       "openedYear": 1933,
       "openedRank": 212,
+      "dailyTraffic": 3859,
+      "dailyTrafficRank": 248,
       "funFact": "Northwood Hills is a London Underground station in Northwood, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Northwood_Hills_tube_station"
     },
@@ -1181,6 +1499,8 @@
       "name": "North Wembley Underground Station",
       "openedYear": 1912,
       "openedRank": 169,
+      "dailyTraffic": 3551,
+      "dailyTrafficRank": 253,
       "funFact": "North Wembley is an interchange station in North Wembley, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/North_Wembley_station"
     },
@@ -1188,6 +1508,8 @@
       "name": "Oakwood Underground Station",
       "openedYear": 1933,
       "openedRank": 213,
+      "dailyTraffic": 6321,
+      "dailyTrafficRank": 205,
       "funFact": "Oakwood is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Oakwood_tube_station"
     },
@@ -1195,6 +1517,8 @@
       "name": "Old Street Underground Station",
       "openedYear": 1901,
       "openedRank": 104,
+      "dailyTraffic": 43416,
+      "dailyTrafficRank": 34,
       "funFact": "Old Street is an interchange station in London, located at the junction of Old Street and City Road for London Underground and National Rail services.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Old_Street_station"
     },
@@ -1202,6 +1526,8 @@
       "name": "Osterley Underground Station",
       "openedYear": 1934,
       "openedRank": 216,
+      "dailyTraffic": 4590,
+      "dailyTrafficRank": 232,
       "funFact": "Osterley is a London Underground station in Osterley in west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Osterley_tube_station"
     },
@@ -1209,6 +1535,8 @@
       "name": "Oval Underground Station",
       "openedYear": 1890,
       "openedRank": 84,
+      "dailyTraffic": 15386,
+      "dailyTrafficRank": 107,
       "funFact": "Oval is a London Underground station in the London Borough of Lambeth.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Oval_tube_station"
     },
@@ -1216,6 +1544,8 @@
       "name": "Oxford Circus Underground Station",
       "openedYear": 1900,
       "openedRank": 98,
+      "dailyTraffic": 140017,
+      "dailyTrafficRank": 8,
       "funFact": "Oxford Circus is a London Underground station in Central London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Oxford_Circus_tube_station"
     },
@@ -1223,6 +1553,8 @@
       "name": "Paddington Underground Station",
       "openedYear": 1838,
       "openedRank": 2,
+      "dailyTraffic": 133004,
+      "dailyTrafficRank": 9,
       "funFact": "London Paddington is a main line and tube station complex on Praed Street, Paddington, London, which has been the main terminus for the Great Western Railway and successors since 1838.",
       "wikiUrl": "https://en.wikipedia.org/wiki/London_Paddington_station"
     },
@@ -1230,6 +1562,8 @@
       "name": "Paddington (H&C Line)-Underground",
       "openedYear": 1863,
       "openedRank": 12,
+      "dailyTraffic": 133004,
+      "dailyTrafficRank": 10,
       "funFact": "Paddington is a London Underground station in Paddington.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Paddington_tube_station_%28Circle_and_Hammersmith_%26_City_lines%29"
     },
@@ -1237,8 +1571,8 @@
       "name": "Piccadilly Circus Underground Station",
       "openedYear": 1906,
       "openedRank": 143,
-      "dailyTraffic": 117616,
-      "dailyTrafficRank": 1,
+      "dailyTraffic": 73260,
+      "dailyTrafficRank": 19,
       "funFact": "Piccadilly Circus is a London Underground station in Central London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Piccadilly_Circus_tube_station"
     },
@@ -1246,6 +1580,8 @@
       "name": "Pimlico Underground Station",
       "openedYear": 1972,
       "openedRank": 258,
+      "dailyTraffic": 19418,
+      "dailyTrafficRank": 87,
       "funFact": "Pimlico is a London Underground station in Pimlico, City of Westminster.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Pimlico_tube_station"
     },
@@ -1253,6 +1589,8 @@
       "name": "Park Royal Underground Station",
       "openedYear": 1931,
       "openedRank": 200,
+      "dailyTraffic": 4533,
+      "dailyTrafficRank": 234,
       "funFact": "Park Royal is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Park_Royal_tube_station"
     },
@@ -1260,6 +1598,8 @@
       "name": "Plaistow Underground Station",
       "openedYear": 1902,
       "openedRank": 112,
+      "dailyTraffic": 12010,
+      "dailyTrafficRank": 141,
       "funFact": "Plaistow is a London Underground station, on Plaistow Road in the Plaistow neighbourhood of the London Borough of Newham, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Plaistow_tube_station"
     },
@@ -1267,6 +1607,8 @@
       "name": "Pinner Underground Station",
       "openedYear": 1885,
       "openedRank": 69,
+      "dailyTraffic": 6093,
+      "dailyTrafficRank": 207,
       "funFact": "Pinner is a London Underground station in Pinner, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Pinner_tube_station"
     },
@@ -1274,6 +1616,8 @@
       "name": "Preston Road Underground Station",
       "openedYear": 1908,
       "openedRank": 163,
+      "dailyTraffic": 6640,
+      "dailyTrafficRank": 203,
       "funFact": "Preston Road is a London Underground station in Preston Road in the London Borough of Brent.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Preston_Road_tube_station"
     },
@@ -1281,6 +1625,8 @@
       "name": "Parsons Green Underground Station",
       "openedYear": 1880,
       "openedRank": 60,
+      "dailyTraffic": 15257,
+      "dailyTrafficRank": 109,
       "funFact": "Parsons Green is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Parsons_Green_tube_station"
     },
@@ -1288,6 +1634,8 @@
       "name": "Perivale Underground Station",
       "openedYear": 1947,
       "openedRank": 236,
+      "dailyTraffic": 4719,
+      "dailyTrafficRank": 231,
       "funFact": "Perivale is a London Underground station in Perivale, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Perivale_tube_station"
     },
@@ -1295,6 +1643,8 @@
       "name": "Putney Bridge Underground Station",
       "openedYear": 1880,
       "openedRank": 61,
+      "dailyTraffic": 13723,
+      "dailyTrafficRank": 127,
       "funFact": "Putney Bridge is a London Underground station on the Wimbledon branch of the District line.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Putney_Bridge_tube_station"
     },
@@ -1302,6 +1652,8 @@
       "name": "Queensbury Underground Station",
       "openedYear": 1934,
       "openedRank": 217,
+      "dailyTraffic": 8387,
+      "dailyTrafficRank": 180,
       "funFact": "Queensbury is a London Underground station in Queensbury, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Queensbury_tube_station"
     },
@@ -1309,6 +1661,8 @@
       "name": "Queen's Park Underground Station",
       "openedYear": 1915,
       "openedRank": 176,
+      "dailyTraffic": 11982,
+      "dailyTrafficRank": 143,
       "funFact": "Queen's Park is an interchange station in London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Queen%27s_Park_station_%28England%29"
     },
@@ -1316,6 +1670,8 @@
       "name": "Queensway Underground Station",
       "openedYear": 1900,
       "openedRank": 99,
+      "dailyTraffic": 16855,
+      "dailyTrafficRank": 98,
       "funFact": "Queensway is a London Underground station in Bayswater, just inside the boundary of the City of Westminster with the Royal Borough of Kensington and Chelsea.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Queensway_tube_station"
     },
@@ -1323,6 +1679,8 @@
       "name": "Redbridge Underground Station",
       "openedYear": 1947,
       "openedRank": 237,
+      "dailyTraffic": 5495,
+      "dailyTrafficRank": 217,
       "funFact": "Redbridge is a London Underground station on Eastern Avenue in the Redbridge district of Ilford, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Redbridge_tube_station"
     },
@@ -1330,6 +1688,8 @@
       "name": "Regent's Park Underground Station",
       "openedYear": 1906,
       "openedRank": 144,
+      "dailyTraffic": 6295,
+      "dailyTrafficRank": 206,
       "funFact": "Regent's Park is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Regent%27s_Park_tube_station"
     },
@@ -1337,6 +1697,8 @@
       "name": "Rickmansworth Underground Station",
       "openedYear": 1887,
       "openedRank": 74,
+      "dailyTraffic": 5072,
+      "dailyTrafficRank": 223,
       "funFact": "Rickmansworth is an interchange railway station in the town of Rickmansworth, Hertfordshire, northwest of Central London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Rickmansworth_station"
     },
@@ -1344,6 +1706,8 @@
       "name": "Richmond Underground Station",
       "openedYear": 1869,
       "openedRank": 37,
+      "dailyTraffic": 24316,
+      "dailyTrafficRank": 70,
       "funFact": "Richmond, also known as Richmond (London), is an interchange station in Richmond, Greater London on the Waterloo to Reading and North London lines in London fare zone 4.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Richmond_station_%28London%29"
     },
@@ -1351,6 +1715,8 @@
       "name": "Ruislip Gardens Underground Station",
       "openedYear": 1934,
       "openedRank": 218,
+      "dailyTraffic": 2210,
+      "dailyTrafficRank": 265,
       "funFact": "Ruislip Gardens is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Ruislip_Gardens_tube_station"
     },
@@ -1358,6 +1724,8 @@
       "name": "Ruislip Manor Underground Station",
       "openedYear": 1904,
       "openedRank": 126,
+      "dailyTraffic": 3825,
+      "dailyTrafficRank": 250,
       "funFact": "Ruislip Manor is a London Underground station in Ruislip Manor in west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Ruislip_Manor_tube_station"
     },
@@ -1365,6 +1733,8 @@
       "name": "Ruislip Underground Station",
       "openedYear": 1904,
       "openedRank": 127,
+      "dailyTraffic": 4010,
+      "dailyTrafficRank": 243,
       "funFact": "Ruislip is a London Underground station in Ruislip in west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Ruislip_tube_station"
     },
@@ -1372,6 +1742,8 @@
       "name": "Russell Square Underground Station",
       "openedYear": 1906,
       "openedRank": 145,
+      "dailyTraffic": 21432,
+      "dailyTrafficRank": 82,
       "funFact": "Russell Square is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Russell_Square_tube_station"
     },
@@ -1379,6 +1751,8 @@
       "name": "Ravenscourt Park Underground Station",
       "openedYear": 1877,
       "openedRank": 49,
+      "dailyTraffic": 7445,
+      "dailyTrafficRank": 192,
       "funFact": "Ravenscourt Park is a London Underground station in Hammersmith in west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Ravenscourt_Park_tube_station"
     },
@@ -1386,6 +1760,8 @@
       "name": "Roding Valley Underground Station",
       "openedYear": 1936,
       "openedRank": 221,
+      "dailyTraffic": 733,
+      "dailyTrafficRank": 270,
       "funFact": "Roding Valley is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Roding_Valley_tube_station"
     },
@@ -1393,6 +1769,8 @@
       "name": "Rayners Lane Underground Station",
       "openedYear": 1906,
       "openedRank": 146,
+      "dailyTraffic": 9152,
+      "dailyTrafficRank": 171,
       "funFact": "Rayners Lane is a London Underground station, located in the district of Rayners Lane, in north-west London, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Rayners_Lane_tube_station"
     },
@@ -1400,6 +1778,8 @@
       "name": "Royal Oak Underground Station",
       "openedYear": 1871,
       "openedRank": 43,
+      "dailyTraffic": 5859,
+      "dailyTrafficRank": 212,
       "funFact": "Royal Oak is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Royal_Oak_tube_station"
     },
@@ -1407,6 +1787,8 @@
       "name": "Shepherd's Bush (Central) Underground Station",
       "openedYear": 1900,
       "openedRank": 100,
+      "dailyTraffic": 33900,
+      "dailyTrafficRank": 50,
       "funFact": "Shepherd's Bush is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Shepherd%27s_Bush_tube_station"
     },
@@ -1414,6 +1796,8 @@
       "name": "Shepherd's Bush Market Underground Station",
       "openedYear": 1864,
       "openedRank": 15,
+      "dailyTraffic": 8813,
+      "dailyTrafficRank": 176,
       "funFact": "Shepherd's Bush Market is a London Underground station in the district of Shepherd's Bush in west London, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Shepherd%27s_Bush_Market_tube_station"
     },
@@ -1421,6 +1805,8 @@
       "name": "South Ealing Underground Station",
       "openedYear": 1883,
       "openedRank": 63,
+      "dailyTraffic": 4558,
+      "dailyTrafficRank": 233,
       "funFact": "South Ealing is a London Underground station in the London Borough of Ealing.",
       "wikiUrl": "https://en.wikipedia.org/wiki/South_Ealing_tube_station"
     },
@@ -1428,6 +1814,8 @@
       "name": "Stamford Brook Underground Station",
       "openedYear": 1912,
       "openedRank": 170,
+      "dailyTraffic": 5848,
+      "dailyTrafficRank": 213,
       "funFact": "Stamford Brook is a London Underground station on the eastern edge of Chiswick in west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Stamford_Brook_tube_station"
     },
@@ -1435,6 +1823,8 @@
       "name": "Southfields Underground Station",
       "openedYear": 1889,
       "openedRank": 78,
+      "dailyTraffic": 12962,
+      "dailyTrafficRank": 134,
       "funFact": "Southfields is a London Underground station in Southfields in the London Borough of Wandsworth.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Southfields_tube_station"
     },
@@ -1442,6 +1832,8 @@
       "name": "Stepney Green Underground Station",
       "openedYear": 1902,
       "openedRank": 113,
+      "dailyTraffic": 14065,
+      "dailyTrafficRank": 123,
       "funFact": "Stepney Green is a London Underground station located on Mile End Road in the Stepney neighbourhood of the London Borough of Tower Hamlets, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Stepney_Green_tube_station"
     },
@@ -1449,6 +1841,8 @@
       "name": "Stonebridge Park Underground Station",
       "openedYear": 1912,
       "openedRank": 171,
+      "dailyTraffic": 6537,
+      "dailyTrafficRank": 204,
       "funFact": "Stonebridge Park is an interchange station in Tokyngton and Stonebridge, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Stonebridge_Park_station"
     },
@@ -1456,6 +1850,8 @@
       "name": "Southgate Underground Station",
       "openedYear": 1933,
       "openedRank": 214,
+      "dailyTraffic": 10815,
+      "dailyTrafficRank": 154,
       "funFact": "Southgate is a London Underground station in Southgate in north London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Southgate_tube_station"
     },
@@ -1463,6 +1859,8 @@
       "name": "South Harrow Underground Station",
       "openedYear": 1903,
       "openedRank": 122,
+      "dailyTraffic": 5596,
+      "dailyTrafficRank": 216,
       "funFact": "South Harrow is a London Underground station in South Harrow, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/South_Harrow_tube_station"
     },
@@ -1470,6 +1868,8 @@
       "name": "St. James's Park Underground Station",
       "openedYear": 1868,
       "openedRank": 30,
+      "dailyTraffic": 26121,
+      "dailyTrafficRank": 65,
       "funFact": "St James's Park is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/St_James%27s_Park_tube_station"
     },
@@ -1477,6 +1877,8 @@
       "name": "St. John's Wood Underground Station",
       "openedYear": 1939,
       "openedRank": 222,
+      "dailyTraffic": 16083,
+      "dailyTrafficRank": 101,
       "funFact": "St. John's Wood is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/St_John%27s_Wood_tube_station"
     },
@@ -1484,6 +1886,8 @@
       "name": "South Kensington Underground Station",
       "openedYear": 1868,
       "openedRank": 31,
+      "dailyTraffic": 71476,
+      "dailyTrafficRank": 20,
       "funFact": "South Kensington is a London Underground station in the district of South Kensington, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/South_Kensington_tube_station"
     },
@@ -1491,6 +1895,8 @@
       "name": "South Kenton Underground Station",
       "openedYear": 1933,
       "openedRank": 215,
+      "dailyTraffic": 2248,
+      "dailyTrafficRank": 263,
       "funFact": "South Kenton is an interchange station in Kenton, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/South_Kenton_station"
     },
@@ -1498,6 +1904,8 @@
       "name": "Stockwell Underground Station",
       "openedYear": 1890,
       "openedRank": 85,
+      "dailyTraffic": 20222,
+      "dailyTrafficRank": 85,
       "funFact": "Stockwell is a London Underground station in Stockwell in the London Borough of Lambeth.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Stockwell_tube_station"
     },
@@ -1505,6 +1913,8 @@
       "name": "Snaresbrook Underground Station",
       "openedYear": 1947,
       "openedRank": 238,
+      "dailyTraffic": 5068,
+      "dailyTrafficRank": 224,
       "funFact": "Snaresbrook is a London Underground station in the area of Snaresbrook in east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Snaresbrook_tube_station"
     },
@@ -1512,6 +1922,8 @@
       "name": "St. Paul's Underground Station",
       "openedYear": 1900,
       "openedRank": 101,
+      "dailyTraffic": 25176,
+      "dailyTrafficRank": 67,
       "funFact": "St Paul's is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/St_Paul%27s_tube_station"
     },
@@ -1519,6 +1931,8 @@
       "name": "South Ruislip Underground Station",
       "openedYear": 1908,
       "openedRank": 164,
+      "dailyTraffic": 4119,
+      "dailyTrafficRank": 242,
       "funFact": "South Ruislip is a station served by London Underground and Chiltern Railways in South Ruislip in West London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/South_Ruislip_station"
     },
@@ -1526,6 +1940,8 @@
       "name": "Sloane Square Underground Station",
       "openedYear": 1868,
       "openedRank": 32,
+      "dailyTraffic": 36045,
+      "dailyTrafficRank": 47,
       "funFact": "Sloane Square is a London Underground station in Chelsea, serving Sloane Square.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Sloane_Square_tube_station"
     },
@@ -1533,6 +1949,8 @@
       "name": "Stratford Underground Station",
       "openedYear": 1946,
       "openedRank": 231,
+      "dailyTraffic": 148976,
+      "dailyTrafficRank": 7,
       "funFact": "Stratford is a major multi-level interchange station serving the town of Stratford and the mixed-use development known as Stratford City, in the London Borough of Newham, east London for London Underground, London Overg…",
       "wikiUrl": "https://en.wikipedia.org/wiki/Stratford_tube_station"
     },
@@ -1540,6 +1958,8 @@
       "name": "Stanmore Underground Station",
       "openedYear": 1932,
       "openedRank": 207,
+      "dailyTraffic": 8227,
+      "dailyTrafficRank": 183,
       "funFact": "Stanmore is a London Underground station in Stanmore, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Stanmore_tube_station"
     },
@@ -1547,6 +1967,8 @@
       "name": "Sudbury Hill Underground Station",
       "openedYear": 1903,
       "openedRank": 123,
+      "dailyTraffic": 4470,
+      "dailyTrafficRank": 236,
       "funFact": "Sudbury Hill is a London Underground station in Sudbury, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Sudbury_Hill_tube_station"
     },
@@ -1554,6 +1976,8 @@
       "name": "Sudbury Town Underground Station",
       "openedYear": 1903,
       "openedRank": 124,
+      "dailyTraffic": 4260,
+      "dailyTrafficRank": 240,
       "funFact": "Sudbury Town is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Sudbury_Town_tube_station"
     },
@@ -1561,6 +1985,8 @@
       "name": "Seven Sisters Underground Station",
       "openedYear": 1906,
       "openedRank": 147,
+      "dailyTraffic": 33330,
+      "dailyTrafficRank": 53,
       "funFact": "Seven Sisters is an interchange station in the Seven Sisters area of the London Borough of Haringey, north London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Seven_Sisters_tube_station"
     },
@@ -1568,6 +1994,8 @@
       "name": "Swiss Cottage Underground Station",
       "openedYear": 1939,
       "openedRank": 223,
+      "dailyTraffic": 14347,
+      "dailyTrafficRank": 117,
       "funFact": "Swiss Cottage is a London Underground station at Swiss Cottage, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Swiss_Cottage_tube_station"
     },
@@ -1575,6 +2003,8 @@
       "name": "South Woodford Underground Station",
       "openedYear": 1947,
       "openedRank": 239,
+      "dailyTraffic": 11100,
+      "dailyTrafficRank": 151,
       "funFact": "South Woodford is a London Underground station in the suburb of South Woodford in east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/South_Woodford_tube_station"
     },
@@ -1582,6 +2012,8 @@
       "name": "Southwark Underground Station",
       "openedYear": 1999,
       "openedRank": 267,
+      "dailyTraffic": 23312,
+      "dailyTrafficRank": 73,
       "funFact": "Southwark is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Southwark_tube_station"
     },
@@ -1589,6 +2021,8 @@
       "name": "South Wimbledon Underground Station",
       "openedYear": 1926,
       "openedRank": 197,
+      "dailyTraffic": 9888,
+      "dailyTrafficRank": 163,
       "funFact": "South Wimbledon is a London Underground station in South Wimbledon, a suburb of Wimbledon in south-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/South_Wimbledon_tube_station"
     },
@@ -1596,6 +2030,8 @@
       "name": "Totteridge & Whetstone Underground Station",
       "openedYear": 1940,
       "openedRank": 226,
+      "dailyTraffic": 5450,
+      "dailyTrafficRank": 218,
       "funFact": "Totteridge & Whetstone is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Totteridge_%26_Whetstone_tube_station"
     },
@@ -1603,6 +2039,8 @@
       "name": "Tooting Bec Underground Station",
       "openedYear": 1926,
       "openedRank": 198,
+      "dailyTraffic": 17165,
+      "dailyTrafficRank": 96,
       "funFact": "Tooting Bec, originally Trinity Road, is a London Underground station in Tooting in south London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Tooting_Bec_tube_station"
     },
@@ -1610,6 +2048,8 @@
       "name": "Tooting Broadway Underground Station",
       "openedYear": 1926,
       "openedRank": 199,
+      "dailyTraffic": 33966,
+      "dailyTrafficRank": 49,
       "funFact": "Tooting Broadway is a London Underground station in Tooting in the London Borough of Wandsworth, south London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Tooting_Broadway_tube_station"
     },
@@ -1617,6 +2057,8 @@
       "name": "Tottenham Court Road Underground Station",
       "openedYear": 1900,
       "openedRank": 102,
+      "dailyTraffic": 160894,
+      "dailyTrafficRank": 4,
       "funFact": "Tottenham Court Road is an interchange station in the St Giles and Soho areas of the West End of London for London Underground and Elizabeth line services.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Tottenham_Court_Road_station"
     },
@@ -1624,6 +2066,8 @@
       "name": "Tufnell Park Underground Station",
       "openedYear": 1907,
       "openedRank": 160,
+      "dailyTraffic": 13359,
+      "dailyTrafficRank": 129,
       "funFact": "Tufnell Park is a London Underground station in Islington, close to its boundary with Camden.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Tufnell_Park_tube_station"
     },
@@ -1631,6 +2075,8 @@
       "name": "Theydon Bois Underground Station",
       "openedYear": 1949,
       "openedRank": 250,
+      "dailyTraffic": 2012,
+      "dailyTrafficRank": 266,
       "funFact": "Theydon Bois is a London Underground station, located in the village of Theydon Bois in Essex, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Theydon_Bois_tube_station"
     },
@@ -1638,6 +2084,8 @@
       "name": "Tottenham Hale Underground Station",
       "openedYear": 1968,
       "openedRank": 254,
+      "dailyTraffic": 36274,
+      "dailyTrafficRank": 46,
       "funFact": "Tottenham Hale is an interchange station located in Tottenham Hale, north London for London Underground and National Rail services.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Tottenham_Hale_tube_station"
     },
@@ -1645,6 +2093,8 @@
       "name": "Temple Underground Station",
       "openedYear": 1870,
       "openedRank": 40,
+      "dailyTraffic": 19314,
+      "dailyTrafficRank": 88,
       "funFact": "Temple is a London Underground station located at Victoria Embankment in the City of Westminster, close to its boundary with the City of London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Temple_tube_station"
     },
@@ -1652,6 +2102,8 @@
       "name": "Turnham Green Underground Station",
       "openedYear": 1869,
       "openedRank": 38,
+      "dailyTraffic": 12776,
+      "dailyTrafficRank": 135,
       "funFact": "Turnham Green is a London Underground station in Chiswick of the London Borough of Hounslow in west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Turnham_Green_tube_station"
     },
@@ -1659,6 +2111,8 @@
       "name": "Turnpike Lane Underground Station",
       "openedYear": 1932,
       "openedRank": 208,
+      "dailyTraffic": 21778,
+      "dailyTrafficRank": 80,
       "funFact": "Turnpike Lane is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Turnpike_Lane_tube_station"
     },
@@ -1666,6 +2120,8 @@
       "name": "Tower Hill Underground Station",
       "openedYear": 1967,
       "openedRank": 251,
+      "dailyTraffic": 41002,
+      "dailyTrafficRank": 39,
       "funFact": "Tower Hill is a London Underground station in Tower Hill in the East End of London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Tower_Hill_tube_station"
     },
@@ -1673,6 +2129,8 @@
       "name": "Upminster Bridge Underground Station",
       "openedYear": 1934,
       "openedRank": 219,
+      "dailyTraffic": 2298,
+      "dailyTrafficRank": 261,
       "funFact": "Upminster Bridge is a London Underground station in the Upminster Bridge neighbourhood of the London Borough of Havering, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Upminster_Bridge_tube_station"
     },
@@ -1680,6 +2138,8 @@
       "name": "Upton Park Underground Station",
       "openedYear": 1902,
       "openedRank": 114,
+      "dailyTraffic": 23264,
+      "dailyTrafficRank": 74,
       "funFact": "Upton Park is a London Underground station, located on Green Street in the Upton Park neighbourhood of the London Borough of Newham, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Upton_Park_tube_station"
     },
@@ -1687,6 +2147,8 @@
       "name": "Upminster Underground Station",
       "openedYear": 1885,
       "openedRank": 70,
+      "dailyTraffic": 13080,
+      "dailyTrafficRank": 133,
       "funFact": "Upminster is an interchange station in the town of Upminster in the London Borough of Havering, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Upminster_station"
     },
@@ -1694,6 +2156,8 @@
       "name": "Upney Underground Station",
       "openedYear": 1932,
       "openedRank": 209,
+      "dailyTraffic": 5899,
+      "dailyTrafficRank": 211,
       "funFact": "Upney is a London Underground station on Upney Lane in Barking in the London Borough of Barking and Dagenham, east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Upney_tube_station"
     },
@@ -1701,6 +2165,8 @@
       "name": "Uxbridge Underground Station",
       "openedYear": 1904,
       "openedRank": 128,
+      "dailyTraffic": 14848,
+      "dailyTrafficRank": 111,
       "funFact": "Uxbridge is a London Underground station, located in Uxbridge in the London Borough of Hillingdon.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Uxbridge_tube_station"
     },
@@ -1708,6 +2174,8 @@
       "name": "Victoria Underground Station",
       "openedYear": 1868,
       "openedRank": 33,
+      "dailyTraffic": 163213,
+      "dailyTrafficRank": 3,
       "funFact": "Victoria is a London Underground station in Victoria, London, sitting adjacent to the mainline station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Victoria_tube_station"
     },
@@ -1715,8 +2183,8 @@
       "name": "Vauxhall Underground Station",
       "openedYear": 1971,
       "openedRank": 257,
-      "dailyTraffic": 61597,
-      "dailyTrafficRank": 2,
+      "dailyTraffic": 56906,
+      "dailyTrafficRank": 24,
       "funFact": "Vauxhall is a National Rail, London Underground and London Buses interchange station in South London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Vauxhall_tube_station"
     },
@@ -1724,6 +2192,8 @@
       "name": "Watford Underground Station",
       "openedYear": 1925,
       "openedRank": 192,
+      "dailyTraffic": 4530,
+      "dailyTrafficRank": 235,
       "funFact": "Watford is a London Underground station in Watford, Hertfordshire.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Watford_tube_station"
     },
@@ -1731,6 +2201,8 @@
       "name": "West Brompton Underground Station",
       "openedYear": 1866,
       "openedRank": 18,
+      "dailyTraffic": 14195,
+      "dailyTrafficRank": 121,
       "funFact": "West Brompton is a Grade II-listed interchange station located on Old Brompton Road (A3218) in West Brompton, West London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/West_Brompton_station"
     },
@@ -1738,6 +2210,8 @@
       "name": "White City Underground Station",
       "openedYear": 1947,
       "openedRank": 240,
+      "dailyTraffic": 21618,
+      "dailyTrafficRank": 81,
       "funFact": "White City is a London Underground station, located on Wood Lane in White City, west London, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/White_City_tube_station"
     },
@@ -1745,6 +2219,8 @@
       "name": "West Finchley Underground Station",
       "openedYear": 1940,
       "openedRank": 227,
+      "dailyTraffic": 3553,
+      "dailyTrafficRank": 252,
       "funFact": "West Finchley is a London Underground station, located in the Finchley area of the London Borough of Barnet.",
       "wikiUrl": "https://en.wikipedia.org/wiki/West_Finchley_tube_station"
     },
@@ -1752,6 +2228,8 @@
       "name": "West Ham Underground Station",
       "openedYear": 1901,
       "openedRank": 105,
+      "dailyTraffic": 14627,
+      "dailyTrafficRank": 115,
       "funFact": "West Ham is an interchange station in West Ham in the London Borough of Newham, East London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/West_Ham_station"
     },
@@ -1759,8 +2237,8 @@
       "name": "West Hampstead Underground Station",
       "openedYear": 1879,
       "openedRank": 55,
-      "dailyTraffic": 32329,
-      "dailyTrafficRank": 4,
+      "dailyTraffic": 20248,
+      "dailyTrafficRank": 84,
       "funFact": "West Hampstead is a London Underground station in West Hampstead.",
       "wikiUrl": "https://en.wikipedia.org/wiki/West_Hampstead_tube_station"
     },
@@ -1768,6 +2246,8 @@
       "name": "West Harrow Underground Station",
       "openedYear": 1913,
       "openedRank": 172,
+      "dailyTraffic": 2749,
+      "dailyTrafficRank": 257,
       "funFact": "West Harrow is a London Underground station in Harrow, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/West_Harrow_tube_station"
     },
@@ -1775,6 +2255,8 @@
       "name": "Willesden Green Underground Station",
       "openedYear": 1879,
       "openedRank": 56,
+      "dailyTraffic": 14867,
+      "dailyTrafficRank": 110,
       "funFact": "Willesden Green is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Willesden_Green_tube_station"
     },
@@ -1782,6 +2264,8 @@
       "name": "Wimbledon Underground Station",
       "openedYear": 1889,
       "openedRank": 79,
+      "dailyTraffic": 30750,
+      "dailyTrafficRank": 57,
       "funFact": "Wimbledon is an interchange station in the centre of Wimbledon for London Underground, London Trams and National Rail services, and is the only station in London that provides an interchange between the London Undergrou…",
       "wikiUrl": "https://en.wikipedia.org/wiki/Wimbledon_tube_station"
     },
@@ -1789,6 +2273,8 @@
       "name": "Wimbledon Park Underground Station",
       "openedYear": 1889,
       "openedRank": 80,
+      "dailyTraffic": 5046,
+      "dailyTrafficRank": 225,
       "funFact": "Wimbledon Park is a London Underground station in Wimbledon, south-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Wimbledon_Park_tube_station"
     },
@@ -1796,6 +2282,8 @@
       "name": "Willesden Junction Underground Station",
       "openedYear": 1866,
       "openedRank": 19,
+      "dailyTraffic": 11838,
+      "dailyTrafficRank": 145,
       "funFact": "Willesden Junction is an interchange station at the intersection of the North London and Watford DC lines in Harlesden, north-west London, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Willesden_Junction_station"
     },
@@ -1803,6 +2291,8 @@
       "name": "Warwick Avenue Underground Station",
       "openedYear": 1915,
       "openedRank": 177,
+      "dailyTraffic": 8272,
+      "dailyTrafficRank": 182,
       "funFact": "Warwick Avenue is a London Underground station, located in Little Venice in the City of Westminster, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Warwick_Avenue_tube_station"
     },
@@ -1810,6 +2300,8 @@
       "name": "West Kensington Underground Station",
       "openedYear": 1874,
       "openedRank": 46,
+      "dailyTraffic": 10311,
+      "dailyTrafficRank": 159,
       "funFact": "West Kensington is a London Underground station in West Kensington, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/West_Kensington_tube_station"
     },
@@ -1817,6 +2309,8 @@
       "name": "Wood Lane Underground Station",
       "openedYear": 2008,
       "openedRank": 269,
+      "dailyTraffic": 13449,
+      "dailyTrafficRank": 128,
       "funFact": "Wood Lane is a London Underground station in the White City area of west London, United Kingdom.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Wood_Lane_tube_station"
     },
@@ -1824,6 +2318,8 @@
       "name": "Waterloo Underground Station",
       "openedYear": 1898,
       "openedRank": 88,
+      "dailyTraffic": 192684,
+      "dailyTrafficRank": 2,
       "funFact": "Waterloo is a London Underground station in Waterloo, Central London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Waterloo_tube_station"
     },
@@ -1831,6 +2327,8 @@
       "name": "Woodford Underground Station",
       "openedYear": 1947,
       "openedRank": 241,
+      "dailyTraffic": 12308,
+      "dailyTrafficRank": 139,
       "funFact": "Woodford is a London Underground station in East London, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Woodford_tube_station"
     },
@@ -1838,6 +2336,8 @@
       "name": "Wood Green Underground Station",
       "openedYear": 1932,
       "openedRank": 210,
+      "dailyTraffic": 24899,
+      "dailyTrafficRank": 68,
       "funFact": "Wood Green is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Wood_Green_tube_station"
     },
@@ -1845,6 +2345,8 @@
       "name": "Woodside Park Underground Station",
       "openedYear": 1940,
       "openedRank": 228,
+      "dailyTraffic": 10020,
+      "dailyTrafficRank": 161,
       "funFact": "Woodside Park is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Woodside_Park_tube_station"
     },
@@ -1852,6 +2354,8 @@
       "name": "Whitechapel Underground Station",
       "openedYear": 1876,
       "openedRank": 48,
+      "dailyTraffic": 47814,
+      "dailyTrafficRank": 32,
       "funFact": "Whitechapel is an interchange station in Whitechapel, East London for London Underground, London Overground and Elizabeth line services.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Whitechapel_station"
     },
@@ -1859,6 +2363,8 @@
       "name": "West Ruislip Underground Station",
       "openedYear": 1948,
       "openedRank": 247,
+      "dailyTraffic": 3321,
+      "dailyTrafficRank": 254,
       "funFact": "West Ruislip is an interchange station on Ickenham High Road on the borders of Ickenham and western Ruislip in the London Borough of Hillingdon in Greater London, England, formerly in the county of Middlesex.",
       "wikiUrl": "https://en.wikipedia.org/wiki/West_Ruislip_station"
     },
@@ -1866,6 +2372,8 @@
       "name": "Warren Street Underground Station",
       "openedYear": 1907,
       "openedRank": 161,
+      "dailyTraffic": 38566,
+      "dailyTrafficRank": 43,
       "funFact": "Warren Street is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Warren_Street_tube_station"
     },
@@ -1873,6 +2381,8 @@
       "name": "Wanstead Underground Station",
       "openedYear": 1947,
       "openedRank": 242,
+      "dailyTraffic": 5338,
+      "dailyTrafficRank": 221,
       "funFact": "Wanstead is a London Underground station in Wanstead in the London Borough of Redbridge, east London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Wanstead_tube_station"
     },
@@ -1880,6 +2390,8 @@
       "name": "Westminster Underground Station",
       "openedYear": 1868,
       "openedRank": 34,
+      "dailyTraffic": 52528,
+      "dailyTrafficRank": 30,
       "funFact": "Westminster is a London Underground station in the City of Westminster, England.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Westminster_tube_station"
     },
@@ -1887,6 +2399,8 @@
       "name": "Westbourne Park Underground Station",
       "openedYear": 1866,
       "openedRank": 20,
+      "dailyTraffic": 9671,
+      "dailyTrafficRank": 166,
       "funFact": "Westbourne Park is a London Underground station.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Westbourne_Park_tube_station"
     },
@@ -1894,6 +2408,8 @@
       "name": "West Acton Underground Station",
       "openedYear": 1923,
       "openedRank": 187,
+      "dailyTraffic": 2898,
+      "dailyTrafficRank": 256,
       "funFact": "West Acton is a London Underground station in West Acton, London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/West_Acton_tube_station"
     },
@@ -1901,6 +2417,8 @@
       "name": "Walthamstow Central Underground Station",
       "openedYear": 1968,
       "openedRank": 255,
+      "dailyTraffic": 36574,
+      "dailyTrafficRank": 45,
       "funFact": "Walthamstow Central is an interchange station in Walthamstow, in the London Borough of Waltham Forest.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Walthamstow_Central_tube_station"
     },
@@ -1908,6 +2426,8 @@
       "name": "Wembley Central Underground Station",
       "openedYear": 1917,
       "openedRank": 180,
+      "dailyTraffic": 12600,
+      "dailyTrafficRank": 137,
       "funFact": "Wembley Central is an interchange station in Wembley, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Wembley_Central_station"
     },
@@ -1915,6 +2435,8 @@
       "name": "Wembley Park Underground Station",
       "openedYear": 1893,
       "openedRank": 87,
+      "dailyTraffic": 42496,
+      "dailyTrafficRank": 36,
       "funFact": "Wembley Park is a London Underground station in Wembley Park, north-west London.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Wembley_Park_tube_station"
     },
@@ -1922,6 +2444,8 @@
       "name": "Nine Elms Underground Station",
       "openedYear": 2021,
       "openedRank": 271,
+      "dailyTraffic": 11256,
+      "dailyTrafficRank": 149,
       "funFact": "Nine Elms is a London Underground station in Nine Elms.",
       "wikiUrl": "https://en.wikipedia.org/wiki/Nine_Elms_tube_station"
     }

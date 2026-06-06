@@ -9,6 +9,7 @@ description = "TfL tube network to graph.json pipeline for the Tube Race game"
 requires-python = ">=3.11"
 dependencies = [
     "httpx>=0.27.0",
+    "openpyxl>=3.1.0",
     "pydantic>=2.0.0",
 ]
 
@@ -19,6 +20,7 @@ dev = [
     "respx>=0.21.0",
     "ruff>=0.4.0",
     "mypy>=1.8.0",
+    "types-openpyxl>=3.1.0",
 ]
 
 [tool.setuptools.packages.find]

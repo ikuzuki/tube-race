@@ -7,7 +7,9 @@
 //    page refresh) must not double-count. Keyed off lastResultDate.
 //  - Streak: solved on the day immediately after lastResultDate => +1; solved
 //    with a gap or no prior result => reset to 1; not solved => reset to 0.
-//  - distribution buckets a solved game by how many stops it ran over par.
+//  - distribution buckets a solved game by how far its weighted SCORE ran over
+//    par (score = stops + 4*changes, the single comparable metric — see
+//    lib/score), not by stops alone.
 
 /** The distribution buckets, in display order. */
 export const BUCKETS = ['0', '1', '2', '3', '4', '5+'] as const
@@ -25,7 +27,7 @@ export interface Stats {
   lastResultDate: string | null
   /** Solved games that matched par exactly (optimal). */
   optimalCount: number
-  /** Solved-game counts keyed by stops-over-par bucket ("0".."5+"). */
+  /** Solved-game counts keyed by score-over-par bucket ("0".."5+"). */
   distribution: Record<string, number>
 }
 
@@ -33,8 +35,8 @@ export interface GameResult {
   /** ISO date string, e.g. "2026-06-06". */
   date: string
   solved: boolean
-  /** How many stops over par the player finished (>= 0). */
-  stopsOverPar: number
+  /** How far the player's weighted score ran over par (>= 0). */
+  scoreOverPar: number
   /** True if the player's route matched or beat par. */
   optimal: boolean
 }
@@ -50,11 +52,11 @@ export const EMPTY_STATS: Stats = {
   distribution: { '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5+': 0 },
 }
 
-/** Map a stops-over-par count to its histogram bucket. Clamps negatives to "0". */
-export function bucket(stopsOverPar: number): string {
-  if (stopsOverPar <= 0) return '0'
-  if (stopsOverPar >= 5) return '5+'
-  return String(stopsOverPar)
+/** Map a score-over-par count to its histogram bucket. Clamps negatives to "0". */
+export function bucket(scoreOverPar: number): string {
+  if (scoreOverPar <= 0) return '0'
+  if (scoreOverPar >= 5) return '5+'
+  return String(scoreOverPar)
 }
 
 /** Parse an ISO yyyy-mm-dd date as a UTC midnight timestamp (ms). */
@@ -95,7 +97,7 @@ export function applyResult(stats: Stats, result: GameResult): Stats {
 
   const distribution = { ...stats.distribution }
   if (result.solved) {
-    const key = bucket(result.stopsOverPar)
+    const key = bucket(result.scoreOverPar)
     distribution[key] = (distribution[key] ?? 0) + 1
   }
 

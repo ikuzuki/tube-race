@@ -17,10 +17,14 @@ functions deliberately avoid.
 from __future__ import annotations
 
 import argparse
+import sys
 from datetime import date
+
+import httpx
 
 from tube_pipeline.build_graph import build_graph, write_graph
 from tube_pipeline.enrich import (
+    StationUsageClient,
     WikidataClient,
     WikipediaClient,
     enrich_stations,
@@ -69,8 +73,9 @@ def _enrich_command(args: argparse.Namespace) -> int:
     """Run the ``enrich`` subcommand: read the graph and write station info.
 
     Reads station ids/coordinates from ``args.graph``, fetches Wikidata
-    candidates plus Wikipedia summaries, and writes the enriched
-    ``stations-info.json`` to ``args.out``.
+    candidates, Wikipedia summaries and TfL station-usage figures, and writes the
+    enriched ``stations-info.json`` to ``args.out``. If the TfL usage download
+    fails the existing artefact is left untouched and a non-zero code returned.
 
     Parameters
     ----------
@@ -80,17 +85,33 @@ def _enrich_command(args: argparse.Namespace) -> int:
     Returns
     -------
     int
-        Process exit code (``0`` on success).
+        Process exit code (``0`` on success, ``1`` if a source fetch failed).
     """
     generated_at = date.today().isoformat()
     graph_stations = load_graph_stations(args.graph)
-    with WikidataClient() as wikidata, WikipediaClient() as wikipedia:
-        info_file = enrich_stations(
-            graph_stations,
-            wikidata=wikidata,
-            wikipedia=wikipedia,
-            generated_at=generated_at,
+    try:
+        with (
+            WikidataClient() as wikidata,
+            WikipediaClient() as wikipedia,
+            StationUsageClient() as usage_client,
+        ):
+            info_file = enrich_stations(
+                graph_stations,
+                wikidata=wikidata,
+                wikipedia=wikipedia,
+                generated_at=generated_at,
+                usage_client=usage_client,
+            )
+    except (httpx.HTTPError, ValueError) as exc:
+        # Fail loud and leave the prior artefact intact rather than writing a
+        # version with a source (Wikidata, Wikipedia or TfL usage) silently
+        # dropped.
+        print(
+            f"Enrichment aborted: could not fetch/parse a data source: {exc}. "
+            f"Left {args.out} unchanged.",
+            file=sys.stderr,
         )
+        return 1
     write_station_info(info_file, args.out)
     print(
         f"Wrote {args.out}: "

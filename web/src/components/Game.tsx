@@ -1,20 +1,25 @@
-// Game shell: composes the chrome (Header, HUD, modals) around the interactive
-// PlayfieldMap, and binds the engine via useGameState. App does the async load
-// and hands the loaded graph/adjacency/puzzle in, so this stays drivable from a
-// fixture in tests. Today's date is passed in for determinism + the share grid.
+// Game shell: composes the chrome (Header, HUD, modals, intro + result cards)
+// around the interactive PlayfieldMap, and binds the engine via useGameState.
+// App does the async load and hands the loaded graph/adjacency/puzzle in, so this
+// stays drivable from a fixture in tests. Today's date is passed in for
+// determinism + the share grid.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { Adjacency, DailyPuzzle, GameState, TubeGraph } from '../engine'
+import type { Adjacency, DailyPuzzle, GameState, Station, TubeGraph } from '../engine'
 import { compass, score, stationIndex } from '../engine'
 import { useGameState } from '../hooks/useGameState'
 import { useStats } from '../hooks/useStats'
 import { useOnboarding } from '../hooks/useOnboarding'
+import { useStationInfo } from '../hooks/useStationInfo'
+import type { StationInfo } from '../lib/stationInfo'
 import { buildShareText } from '../lib/share'
+import { points } from '../lib/score'
 import { displayName } from '../lib/format'
 import Header from './Header'
 import Hud from './Hud'
 import PlayfieldMap from './PlayfieldMap'
 import OnboardingModal from './OnboardingModal'
+import IntroModal from './IntroModal'
 import ResultCard from './ResultCard'
 import StatsModal from './StatsModal'
 
@@ -39,6 +44,7 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
   const { state, legalMoves, play, restart } = useGameState(puzzle, graph, adj, initialState)
   const { stats, recordResult } = useStats()
   const { seen, markSeen } = useOnboarding()
+  const { infoMap } = useStationInfo()
 
   const dateISO = today ?? puzzle.date
   const stationsById = useMemo(() => stationIndex(graph), [graph])
@@ -54,18 +60,33 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
     [graph, state.currentId, puzzle.targetId],
   )
 
+  // Endpoint cards (start + destination) for the intro and result modals.
+  const endpoint = useCallback(
+    (id: string): { station: Station; info?: StationInfo } | null => {
+      const station = stationsById.get(id)
+      if (!station) return null
+      return { station, info: infoMap[id] }
+    },
+    [stationsById, infoMap],
+  )
+  const startCard = endpoint(puzzle.startId)
+  const destCard = endpoint(puzzle.targetId)
+
   const [onboardingOpen, setOnboardingOpen] = useState(false)
+  const [introOpen, setIntroOpen] = useState(() => seen && !state.solved)
   const [statsOpen, setStatsOpen] = useState(false)
   const [resultOpen, setResultOpen] = useState(false)
+  const [showOptimal, setShowOptimal] = useState(false)
 
-  // First-run onboarding.
+  // First-run onboarding, then the daily intro card.
   useEffect(() => {
     if (!seen) setOnboardingOpen(true)
   }, [seen])
   const closeOnboarding = useCallback(() => {
     setOnboardingOpen(false)
     markSeen()
-  }, [markSeen])
+    if (!state.solved) setIntroOpen(true)
+  }, [markSeen, state.solved])
 
   // Record the result once per date when solved, then surface the result card.
   const recordedRef = useRef<string | null>(null)
@@ -73,20 +94,24 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
     if (!state.solved || recordedRef.current === dateISO) return
     recordedRef.current = dateISO
     const sc = score(state)
-    recordResult({
-      date: dateISO,
-      solved: true,
-      stopsOverPar: Math.max(0, sc.hopsDelta),
-      optimal: sc.optimal,
-    })
+    const scoreOverPar = Math.max(
+      0,
+      points(sc.hops, sc.changes) - points(sc.parHops, sc.parChanges),
+    )
+    recordResult({ date: dateISO, solved: true, scoreOverPar, optimal: sc.optimal })
+    setIntroOpen(false)
     setResultOpen(true)
   }, [state, dateISO, recordResult])
 
   const sc = state.solved ? score(state) : null
+  const playerScore = sc ? points(sc.hops, sc.changes) : points(state.path.length, state.changes)
+  const parScore = points(puzzle.par.hops, puzzle.par.changes)
   const shareText = sc
     ? buildShareText({
         dateISO,
         solved: true,
+        score: points(sc.hops, sc.changes),
+        parScore,
         stops: sc.hops,
         parStops: sc.parHops,
         changes: sc.changes,
@@ -97,9 +122,15 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
 
   const handlePlayAgain = useCallback(() => {
     setResultOpen(false)
+    setShowOptimal(false)
     recordedRef.current = null
     restart()
   }, [restart])
+
+  const handleShowOptimal = useCallback(() => {
+    setShowOptimal(true)
+    setResultOpen(false)
+  }, [])
 
   return (
     <div className="flex min-h-screen flex-col bg-stone text-ink">
@@ -131,17 +162,46 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
             targetId={puzzle.targetId}
             stationsById={stationsById}
             onMove={play}
-            showOptimal={false}
+            showOptimal={showOptimal}
             className="absolute inset-0 h-full w-full"
           />
         </div>
       </main>
 
+      {/* When the result card is dismissed (e.g. to view the best route), keep a
+          way back to it and to a fresh game. */}
+      {state.solved && !resultOpen && (
+        <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center gap-2">
+          <button
+            onClick={() => setResultOpen(true)}
+            className="rounded-full bg-paper px-4 py-2 text-sm font-semibold text-ink shadow-lg ring-1 ring-black/10 transition hover:bg-stone"
+          >
+            View result
+          </button>
+          <button
+            onClick={handlePlayAgain}
+            className="rounded-full bg-progress px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+          >
+            Play again
+          </button>
+        </div>
+      )}
+
       <OnboardingModal open={onboardingOpen} onClose={closeOnboarding} />
+      {startCard && destCard && (
+        <IntroModal
+          open={introOpen}
+          onClose={() => setIntroOpen(false)}
+          start={startCard}
+          destination={destCard}
+        />
+      )}
       <StatsModal open={statsOpen} onClose={() => setStatsOpen(false)} stats={stats} />
       <ResultCard
         open={resultOpen}
         solved={state.solved}
+        score={playerScore}
+        parScore={parScore}
         stops={sc?.hops ?? state.path.length}
         parStops={puzzle.par.hops}
         changes={sc?.changes ?? state.changes}
@@ -149,6 +209,9 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
         optimal={sc?.optimal ?? false}
         shareText={shareText}
         streak={stats.curStreak}
+        start={startCard ?? undefined}
+        destination={destCard ?? undefined}
+        onShowOptimal={handleShowOptimal}
         onPlayAgain={handlePlayAgain}
         onClose={() => setResultOpen(false)}
       />

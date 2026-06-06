@@ -1,9 +1,12 @@
 // Read-only heads-up display for the active game: where you're headed, your
-// stops/changes against par, the line you're currently riding, and a compass
-// pointing at the destination. Sits above or beside the map. Purely
+// weighted SCORE against par (the hero number — score = stops + 4*changes, the
+// single comparable metric the Dijkstra par minimises; see lib/score), with
+// stops and changes as the breakdown, the line you're currently riding, and a
+// compass pointing at the destination. Sits above or beside the map. Purely
 // presentational — every value arrives as a prop.
 
 import { lineColour, lineTextColour } from '../theme'
+import { points } from '../lib/score'
 
 interface HudProps {
   /** Destination station display name. */
@@ -33,6 +36,9 @@ export default function Hud({
   bearingDeg,
   km,
 }: HudProps) {
+  const score = points(hops, changes)
+  const parScore = points(parHops, parChanges)
+
   return (
     <section
       className="flex items-center justify-between gap-4 rounded-xl border border-stone-200 bg-paper px-4 py-3"
@@ -41,20 +47,47 @@ export default function Hud({
       <div className="flex min-w-0 flex-col gap-2">
         <div className="min-w-0">
           <Label>Destination</Label>
-          <p className="truncate text-base font-bold leading-tight text-ink" title={targetName}>
+          <p className="truncate text-sm font-bold leading-tight text-ink" title={targetName}>
             {targetName}
           </p>
         </div>
 
+        <ScoreReadout score={score} parScore={parScore} />
+
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
-          <Stat label="Stops" value={hops} par={parHops} overPar={hops > parHops} />
-          <Stat label="Changes" value={changes} par={parChanges} overPar={changes > parChanges} />
+          <SubStat label="Stops" value={hops} par={parHops} overPar={hops > parHops} />
+          <SubStat label="Changes" value={changes} par={parChanges} overPar={changes > parChanges} />
           <LineBadge lineId={currentLineId} lineName={currentLineName} />
         </div>
       </div>
 
       <Compass bearingDeg={bearingDeg} km={km} />
     </section>
+  )
+}
+
+interface ScoreReadoutProps {
+  score: number
+  parScore: number
+}
+
+/**
+ * The hero metric: the run's weighted score against par. Lower is better, so the
+ * player's number reads amber once it has crept above par and stays ink (calm)
+ * while still at or below it.
+ */
+function ScoreReadout({ score, parScore }: ScoreReadoutProps) {
+  const overPar = score > parScore
+  return (
+    <div className="min-w-0" aria-label={`Score ${score}, par ${parScore}`}>
+      <Label>Score</Label>
+      <p className="leading-none tabular-nums">
+        <span className={`text-3xl font-extrabold ${overPar ? 'text-warn' : 'text-ink'}`}>
+          {score}
+        </span>
+        <span className="ml-1 text-base font-semibold text-ink-soft">/ {parScore} par</span>
+      </p>
+    </div>
   )
 }
 
@@ -66,7 +99,7 @@ function Label({ children }: { children: React.ReactNode }) {
   )
 }
 
-interface StatProps {
+interface SubStatProps {
   label: string
   value: number
   par: number
@@ -74,7 +107,8 @@ interface StatProps {
   overPar: boolean
 }
 
-function Stat({ label, value, par, overPar }: StatProps) {
+/** A small breakdown stat (stops / changes) shown under the hero score. */
+function SubStat({ label, value, par, overPar }: SubStatProps) {
   return (
     <div className="flex flex-col">
       <Label>{label}</Label>

@@ -1,4 +1,4 @@
-"""Enrich graph stations with trivia/stats from Wikidata and Wikipedia.
+"""Enrich graph stations with trivia/stats from open data.
 
 For every station already present in ``graph.json`` this module produces a
 best-effort :class:`~tube_pipeline.models.StationInfo`: opening year (with a
@@ -9,19 +9,25 @@ sourced fun fact, and a link to the Wikipedia article. Every field is optional
 Pipeline
 --------
 1. Query Wikidata (SPARQL) for London Underground stations, returning label,
-   coordinates, opening date, annual patronage, and the English Wikipedia
-   article title.
+   coordinates, opening date, and the English Wikipedia article title. (Wikidata
+   also carries a patronage field, but its tube coverage is sparse -- see step
+   4 -- so it is only a fallback for daily traffic.)
 2. Match each Wikidata candidate to a graph station by coordinate proximity
    (haversine, nearest within ~400 m), falling back to a normalised-name
    match.
 3. Fetch a one-line fun fact per matched station from the Wikipedia REST
    summary endpoint (polite: descriptive User-Agent, per-request delay).
-4. Convert annual patronage to a daily figure, then rank stations by opening
-   year (1 = oldest) and daily traffic (1 = busiest).
+4. Download TfL's authoritative Annual Station Counts spreadsheet and read each
+   Underground station's annualised entries+exits, matched to a graph station
+   by normalised name. This covers essentially the whole network, where the
+   Wikidata patronage field covers only a handful of stations; the TfL figure
+   is therefore preferred and Wikidata patronage is the fallback.
+5. Convert the annual figure to a daily one (divide by 365), then rank stations
+   by opening year (1 = oldest) and daily traffic (1 = busiest).
 
-Network access is confined to :class:`WikidataClient` and
-:class:`WikipediaClient`; :func:`enrich_stations` takes them as arguments so it
-can be driven against mocked HTTP in tests.
+Network access is confined to :class:`WikidataClient`, :class:`WikipediaClient`
+and :class:`StationUsageClient`; :func:`enrich_stations` takes them as arguments
+so it can be driven against mocked HTTP (and an in-memory XLSX) in tests.
 
 See ``SPEC.md`` and ``web/src/lib/stationInfo.ts`` for the output contract.
 """
@@ -31,6 +37,7 @@ from __future__ import annotations
 import math
 import re
 import time
+import zipfile
 from dataclasses import dataclass
 from typing import Any
 
@@ -73,6 +80,21 @@ _RETRYABLE_STATUS: frozenset[int] = frozenset({429, 500, 502, 503, 504})
 
 _EARTH_RADIUS_M: float = 6_371_000.0
 """Mean Earth radius in metres, for the haversine distance."""
+
+STATION_USAGE_URL: str = (
+    "https://crowding.data.tfl.gov.uk/"
+    "Annual%20Station%20Counts/2023/AC2023_AnnualisedEntryExit.xlsx"
+)
+"""TfL Annual Station Counts (2023): annualised entries+exits per station.
+
+This is the most recent year published in TfL's open ``crowding.data.tfl.gov.uk``
+bucket at time of writing; later years appear under the same path scheme. The
+spreadsheet covers London Underground, Overground, DLR and Elizabeth line; only
+the Underground (``LU``) rows are used here.
+"""
+
+DAYS_PER_YEAR: float = 365.0
+"""Divisor turning an annual entries+exits total into an approximate daily one."""
 
 # The Wikidata SPARQL query. A station qualifies if it is served by / has as a
 # connecting line (P81) a line that is part of (P361, transitively) the London
@@ -231,6 +253,57 @@ def normalise_name(name: str) -> str:
     return " ".join(text.split())
 
 
+_MODE_TAIL_RE: re.Pattern[str] = re.compile(r"\b(?:lu|dlr|tfl|elr|nr|lo)\s*$", re.IGNORECASE)
+"""Trailing mode token TfL appends to disambiguate co-located stations.
+
+In the Annual Station Counts file a station that shares a name with a National
+Rail or multi-modal hub carries a ``" LU"`` (or ``" TfL"``) suffix on the
+Underground gateline row -- e.g. ``"Euston LU"``, ``"Victoria LU"``,
+``"Paddington TfL"`` -- to separate it from the mainline counts. The graph names
+have no such suffix, so it is stripped before matching.
+"""
+
+_USAGE_NAME_ALIASES: dict[str, tuple[str, ...]] = {
+    # One combined Underground row feeds two distinct graph stations.
+    "bank and monument": ("bank", "monument"),
+    # TfL writes the terminals 2 & 3 row as "Heathrow Terminals 123".
+    "heathrow terminals 123": ("heathrow terminals 2 and 3",),
+}
+"""Maps a normalised usage-file name to the graph key(s) it should populate.
+
+Resolves the handful of cases where TfL's naming differs structurally from the
+graph's, rather than merely by the mode suffix handled by :data:`_MODE_TAIL_RE`.
+Each value is one or more graph match keys (as produced by
+:func:`normalise_name`) the row's figure applies to.
+"""
+
+
+def usage_match_keys(name: str) -> tuple[str, ...]:
+    """Map a TfL usage-file station name to graph match key(s).
+
+    Normalises the name the same way graph names are (:func:`normalise_name`),
+    strips TfL's trailing mode-disambiguation token (``"... LU"``/``"... TfL"``),
+    then expands any structural alias (:data:`_USAGE_NAME_ALIASES`). The result
+    is the set of :func:`normalise_name` keys whose graph station this row's
+    figure should populate.
+
+    Parameters
+    ----------
+    name : str
+        Raw ``Station`` cell from the Annual Station Counts spreadsheet.
+
+    Returns
+    -------
+    tuple of str
+        Zero or more graph match keys. Empty only when the name normalises away
+        to nothing.
+    """
+    key = _MODE_TAIL_RE.sub("", normalise_name(name)).strip()
+    if not key:
+        return ()
+    return _USAGE_NAME_ALIASES.get(key, (key,))
+
+
 def parse_wkt_point(literal: str) -> tuple[float, float] | None:
     """Parse a Wikidata ``Point(lon lat)`` WKT literal.
 
@@ -303,6 +376,197 @@ def article_title_from_url(url: str) -> str | None:
     if not slug:
         return None
     return unquote(slug).replace("_", " ")
+
+
+_USAGE_MODE_COLUMN: str = "mode"
+"""Header label of the transport-mode column in the Annual Station Counts sheet."""
+
+_USAGE_STATION_COLUMN: str = "station"
+"""Header label of the station-name column."""
+
+_USAGE_ANNUAL_HEADER: str = "en/ex"
+"""Per-column header of the entries+exits summary columns (weekly/12-week/annual)."""
+
+_USAGE_ANNUAL_GROUP: str = "annualised"
+"""Group label (one row above the header) marking the annualised total column."""
+
+_UNDERGROUND_MODE: str = "lu"
+"""Value in the mode column identifying a London Underground row."""
+
+
+def _header_row_index(rows: list[tuple[Any, ...]]) -> int | None:
+    """Find the column-header row in an Annual Station Counts sheet.
+
+    The sheet has several title rows before the real header; the header is the
+    first row carrying both a ``Mode`` and a ``Station`` cell.
+
+    Parameters
+    ----------
+    rows : list of tuple
+        All sheet rows as value tuples.
+
+    Returns
+    -------
+    int or None
+        Zero-based index of the header row, or ``None`` if not found.
+    """
+    for idx, row in enumerate(rows):
+        labels = {str(c).strip().lower() for c in row if c is not None}
+        if _USAGE_MODE_COLUMN in labels and _USAGE_STATION_COLUMN in labels:
+            return idx
+    return None
+
+
+def _column_index(row: tuple[Any, ...], label: str) -> int | None:
+    """Return the index of the first cell in ``row`` matching ``label``.
+
+    Parameters
+    ----------
+    row : tuple
+        A header row.
+    label : str
+        Lowercased label to find.
+
+    Returns
+    -------
+    int or None
+        Column index, or ``None`` if absent.
+    """
+    for idx, cell in enumerate(row):
+        if cell is not None and str(cell).strip().lower() == label:
+            return idx
+    return None
+
+
+def _annualised_column_index(header: tuple[Any, ...], group_row: tuple[Any, ...]) -> int | None:
+    """Locate the annualised entries+exits column.
+
+    Three trailing summary columns share the header ``En/Ex`` (weekly, 12-week,
+    annualised); they are told apart by the group label one row above. The
+    annualised column is the one whose own header is ``En/Ex`` and whose group
+    label is ``Annualised`` -- located by label rather than fixed offset so a
+    re-ordered or re-sized sheet still parses.
+
+    Parameters
+    ----------
+    header : tuple
+        The column-header row.
+    group_row : tuple
+        The row immediately above the header (the merged group labels).
+
+    Returns
+    -------
+    int or None
+        Column index of the annualised total, or ``None`` if not found.
+    """
+    for idx, cell in enumerate(header):
+        head = str(cell).strip().lower() if cell is not None else ""
+        group = (
+            str(group_row[idx]).strip().lower()
+            if idx < len(group_row) and group_row[idx] is not None
+            else ""
+        )
+        if head == _USAGE_ANNUAL_HEADER and group == _USAGE_ANNUAL_GROUP:
+            return idx
+    return None
+
+
+def parse_station_usage(data: bytes) -> dict[str, float]:
+    """Parse annualised Underground entries+exits from the TfL counts XLSX.
+
+    Reads TfL's Annual Station Counts workbook and returns, for every London
+    Underground row carrying a numeric annualised total, the annual
+    entries+exits keyed by graph match key (:func:`usage_match_keys`). The
+    header is self-located (see :func:`_header_row_index` and
+    :func:`_annualised_column_index`) rather than hardcoded by offset.
+
+    Rows whose annualised cell is non-numeric (TfL writes ``"---"`` where a
+    station has no count) are skipped. On a key collision the larger figure
+    wins, which keeps the busier of two co-located rows.
+
+    Parameters
+    ----------
+    data : bytes
+        Raw ``.xlsx`` file contents.
+
+    Returns
+    -------
+    dict of str to float
+        Graph match key to annualised entries+exits. Empty if the workbook has
+        no recognisable header or no usable Underground rows.
+
+    Raises
+    ------
+    ValueError
+        If ``data`` is not a readable XLSX workbook.
+    """
+    import io
+
+    from openpyxl import load_workbook
+    from openpyxl.utils.exceptions import InvalidFileException
+
+    try:
+        workbook = load_workbook(io.BytesIO(data), read_only=True, data_only=True)
+    except (InvalidFileException, KeyError, OSError, zipfile.BadZipFile) as exc:
+        raise ValueError("station usage data is not a readable XLSX workbook") from exc
+
+    try:
+        sheet = workbook[workbook.sheetnames[0]]
+        rows = [tuple(row) for row in sheet.iter_rows(values_only=True)]
+    finally:
+        workbook.close()
+
+    header_idx = _header_row_index(rows)
+    if header_idx is None:
+        return {}
+    header = rows[header_idx]
+    group_row = rows[header_idx - 1] if header_idx > 0 else ()
+    mode_col = _column_index(header, _USAGE_MODE_COLUMN)
+    name_col = _column_index(header, _USAGE_STATION_COLUMN)
+    annual_col = _annualised_column_index(header, group_row)
+    if mode_col is None or name_col is None or annual_col is None:
+        return {}
+
+    usage: dict[str, float] = {}
+    for row in rows[header_idx + 1 :]:
+        if max(mode_col, name_col, annual_col) >= len(row):
+            continue
+        mode = row[mode_col]
+        if mode is None or str(mode).strip().lower() != _UNDERGROUND_MODE:
+            continue
+        name = row[name_col]
+        annual = _coerce_float(row[annual_col])
+        if name is None or annual is None or annual <= 0:
+            continue
+        for key in usage_match_keys(str(name)):
+            if usage.get(key, 0.0) < annual:
+                usage[key] = annual
+    return usage
+
+
+def _coerce_float(value: Any) -> float | None:
+    """Coerce a spreadsheet cell to a positive ``float`` if possible.
+
+    Parameters
+    ----------
+    value : Any
+        A cell value (number, numeric string, ``"---"`` placeholder, or ``None``).
+
+    Returns
+    -------
+    float or None
+        The float value, or ``None`` if it does not parse as a number.
+    """
+    if isinstance(value, bool):  # bools are ints in Python; never a count
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value.replace(",", "").strip())
+        except ValueError:
+            return None
+    return None
 
 
 _ABBREVIATIONS: frozenset[str] = frozenset(
@@ -542,6 +806,78 @@ class WikipediaClient:
             return None
         extract = body.get("extract")
         return extract if isinstance(extract, str) and extract.strip() else None
+
+
+class StationUsageClient:
+    """Downloads and parses TfL's Annual Station Counts spreadsheet.
+
+    Fetches the entries+exits workbook once and returns the annualised total per
+    Underground station, keyed by graph match key. The single network call lives
+    here so tests can drive :func:`parse_station_usage` against an in-memory XLSX
+    with no HTTP at all.
+
+    Parameters
+    ----------
+    url : str, optional
+        Workbook URL. Defaults to :data:`STATION_USAGE_URL`.
+    timeout : float, optional
+        Per-request timeout in seconds. Defaults to :data:`DEFAULT_TIMEOUT`.
+    client : httpx.Client or None, optional
+        An existing client to use (not closed by this object). When ``None`` a
+        client carrying the descriptive User-Agent is created internally.
+    """
+
+    def __init__(
+        self,
+        url: str = STATION_USAGE_URL,
+        timeout: float = DEFAULT_TIMEOUT,
+        client: httpx.Client | None = None,
+    ) -> None:
+        self.url = url
+        self._owns_client = client is None
+        self._client = client if client is not None else _new_http_client(timeout)
+
+    def __enter__(self) -> StationUsageClient:
+        """Enter the runtime context and return this client.
+
+        Returns
+        -------
+        StationUsageClient
+            This client instance.
+        """
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        """Exit the runtime context, closing an internally owned client."""
+        self.close()
+
+    def close(self) -> None:
+        """Close the underlying HTTP client if this object created it."""
+        if self._owns_client:
+            self._client.close()
+
+    def fetch_usage(self) -> dict[str, float]:
+        """Download the workbook and parse annualised Underground usage.
+
+        A non-2xx response raises so a failed download is loud rather than
+        silently yielding empty traffic (the caller can then leave the prior
+        artefact intact).
+
+        Returns
+        -------
+        dict of str to float
+            Graph match key to annualised entries+exits.
+
+        Raises
+        ------
+        httpx.HTTPStatusError
+            If the download returns a non-2xx status.
+        ValueError
+            If the downloaded bytes are not a readable XLSX workbook.
+        """
+        response = self._client.get(self.url)
+        response.raise_for_status()
+        return parse_station_usage(response.content)
 
 
 def _new_http_client(timeout: float) -> httpx.Client:
@@ -795,9 +1131,14 @@ def build_station_infos(
     graph_stations: list[GraphStation],
     candidates: list[WikidataStation],
     wiki: WikipediaClient,
+    usage: dict[str, float] | None = None,
     radius_m: float = DEFAULT_MATCH_RADIUS_M,
 ) -> dict[str, StationInfo]:
     """Match, fetch fun facts, and assemble per-station info (pre-ranking).
+
+    Daily traffic prefers the TfL Annual Station Counts figure (``usage``,
+    matched by :func:`normalise_name`); it falls back to the Wikidata patronage
+    of the matched candidate only where TfL has no figure for the station.
 
     Parameters
     ----------
@@ -807,6 +1148,10 @@ def build_station_infos(
         Wikidata candidates to match against.
     wiki : WikipediaClient
         Client used to fetch Wikipedia summaries for fun facts.
+    usage : dict of str to float or None, optional
+        Annualised entries+exits keyed by graph match key (from
+        :func:`parse_station_usage`). ``None`` disables the TfL source, leaving
+        only the sparse Wikidata fallback.
     radius_m : float, optional
         Coordinate match radius in metres.
 
@@ -816,12 +1161,16 @@ def build_station_infos(
         One entry per graph station, keyed by graph id. Opened/traffic ranks are
         left unset here and filled by :func:`enrich_stations`.
     """
+    usage = usage or {}
     name_index = _build_name_index(candidates)
     infos: dict[str, StationInfo] = {}
     for station in graph_stations:
         match = match_candidate(station, candidates, name_index, radius_m=radius_m)
         opened_year = match.opened_year if match else None
-        daily_traffic = _daily_from_annual(match.annual_patronage) if match else None
+        annual = usage.get(normalise_name(station.name))
+        if annual is None and match is not None:
+            annual = match.annual_patronage
+        daily_traffic = _daily_from_annual(annual)
         wiki_url, fun_fact = _resolve_article(station, match, wiki)
         # Constructed via model_validate with alias keys (matching the Edge /
         # TubeGraph convention in build_graph.py) so the aliased fields are set
@@ -864,12 +1213,12 @@ def _build_name_index(candidates: list[WikidataStation]) -> dict[str, WikidataSt
 
 
 def _daily_from_annual(annual: float | None) -> int | None:
-    """Convert an annual patronage figure to a rounded daily figure.
+    """Convert an annual entries+exits figure to a rounded daily figure.
 
     Parameters
     ----------
     annual : float or None
-        Annual passenger usage.
+        Annual passenger usage (TfL annualised count or Wikidata patronage).
 
     Returns
     -------
@@ -878,7 +1227,7 @@ def _daily_from_annual(annual: float | None) -> int | None:
     """
     if annual is None or annual <= 0:
         return None
-    return round(annual / 365.0)
+    return round(annual / DAYS_PER_YEAR)
 
 
 def _resolve_article(
@@ -928,13 +1277,16 @@ def enrich_stations(
     wikidata: WikidataClient,
     wikipedia: WikipediaClient,
     generated_at: str,
+    usage_client: StationUsageClient | None = None,
     radius_m: float = DEFAULT_MATCH_RADIUS_M,
 ) -> StationInfoFile:
     """Produce the full station-info artefact for a set of graph stations.
 
-    Fetches Wikidata candidates once, matches and enriches each station, then
-    computes network-wide ranks (``openedRank`` 1 = oldest; ``dailyTrafficRank``
-    1 = busiest) among the stations that have each stat.
+    Fetches Wikidata candidates and the TfL station-usage figures once, matches
+    and enriches each station, then computes network-wide ranks (``openedRank``
+    1 = oldest; ``dailyTrafficRank`` 1 = busiest) among the stations that have
+    each stat. Daily traffic comes from TfL where available, falling back to
+    Wikidata patronage; the rank is computed over whatever coverage results.
 
     Parameters
     ----------
@@ -946,6 +1298,10 @@ def enrich_stations(
         Client used for per-station summary fetches.
     generated_at : str
         ISO date written to the artefact's ``generatedAt`` field.
+    usage_client : StationUsageClient or None, optional
+        Client for TfL's Annual Station Counts. When ``None``, daily traffic
+        relies solely on the sparse Wikidata patronage fallback. The download
+        runs here so any failure propagates to the caller (loud, not silent).
     radius_m : float, optional
         Coordinate match radius in metres.
 
@@ -953,9 +1309,20 @@ def enrich_stations(
     -------
     StationInfoFile
         The assembled, ranked artefact.
+
+    Raises
+    ------
+    httpx.HTTPStatusError
+        If ``usage_client`` is given and its download returns a non-2xx status.
+    ValueError
+        If ``usage_client`` is given and the downloaded bytes are not a readable
+        XLSX workbook.
     """
     candidates = wikidata.fetch_stations()
-    infos = build_station_infos(graph_stations, candidates, wikipedia, radius_m=radius_m)
+    usage = usage_client.fetch_usage() if usage_client is not None else {}
+    infos = build_station_infos(
+        graph_stations, candidates, wikipedia, usage=usage, radius_m=radius_m
+    )
 
     opened_values = {
         sid: info.opened_year for sid, info in infos.items() if info.opened_year is not None

@@ -8,7 +8,7 @@ import {
 } from './stats'
 
 function result(over: Partial<GameResult> & Pick<GameResult, 'date'>): GameResult {
-  return { solved: true, stopsOverPar: 0, optimal: false, ...over }
+  return { solved: true, scoreOverPar: 0, optimal: false, ...over }
 }
 
 describe('bucket', () => {
@@ -70,7 +70,7 @@ describe('applyResult — counting', () => {
 
   it('does not mutate the input stats or its distribution', () => {
     const before = JSON.stringify(EMPTY_STATS)
-    const out = applyResult(EMPTY_STATS, result({ date: '2026-06-06', stopsOverPar: 2 }))
+    const out = applyResult(EMPTY_STATS, result({ date: '2026-06-06', scoreOverPar: 2 }))
     expect(JSON.stringify(EMPTY_STATS)).toBe(before)
     expect(out.distribution).not.toBe(EMPTY_STATS.distribution)
   })
@@ -78,13 +78,13 @@ describe('applyResult — counting', () => {
 
 describe('applyResult — idempotency per date', () => {
   it('returns the same record when the date matches lastResultDate', () => {
-    const first = applyResult(EMPTY_STATS, result({ date: '2026-06-06', stopsOverPar: 1 }))
-    const replay = applyResult(first, result({ date: '2026-06-06', stopsOverPar: 1 }))
+    const first = applyResult(EMPTY_STATS, result({ date: '2026-06-06', scoreOverPar: 1 }))
+    const replay = applyResult(first, result({ date: '2026-06-06', scoreOverPar: 1 }))
     expect(replay).toBe(first)
   })
 
   it('does not double-count played/solved/distribution on replay', () => {
-    const first = applyResult(EMPTY_STATS, result({ date: '2026-06-06', stopsOverPar: 1 }))
+    const first = applyResult(EMPTY_STATS, result({ date: '2026-06-06', scoreOverPar: 1 }))
     // Even a *different* outcome on the same date is ignored — first write wins.
     const replay = applyResult(first, result({ date: '2026-06-06', solved: false }))
     expect(replay.played).toBe(1)
@@ -148,11 +148,11 @@ describe('applyResult — streak rules', () => {
 })
 
 describe('applyResult — distribution', () => {
-  it('buckets solved games by stops over par', () => {
-    let s = applyResult(EMPTY_STATS, result({ date: '2026-06-01', stopsOverPar: 0 }))
-    s = applyResult(s, result({ date: '2026-06-02', stopsOverPar: 2 }))
-    s = applyResult(s, result({ date: '2026-06-03', stopsOverPar: 2 }))
-    s = applyResult(s, result({ date: '2026-06-04', stopsOverPar: 7 }))
+  it('buckets solved games by score over par', () => {
+    let s = applyResult(EMPTY_STATS, result({ date: '2026-06-01', scoreOverPar: 0 }))
+    s = applyResult(s, result({ date: '2026-06-02', scoreOverPar: 2 }))
+    s = applyResult(s, result({ date: '2026-06-03', scoreOverPar: 2 }))
+    s = applyResult(s, result({ date: '2026-06-04', scoreOverPar: 7 }))
     expect(s.distribution['0']).toBe(1)
     expect(s.distribution['2']).toBe(2)
     expect(s.distribution['5+']).toBe(1)
@@ -161,7 +161,7 @@ describe('applyResult — distribution', () => {
   it('does not record a distribution bucket for a loss', () => {
     const s = applyResult(
       EMPTY_STATS,
-      result({ date: '2026-06-06', solved: false, stopsOverPar: 3 }),
+      result({ date: '2026-06-06', solved: false, scoreOverPar: 3 }),
     )
     expect(s.distribution['3']).toBe(0)
   })
