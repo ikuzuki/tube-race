@@ -29,7 +29,7 @@ export default function StatsModal({ open, onClose, stats }: StatsModalProps) {
       </div>
 
       <h3 className="mt-6 mb-2 text-xs font-semibold uppercase tracking-wider text-ink-soft">
-        Score over par
+        Score over best
       </h3>
       {stats.solved === 0 ? (
         <p className="text-sm text-ink-soft">

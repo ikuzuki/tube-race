@@ -60,9 +60,9 @@ describe('ResultCard', () => {
   it('leads with the weighted score against par', () => {
     setup()
     // Hero score block: value 17, par 11.
-    expect(screen.getByLabelText('Score 17, par 11')).toBeInTheDocument()
+    expect(screen.getByLabelText('Score 17, best possible 11')).toBeInTheDocument()
     expect(screen.getByText('17')).toBeInTheDocument()
-    expect(screen.getByText('/ 11 par')).toBeInTheDocument()
+    expect(screen.getByText('/ 11 best')).toBeInTheDocument()
   })
 
   it('shows the stops and changes against par as the breakdown', () => {
@@ -71,9 +71,9 @@ describe('ResultCard', () => {
     expect(screen.getByText('Changes')).toBeInTheDocument()
     // value 9, par 7 for stops.
     expect(screen.getByText('9')).toBeInTheDocument()
-    expect(screen.getByText('/ 7 par')).toBeInTheDocument()
+    expect(screen.getByText('/ 7 best')).toBeInTheDocument()
     expect(screen.getByText('2')).toBeInTheDocument()
-    expect(screen.getByText('/ 1 par')).toBeInTheDocument()
+    expect(screen.getByText('/ 1 best')).toBeInTheDocument()
   })
 
   it('shows the current streak', () => {

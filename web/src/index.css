@@ -93,3 +93,28 @@
     transform: scale(1);
   }
 }
+
+/* Move popup (line picker / switch confirm) — softer card, breathing room,
+   and the close button pulled off the edge. */
+.tr-popup .maplibregl-popup-content {
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 12px 32px rgba(17, 21, 28, 0.18);
+  border: 1px solid var(--color-stone-200);
+}
+.tr-popup .maplibregl-popup-close-button {
+  width: 26px;
+  height: 26px;
+  right: 6px;
+  top: 6px;
+  font-size: 16px;
+  line-height: 1;
+  border-radius: 9999px;
+  color: var(--color-ink-soft);
+}
+.tr-popup .maplibregl-popup-close-button:hover {
+  background: var(--color-stone);
+}
+.tr-popup .maplibregl-popup-tip {
+  display: none;
+}

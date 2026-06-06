@@ -26,18 +26,18 @@ describe('Hud', () => {
     setup({ hops: 5, parHops: 4, changes: 1, parChanges: 1 })
     expect(points(5, 1)).toBe(9)
     expect(points(4, 1)).toBe(8)
-    expect(screen.getByLabelText('Score 9, par 8')).toBeInTheDocument()
+    expect(screen.getByLabelText('Score 9, best possible 8')).toBeInTheDocument()
     expect(screen.getByText('9')).toBeInTheDocument()
-    expect(screen.getByText('/ 8 par')).toBeInTheDocument()
+    expect(screen.getByText('/ 8 best')).toBeInTheDocument()
   })
 
-  it('shows stops and changes as the breakdown sub-stats', () => {
+  it('shows stops and changes as plain breakdown counts (no denominator)', () => {
     setup({ hops: 5, parHops: 4, changes: 2, parChanges: 1 })
     expect(screen.getByText('Stops')).toBeInTheDocument()
     expect(screen.getByText('Changes')).toBeInTheDocument()
-    // Stops 5 / 4.
+    // Stops value 5, shown as a plain count (no "/ par" denominator any more).
     expect(screen.getByText('5')).toBeInTheDocument()
-    expect(screen.getByText('/ 4')).toBeInTheDocument()
+    expect(screen.queryByText('/ 4')).not.toBeInTheDocument()
   })
 
   it('renders the destination name and the current line badge', () => {

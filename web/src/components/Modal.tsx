@@ -34,7 +34,7 @@ export default function Modal({ open, onClose, title, hideClose, children }: Mod
       <div
         role="dialog"
         aria-modal="true"
-        className="relative w-full max-w-md rounded-2xl bg-paper p-6 text-ink shadow-2xl"
+        className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-paper p-6 text-ink shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {(title || !hideClose) && (

@@ -44,16 +44,16 @@ describe('IntroModal', () => {
     expect(screen.queryByText(/today's journey/i)).not.toBeInTheDocument()
   })
 
-  it('renders the title and both station cards when open', () => {
+  it('renders the title, both station names and the Start button (spoiler-free)', () => {
     setup()
     expect(screen.getByRole('heading', { name: /today's journey/i })).toBeInTheDocument()
-    // The Destination role tag is unique; "Start" also names the button, so just
-    // assert the two station headings to confirm both cards rendered.
+    expect(screen.getByText('Brixton')).toBeInTheDocument()
+    expect(screen.getByText("King's Cross St. Pancras")).toBeInTheDocument()
     expect(screen.getByText('Destination')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Brixton' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: "King's Cross St. Pancras" })).toBeInTheDocument()
-    // The primary action is a button.
     expect(screen.getByRole('button', { name: /^start$/i })).toBeInTheDocument()
+    // No trivia or Wikipedia link pre-game — that would let players cheat.
+    expect(screen.queryByText(/wikipedia/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/daily traffic/i)).not.toBeInTheDocument()
   })
 
   it('calls onClose when the Start button is clicked', () => {
@@ -62,14 +62,12 @@ describe('IntroModal', () => {
     expect(onClose).toHaveBeenCalledTimes(1)
   })
 
-  it('renders without info (degrades to the always-available facts)', () => {
+  it('renders the journey even without loaded info', () => {
     setup({
       start: { station: brixton },
       destination: { station: kingsCross },
     })
-    expect(screen.getByRole('heading', { name: 'Brixton' })).toBeInTheDocument()
-    // Lines fact is always present.
-    expect(screen.getByText('1 line')).toBeInTheDocument()
-    expect(screen.getByText('2 lines')).toBeInTheDocument()
+    expect(screen.getByText('Brixton')).toBeInTheDocument()
+    expect(screen.getByText("King's Cross St. Pancras")).toBeInTheDocument()
   })
 })

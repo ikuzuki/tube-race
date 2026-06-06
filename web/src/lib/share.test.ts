@@ -36,7 +36,7 @@ describe('buildShareText — structure', () => {
     const text = buildShareText(input({ stops: 9, parStops: 7, changes: 2, parChanges: 1 }))
     expect(text).toContain('2026-06-06')
     // score = 9 + 4*2 = 17, par = 7 + 4*1 = 11
-    expect(text).toContain('Score 17 (par 11)')
+    expect(text).toContain('Score 17 (best 11)')
   })
 
   it('keeps a stops·changes breakdown line', () => {
@@ -63,7 +63,7 @@ describe('buildShareText — spoiler-free', () => {
     const text = buildShareText(input({ stops: 8, parStops: 6 }))
     // Strip the known-safe tokens; what remains must not contain letters that
     // could be a station name (only the words in the fixed template survive).
-    const allowedWords = /Tube|Race|Score|par|stops|changes|Optimal|Streak|Gave|up/g
+    const allowedWords = /Tube|Race|Score|best|par|stops|changes|Optimal|Streak|Gave|up/g
     const stripped = text.replace(allowedWords, '').replace(/[0-9/:·()\s🟩🟨⬛.-]/g, '')
     expect(stripped).toBe('')
   })

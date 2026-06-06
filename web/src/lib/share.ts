@@ -60,7 +60,7 @@ export function buildShareText(o: ShareInput): string {
 
   const over = Math.max(0, o.score - o.parScore)
   const result = o.solved
-    ? `Score ${o.score} (par ${o.parScore})${over === 0 ? ' · Optimal!' : ''}`
+    ? `Score ${o.score} (best ${o.parScore})${over === 0 ? ' · Optimal!' : ''}`
     : 'Gave up'
 
   const breakdown = `${o.stops}/${o.parStops} stops · ${o.changes}/${o.parChanges} changes`

@@ -98,7 +98,7 @@ export default function ResultCard({
       <p className="text-sm text-ink-soft">
         {solved
           ? 'Here is how your run stacked up against the best possible route.'
-          : 'No worries — the line was tricky today. Here is the par you were chasing.'}
+          : 'No worries — the line was tricky today. Here is the best route you were chasing.'}
       </p>
 
       <ScoreHero score={score} parScore={parScore} overPar={!optimal && solved} />
@@ -175,7 +175,7 @@ function ScoreHero({ score, parScore, overPar }: ScoreHeroProps) {
   return (
     <div
       className="mt-4 rounded-xl border border-stone-200 bg-paper px-4 py-3 text-center"
-      aria-label={`Score ${score}, par ${parScore}`}
+      aria-label={`Score ${score}, best possible ${parScore}`}
     >
       <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-ink-soft">
         Score
@@ -184,7 +184,7 @@ function ScoreHero({ score, parScore, overPar }: ScoreHeroProps) {
         <span className={`text-4xl font-extrabold ${overPar ? 'text-warn' : 'text-ink'}`}>
           {score}
         </span>
-        <span className="ml-1.5 text-lg font-semibold text-ink-soft">/ {parScore} par</span>
+        <span className="ml-1.5 text-lg font-semibold text-ink-soft">/ {parScore} best</span>
       </p>
     </div>
   )
@@ -205,7 +205,7 @@ function ResultStat({ label, value, par, overPar }: ResultStatProps) {
       </span>
       <p className="mt-0.5 text-lg font-bold leading-none tabular-nums">
         <span className={overPar ? 'text-warn' : 'text-ink'}>{value}</span>
-        <span className="text-sm font-semibold text-ink-soft"> / {par} par</span>
+        <span className="text-sm font-semibold text-ink-soft"> / {par} best</span>
       </p>
     </div>
   )

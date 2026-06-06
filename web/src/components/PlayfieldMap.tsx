@@ -43,9 +43,10 @@ export interface PlayfieldMapProps {
 // --- Map constants ----------------------------------------------------------
 
 const LONDON_CENTRE: LngLatLike = [-0.118, 51.51]
-const INITIAL_ZOOM = 13
-/** Zoom the follow-cam eases to — frames the local neighbourhood without cramming. */
-const FOLLOW_ZOOM = 14.2
+const INITIAL_ZOOM = 12
+/** Zoom the follow-cam eases to — wide enough that the next stations are usually
+ *  already on screen, so you rarely need to pan or zoom to make a move. */
+const FOLLOW_ZOOM = 12.5
 const FOLLOW_MS = 600
 
 /** CARTO Positron raster basemap — keyless, clean and light. */
@@ -348,11 +349,33 @@ export default function PlayfieldMap({
       // Interactions: hit-test the two station circle layers.
       const hitLayers = [LYR_STATION_DOT, LYR_STATION_RING]
 
-      map.on('click', LYR_STATION_DOT, (e) => {
-        const f = e.features?.[0] as MapGeoJSONFeature | undefined
-        if (!f) return
-        if (f.properties?.legal) {
-          handleStationTap(String(f.properties.id), e.lngLat)
+      // General click with a generous hit box so the small dots are easy to tap
+      // — a layer-scoped click only fires on a pixel-perfect hit, which felt
+      // unresponsive. Pick the nearest LEGAL station within the box.
+      map.on('click', (e) => {
+        const r = 16
+        const feats = map.queryRenderedFeatures(
+          [
+            [e.point.x - r, e.point.y - r],
+            [e.point.x + r, e.point.y + r],
+          ],
+          { layers: hitLayers },
+        )
+        let best: MapGeoJSONFeature | undefined
+        let bestD = Infinity
+        for (const f of feats) {
+          if (!f.properties?.legal || f.geometry.type !== 'Point') continue
+          const [lng, lat] = f.geometry.coordinates as [number, number]
+          const p = map.project([lng, lat])
+          const d = (p.x - e.point.x) ** 2 + (p.y - e.point.y) ** 2
+          if (d < bestD) {
+            bestD = d
+            best = f
+          }
+        }
+        if (best && best.geometry.type === 'Point') {
+          const [lng, lat] = best.geometry.coordinates as [number, number]
+          handleStationTap(String(best.properties?.id ?? ''), [lng, lat])
         }
       })
 

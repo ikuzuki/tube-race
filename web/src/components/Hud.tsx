@@ -55,8 +55,8 @@ export default function Hud({
         <ScoreReadout score={score} parScore={parScore} />
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">
-          <SubStat label="Stops" value={hops} par={parHops} overPar={hops > parHops} />
-          <SubStat label="Changes" value={changes} par={parChanges} overPar={changes > parChanges} />
+          <SubStat label="Stops" value={hops} overPar={hops > parHops} />
+          <SubStat label="Changes" value={changes} overPar={changes > parChanges} />
           <LineBadge lineId={currentLineId} lineName={currentLineName} />
         </div>
       </div>
@@ -79,13 +79,13 @@ interface ScoreReadoutProps {
 function ScoreReadout({ score, parScore }: ScoreReadoutProps) {
   const overPar = score > parScore
   return (
-    <div className="min-w-0" aria-label={`Score ${score}, par ${parScore}`}>
+    <div className="min-w-0" aria-label={`Score ${score}, best possible ${parScore}`}>
       <Label>Score</Label>
       <p className="leading-none tabular-nums">
         <span className={`text-3xl font-extrabold ${overPar ? 'text-warn' : 'text-ink'}`}>
           {score}
         </span>
-        <span className="ml-1 text-base font-semibold text-ink-soft">/ {parScore} par</span>
+        <span className="ml-1 text-base font-semibold text-ink-soft">/ {parScore} best</span>
       </p>
     </div>
   )
@@ -102,19 +102,17 @@ function Label({ children }: { children: React.ReactNode }) {
 interface SubStatProps {
   label: string
   value: number
-  par: number
-  /** Highlight in amber when the player has gone over par. */
+  /** Highlight in amber when the player has exceeded the best route's count. */
   overPar: boolean
 }
 
 /** A small breakdown stat (stops / changes) shown under the hero score. */
-function SubStat({ label, value, par, overPar }: SubStatProps) {
+function SubStat({ label, value, overPar }: SubStatProps) {
   return (
     <div className="flex flex-col">
       <Label>{label}</Label>
       <p className="text-sm font-semibold leading-tight tabular-nums">
         <span className={overPar ? 'text-warn' : 'text-ink'}>{value}</span>
-        <span className="text-ink-soft"> / {par}</span>
       </p>
     </div>
   )
