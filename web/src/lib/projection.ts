@@ -1,98 +1,103 @@
-// UI-only geometry + naming helpers. No engine/DOM state; pure functions so they
-// can be unit-tested in isolation and reused across map components.
+// UI-only geometry helpers. No engine/DOM state; pure functions so they can be
+// unit-tested in isolation and reused across map components.
+//
+// V2 uses a FIXED WORLD projection: every station is projected once into a large,
+// stable world-coordinate space (independent of fog or viewport). The map's SVG
+// `viewBox` is then a moving window into this world, driven by the follow-camera
+// (see hooks/useCamera.ts). Because world coords never change, a station sits in
+// the same place whether or not it is currently on screen — panning the camera is
+// just moving the viewBox.
 
 import type { Station } from '../engine'
 
-/** A station's projected position in SVG user units. */
+/** A point in world (or SVG user) units. */
 export interface Point {
   x: number
   y: number
 }
 
-/** Inputs needed to project lat/lon into a fixed-size SVG viewport. */
-export interface Projector {
-  /** Project a station (or any lat/lon) to SVG coordinates. */
+/** Axis-aligned bounds in world units. */
+export interface WorldBounds {
+  minX: number
+  minY: number
+  maxX: number
+  maxY: number
+}
+
+/** A fixed projection of all stations into a stable world-coordinate space. */
+export interface WorldProjection {
+  /** Project a station (or any lat/lon) to fixed world coordinates. */
   project(lat: number, lon: number): Point
-  /** The viewport the projection fits into. */
-  width: number
-  height: number
+  /** Total world extent (true aspect ratio preserved). */
+  worldWidth: number
+  worldHeight: number
+  /** Bounds of the projected stations (== {0,0,worldWidth,worldHeight}). */
+  bounds: WorldBounds
 }
 
 const DEG2RAD = Math.PI / 180
 
+/** Default world width in user units; height follows London's true aspect. */
+export const WORLD_WIDTH = 2000
+
 /**
- * Build a projector that fits every station into a `width`×`height` viewport
- * with uniform padding.
+ * Build a fixed world projection covering every station.
  *
- * Longitude is scaled by cos(meanLatitude) before fitting so that, at London's
+ * Longitude is scaled by cos(meanLatitude) before projecting so that, at London's
  * latitude, a degree of longitude and a degree of latitude map to comparable
- * screen distances (otherwise the map is horizontally stretched). The y axis is
- * inverted — higher latitude sits higher on screen. A single uniform scale is
- * used for both axes so the map keeps its true aspect ratio, then the result is
- * centred within the viewport.
+ * distances (otherwise the map is horizontally stretched). The Y axis is inverted
+ * — higher latitude sits higher on screen (smaller y). A single uniform scale is
+ * applied to both axes so the map keeps its true aspect ratio; `worldWidth` is
+ * fixed (default {@link WORLD_WIDTH}) and `worldHeight` is derived from the data's
+ * aspect, so the camera's fixed zoom means the same thing across puzzles.
+ *
+ * The projection is independent of any viewport — it is the stable "world" the
+ * follow-camera pans over.
  */
-export function makeProjector(
+export function makeWorldProjection(
   stations: Station[],
-  width: number,
-  height: number,
-  padding = 28,
-): Projector {
+  worldWidth = WORLD_WIDTH,
+): WorldProjection {
   if (stations.length === 0) {
-    // Degenerate: nothing to fit. Project everything to the centre.
+    // Degenerate: nothing to fit. Treat as a 1:1 square; everything maps to centre.
+    const centre = worldWidth / 2
     return {
-      width,
-      height,
-      project: () => ({ x: width / 2, y: height / 2 }),
+      worldWidth,
+      worldHeight: worldWidth,
+      bounds: { minX: 0, minY: 0, maxX: worldWidth, maxY: worldWidth },
+      project: () => ({ x: centre, y: centre }),
     }
   }
 
-  const meanLat =
-    stations.reduce((sum, s) => sum + s.lat, 0) / stations.length
+  const meanLat = stations.reduce((sum, s) => sum + s.lat, 0) / stations.length
   const lonScale = Math.cos(meanLat * DEG2RAD)
 
-  // Work in a corrected planar space: X grows with longitude, Y with latitude.
+  // Corrected planar space: X grows with longitude, Y with latitude.
   const xs = stations.map((s) => s.lon * lonScale)
   const ys = stations.map((s) => s.lat)
 
-  const minX = Math.min(...xs)
-  const maxX = Math.max(...xs)
-  const minY = Math.min(...ys)
-  const maxY = Math.max(...ys)
+  const minLonX = Math.min(...xs)
+  const maxLonX = Math.max(...xs)
+  const minLatY = Math.min(...ys)
+  const maxLatY = Math.max(...ys)
 
-  const spanX = maxX - minX || 1e-9
-  const spanY = maxY - minY || 1e-9
+  const spanX = maxLonX - minLonX || 1e-9
+  const spanY = maxLatY - minLatY || 1e-9
 
-  const availW = Math.max(width - padding * 2, 1)
-  const availH = Math.max(height - padding * 2, 1)
-
-  // Uniform scale keeps the true aspect ratio; pick the limiting axis.
-  const scale = Math.min(availW / spanX, availH / spanY)
-
-  const drawnW = spanX * scale
-  const drawnH = spanY * scale
-  // Centre the drawn extent inside the available area.
-  const offX = padding + (availW - drawnW) / 2
-  const offY = padding + (availH - drawnH) / 2
+  // One uniform scale so longitude maps to the full requested width; latitude
+  // then fills whatever height that scale implies, preserving true aspect.
+  const scale = worldWidth / spanX
+  const worldHeight = spanY * scale
 
   return {
-    width,
-    height,
+    worldWidth,
+    worldHeight,
+    bounds: { minX: 0, minY: 0, maxX: worldWidth, maxY: worldHeight },
     project(lat: number, lon: number): Point {
-      const px = (lon * lonScale - minX) * scale + offX
-      // Invert Y: max latitude -> top (small y).
-      const py = (maxY - lat) * scale + offY
-      return { x: px, y: py }
+      const x = (lon * lonScale - minLonX) * scale
+      // Invert Y: max latitude -> top (y = 0).
+      const y = (maxLatY - lat) * scale
+      return { x, y }
     },
   }
-}
-
-/**
- * Strip the verbose TfL suffix from a station name for display.
- * "Victoria Underground Station" -> "Victoria", "Euston Station" -> "Euston".
- */
-export function displayName(name: string): string {
-  return name
-    .replace(/\s+Underground Station$/i, '')
-    .replace(/\s+Station$/i, '')
-    .trim()
 }

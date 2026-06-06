@@ -1,0 +1,86 @@
+// App chrome header: the Portland-stone bar carrying the roundel brand, the
+// "Tube Race" wordmark and today's date, with icon buttons for the how-to-play
+// card and the stats panel. Presentational — all actions come in as props.
+
+import Roundel from './Roundel'
+
+interface HeaderProps {
+  /** Display date, e.g. "2026-06-06" or a prettier formatted string. */
+  date: string
+  onHowToPlay: () => void
+  onStats: () => void
+}
+
+export default function Header({ date, onHowToPlay, onStats }: HeaderProps) {
+  return (
+    <header className="flex items-center justify-between gap-3 border-b border-stone-200 bg-paper px-4 py-3">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <Roundel size={30} />
+        <div className="flex min-w-0 flex-col leading-tight">
+          <span className="font-display text-lg font-extrabold tracking-tight text-ink">
+            Tube Race
+          </span>
+          <span className="truncate text-xs font-medium text-ink-soft">{date}</span>
+        </div>
+      </div>
+
+      <nav className="flex items-center gap-1">
+        <IconButton label="How to play" onClick={onHowToPlay}>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M9.5 9a2.5 2.5 0 0 1 4.5 1.5c0 1.5-2 2-2 3.5" />
+            <path d="M12 17.5h.01" />
+          </svg>
+        </IconButton>
+
+        <IconButton label="Stats" onClick={onStats}>
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <line x1="6" y1="20" x2="6" y2="13" />
+            <line x1="12" y1="20" x2="12" y2="7" />
+            <line x1="18" y1="20" x2="18" y2="10" />
+          </svg>
+        </IconButton>
+      </nav>
+    </header>
+  )
+}
+
+interface IconButtonProps {
+  label: string
+  onClick: () => void
+  children: React.ReactNode
+}
+
+function IconButton({ label, onClick, children }: IconButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="grid h-9 w-9 place-items-center rounded-full text-ink-soft transition hover:bg-stone hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress"
+    >
+      {children}
+    </button>
+  )
+}
