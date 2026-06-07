@@ -1,14 +1,15 @@
-// Past-puzzles menu: the curated archive (lib/archive ARCHIVE_DATES) rendered
-// as a selectable list with endpoints, a difficulty chip and the player's best
-// result. Puzzles are derived deterministically from their date on first open
-// (cheap, ~10ms each) rather than at app start. Selecting an entry swaps the
-// active puzzle via onSelect; the daily stays the default landing experience.
+// Past-puzzles menu: every daily from launch to yesterday (lib/archive
+// archiveDates), newest first, rendered as a selectable list with endpoints, a
+// difficulty chip and the player's best result. Puzzles are derived
+// deterministically from their date on open (cheap, ~10ms each, capped) rather
+// than at app start. Selecting an entry swaps the active puzzle via onSelect;
+// the daily stays the default landing experience.
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Modal from './Modal'
 import type { Adjacency, DailyPuzzle, Tier, TubeGraph } from '../engine'
 import { dailyPuzzle, stationIndex } from '../engine'
-import { ARCHIVE_DATES, type ArchiveCompletions } from '../lib/archive'
+import { archiveDates, type ArchiveCompletions } from '../lib/archive'
 import { displayName } from '../lib/format'
 
 interface ArchiveModalProps {
@@ -49,13 +50,16 @@ export default function ArchiveModal({
   todayISO,
   onSelect,
 }: ArchiveModalProps) {
+  // Past dates (newest first) recomputed only when the day rolls over.
+  const dates = useMemo(() => archiveDates(todayISO), [todayISO])
+
   // Derive the archived puzzles lazily on first open; they are deterministic
   // per date so this never needs recomputing.
   const [puzzles, setPuzzles] = useState<DailyPuzzle[] | null>(null)
   useEffect(() => {
     if (!open || puzzles) return
-    setPuzzles(ARCHIVE_DATES.map((d) => dailyPuzzle(graph, adj, d)))
-  }, [open, puzzles, graph, adj])
+    setPuzzles(dates.map((d) => dailyPuzzle(graph, adj, d)))
+  }, [open, puzzles, dates, graph, adj])
 
   const stationsById = stationIndex(graph)
   const name = (id: string): string => displayName(stationsById.get(id)?.name ?? id)
@@ -63,8 +67,7 @@ export default function ArchiveModal({
   return (
     <Modal open={open} onClose={onClose} title="Past puzzles">
       <p className="text-sm text-ink-soft">
-        Ten journeys from the archive, from gentle to compass-defying. Your best run for each is
-        kept.
+        Every past daily, newest first. A fresh one joins each day; your best run for each is kept.
       </p>
 
       <ol className="mt-4 flex flex-col gap-1.5">

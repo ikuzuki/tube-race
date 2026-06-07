@@ -1,26 +1,33 @@
-// The past-puzzles archive: a curated list of dates whose deterministic daily
-// puzzles (engine/daily.ts) are known to be good, plus the pure logic for
-// tracking per-puzzle completion. The dates were hand-picked from generator
-// output for recognisable endpoints and satisfying routes, and deliberately
-// span the difficulty tiers. localStorage wiring lives in hooks/useArchive.ts.
+// The past-puzzles archive: every daily puzzle from launch up to yesterday, in
+// reverse-chronological order. Each date yields a stable puzzle via
+// `dailyPuzzle(graph, adj, dateISO)` (engine/daily.ts), so the archive grows by
+// one every day with no curation. Also holds the pure logic for tracking
+// per-puzzle completion. localStorage wiring lives in hooks/useArchive.ts.
+
+/** The first daily puzzle's date. Everything from here to yesterday is playable. */
+export const LAUNCH_DATE = '2026-05-28'
+
+/** Cap on how many recent dates the menu derives at once (bounds compute). */
+export const MAX_ARCHIVE = 60
 
 /**
- * Curated archive dates, oldest first. Each yields a stable puzzle via
- * `dailyPuzzle(graph, adj, dateISO)`. Mix at curation time: three easy, five
- * medium, two hard. More can be appended later; keep the list chronological.
+ * Past daily-puzzle dates, newest first: from the day before `todayISO` back to
+ * {@link LAUNCH_DATE}, capped at `max`. Pure and deterministic for a given
+ * `todayISO`; today's puzzle itself is excluded (it's the landing experience).
  */
-export const ARCHIVE_DATES: readonly string[] = [
-  '2026-04-22', // hard:   Notting Hill Gate -> Tooting Broadway
-  '2026-04-24', // medium: Clapham Junction -> Marylebone
-  '2026-04-26', // easy:   Battersea Power Station -> Piccadilly Circus
-  '2026-05-05', // easy:   Tottenham Court Road -> Canning Town
-  '2026-05-18', // hard:   Monument -> Gallions Reach
-  '2026-05-21', // medium: Pimlico -> Surrey Quays
-  '2026-05-22', // medium: Moorgate -> Northfields
-  '2026-05-23', // medium: Queen's Park -> St. James's Park
-  '2026-05-27', // medium: Greenwich -> Barbican
-  '2026-06-02', // easy:   Clapham Common -> Green Park
-]
+export function archiveDates(todayISO: string, max: number = MAX_ARCHIVE): string[] {
+  const launch = new Date(`${LAUNCH_DATE}T00:00:00Z`)
+  const cursor = new Date(`${todayISO}T00:00:00Z`)
+  if (Number.isNaN(launch.getTime()) || Number.isNaN(cursor.getTime())) return []
+  cursor.setUTCDate(cursor.getUTCDate() - 1) // start at yesterday
+
+  const dates: string[] = []
+  while (cursor >= launch && dates.length < max) {
+    dates.push(cursor.toISOString().slice(0, 10))
+    cursor.setUTCDate(cursor.getUTCDate() - 1)
+  }
+  return dates
+}
 
 /** Best result recorded for one archived puzzle. */
 export interface ArchiveCompletion {

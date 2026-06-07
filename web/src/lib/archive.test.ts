@@ -1,12 +1,23 @@
 import { describe, expect, it } from 'vitest'
-import { ARCHIVE_DATES, recordCompletion, type ArchiveCompletions } from './archive'
+import { archiveDates, LAUNCH_DATE, recordCompletion, type ArchiveCompletions } from './archive'
 
-describe('ARCHIVE_DATES', () => {
-  it('holds ten unique ISO dates in chronological order', () => {
-    expect(ARCHIVE_DATES).toHaveLength(10)
-    expect(new Set(ARCHIVE_DATES).size).toBe(10)
-    for (const d of ARCHIVE_DATES) expect(d).toMatch(/^\d{4}-\d{2}-\d{2}$/)
-    expect([...ARCHIVE_DATES].sort()).toEqual([...ARCHIVE_DATES])
+describe('archiveDates', () => {
+  it('lists yesterday back to launch, newest first, excluding today', () => {
+    const dates = archiveDates('2026-06-07')
+    expect(dates[0]).toBe('2026-06-06') // yesterday
+    expect(dates[dates.length - 1]).toBe(LAUNCH_DATE)
+    expect(dates).not.toContain('2026-06-07') // never today's puzzle
+    expect([...dates].sort().reverse()).toEqual(dates) // strictly descending
+    for (const d of dates) expect(d).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+  })
+
+  it('is empty on launch day (no past dailies yet) and grows by one a day', () => {
+    expect(archiveDates(LAUNCH_DATE)).toEqual([])
+    expect(archiveDates('2026-05-29')).toEqual([LAUNCH_DATE])
+  })
+
+  it('respects the max cap', () => {
+    expect(archiveDates('2027-01-01', 5)).toHaveLength(5)
   })
 })
 
