@@ -29,6 +29,7 @@ from tube_pipeline.enrich import (
     StationUsageClient,
     WikidataClient,
     WikipediaClient,
+    apply_curated_stats,
     enrich_stations,
     is_generic_definition,
     load_graph_stations,
@@ -180,6 +181,39 @@ def _refresh_facts_command(args: argparse.Namespace) -> int:
     return 0
 
 
+def _apply_stats_command(args: argparse.Namespace) -> int:
+    """Run the ``apply-stats`` subcommand: fill stat gaps and recompute ranks.
+
+    Loads the existing ``stations-info.json``, fills missing ``openedYear`` /
+    ``dailyTraffic`` values from the curated overrides (``curated_stats``),
+    recomputes both ranks over the full coverage, and writes the artefact back.
+    Pure merge -- no network access.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Parsed arguments. Uses ``args.info`` (input) and ``args.out`` (output).
+
+    Returns
+    -------
+    int
+        Process exit code (``0`` on success).
+    """
+    info_file = load_station_info_file(args.info)
+    before_opened = info_file.counts.with_opened
+    before_traffic = info_file.counts.with_traffic
+    merged = apply_curated_stats(info_file)
+    write_station_info(merged, args.out)
+    print(
+        f"Wrote {args.out}: "
+        f"{merged.counts.total} stations, "
+        f"openedYear {before_opened} -> {merged.counts.with_opened}, "
+        f"dailyTraffic {before_traffic} -> {merged.counts.with_traffic} "
+        f"(ranks recomputed)."
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     """Construct the argument parser for the CLI.
 
@@ -237,6 +271,22 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"Output path for stations-info.json (default: {DEFAULT_INFO_OUT_PATH}).",
     )
     refresh.set_defaults(func=_refresh_facts_command)
+
+    apply_stats = subparsers.add_parser(
+        "apply-stats",
+        help="Fill missing openedYear/dailyTraffic from curated overrides and recompute ranks.",
+    )
+    apply_stats.add_argument(
+        "--info",
+        default=DEFAULT_INFO_OUT_PATH,
+        help=f"Input stations-info.json path (default: {DEFAULT_INFO_OUT_PATH}).",
+    )
+    apply_stats.add_argument(
+        "--out",
+        default=DEFAULT_INFO_OUT_PATH,
+        help=f"Output path for stations-info.json (default: {DEFAULT_INFO_OUT_PATH}).",
+    )
+    apply_stats.set_defaults(func=_apply_stats_command)
     return parser
 
 
