@@ -25,9 +25,18 @@ describe('OnboardingModal', () => {
     expect(screen.getByRole('img', { name: /demo of a run/i })).toBeInTheDocument()
   })
 
-  it('explains the scoring system and the goal', () => {
+  it('states the goal of getting from start to destination', () => {
     render(<OnboardingModal open onClose={vi.fn()} />)
-    expect(screen.getByText('Score = stops + 4 × changes')).toBeInTheDocument()
+    expect(screen.getByText(/given a start and a destination/i)).toBeInTheDocument()
+  })
+
+  it('explains the scoring system as stop = 1, change = 4', () => {
+    render(<OnboardingModal open onClose={vi.fn()} />)
+    expect(screen.getByText('each stop')).toBeInTheDocument()
+    expect(screen.getByText('each change')).toBeInTheDocument()
+    // +1 appears on each stop pill and in the demo popups; +4 on the change.
+    expect(screen.getAllByText('+1').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('+4').length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText(/lower is better/i)).toBeInTheDocument()
     expect(screen.getByText(/racing the best possible route/i)).toBeInTheDocument()
   })

@@ -16,8 +16,8 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
   return (
     <Modal open={open} onClose={onClose} title="How to play">
       <p className="text-sm text-ink-soft">
-        Mind the gap. You&apos;ve been dropped somewhere on the network and need to find your way
-        across town.
+        You&apos;re given a start and a destination and have to find your way across town, in as few
+        stops and line changes as you can.
       </p>
 
       <Demo />
@@ -36,13 +36,14 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
         </Rule>
       </ol>
 
-      <div className="mt-4 rounded-xl border border-stone-200 bg-stone/60 px-4 py-3 text-center">
-        <p className="text-base font-extrabold tracking-tight text-ink">
-          Score = stops + 4 × changes
-        </p>
-        <p className="mt-1 text-xs leading-snug text-ink-soft">
-          Lower is better: you&apos;re racing the best possible route. Changes are expensive, so
-          think before switching lines. Come back each day to keep your streak alive.
+      <div className="mt-4 rounded-xl border border-stone-200 bg-stone/60 px-4 py-3">
+        <div className="flex items-center justify-center gap-6">
+          <ScorePill colour="text-progress" amount="+1" label="each stop" />
+          <ScorePill colour="text-warn" amount="+4" label="each change" />
+        </div>
+        <p className="mt-2 text-center text-xs leading-snug text-ink-soft">
+          Your score adds up as you travel and lower is better: you&apos;re racing the best possible
+          route, so changes are expensive. Come back each day to keep your streak alive.
         </p>
       </div>
 
@@ -59,31 +60,33 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
 
 // --- Animated mini-demo ------------------------------------------------------
 
-/** Demo network geometry (viewBox coordinates). */
-const A = { x: 35, y: 85 }
-const B = { x: 110, y: 85 }
-const C = { x: 185, y: 85 }
-const D = { x: 285, y: 85 }
-const T = { x: 265, y: 30 }
+/** Demo network geometry (viewBox coordinates). Stations sit on one row; the
+ *  target sits up-right, reached by changing lines at Oxford Circus. */
+const A = { x: 48, y: 80 } // Marble Arch
+const B = { x: 123, y: 80 } // Bond Street
+const C = { x: 198, y: 80 } // Oxford Circus (interchange)
+const D = { x: 288, y: 80 } // Tottenham Court Road (a fogged decoy)
+const T = { x: 273, y: 30 } // Green Park (the target)
 
-const RED = '#e32017'
-const BLUE = '#0098d4'
+const RED = '#e32017' // Central
+const BLUE = '#0098d4' // Victoria
 
 /**
- * A looping SVG storyboard of one tiny game: ride the red line two stops as the
- * fog lifts, change to the blue line (+4 pops up), arrive at the flagged
- * target. All timing lives in the demo-* keyframes in index.css.
+ * A looping SVG storyboard of one tiny real run on a light map: ride the Central
+ * line from Marble Arch two stops to Oxford Circus (a +1 pops up at each stop)
+ * as the fog lifts, change to the Victoria line (+4), and arrive at Green Park.
+ * All timing lives in the demo-* keyframes in index.css.
  */
 function Demo() {
   return (
     <svg
-      viewBox="0 0 320 120"
-      className="mt-4 w-full rounded-xl bg-map"
+      viewBox="0 0 330 108"
+      className="mt-4 w-full rounded-xl border border-stone-200 bg-stone"
       role="img"
-      aria-label="Demo of a run: two stops on one line, a change costing four points, then the target"
+      aria-label="Demo of a run from Marble Arch to Green Park: two stops on the Central line scoring one each, a change to the Victoria line scoring four, then the target"
     >
-      {/* Network edges. C-D and C-T start fogged and reveal as the player nears. */}
-      <line x1={A.x} y1={A.y} x2={B.x} y2={B.y} stroke={RED} strokeWidth="4" opacity="0.55" />
+      {/* Network edges. B-C, C-D and C-T start fogged and reveal as you near them. */}
+      <line x1={A.x} y1={A.y} x2={B.x} y2={B.y} stroke={RED} strokeWidth="4" opacity="0.5" />
       <line
         x1={B.x}
         y1={B.y}
@@ -91,10 +94,10 @@ function Demo() {
         y2={C.y}
         stroke={RED}
         strokeWidth="4"
-        opacity="0.55"
+        opacity="0.5"
         className="demo-reveal-c"
       />
-      <g className="demo-reveal-d" opacity="0.55">
+      <g className="demo-reveal-d" opacity="0.5">
         <line x1={C.x} y1={C.y} x2={D.x} y2={D.y} stroke={RED} strokeWidth="4" />
         <line x1={C.x} y1={C.y} x2={T.x} y2={T.y} stroke={BLUE} strokeWidth="4" />
       </g>
@@ -121,17 +124,25 @@ function Demo() {
         className="demo-trail-blue"
       />
 
-      {/* Stations. */}
+      {/* Stations + real names. */}
       <Station x={A.x} y={A.y} />
+      <Label x={A.x} y={A.y}>Marble Arch</Label>
       <Station x={B.x} y={B.y} />
-      <Station x={C.x} y={C.y} className="demo-reveal-c" />
+      <Label x={B.x} y={B.y}>Bond Street</Label>
+      <g className="demo-reveal-c">
+        <Station x={C.x} y={C.y} />
+        <Label x={C.x} y={C.y}>Oxford Circus</Label>
+      </g>
       <Station x={D.x} y={D.y} className="demo-reveal-d" />
-      {/* Target: flagged ring, revealed with the rest of the fog. */}
+
+      {/* Target: flagged ring + name, revealed with the rest of the fog. */}
       <g className="demo-reveal-d">
         <circle cx={T.x} cy={T.y} r="8" fill="none" stroke="var(--color-flag)" strokeWidth="2.5" />
         <circle cx={T.x} cy={T.y} r="3" fill="var(--color-flag)" />
+        <text x={T.x} y={T.y - 13} textAnchor="middle" fontSize="9" fontWeight="700" fill="var(--color-ink)">
+          Green Park
+        </text>
       </g>
-      {/* Arrival pulse. */}
       <circle
         cx={T.x}
         cy={T.y}
@@ -151,16 +162,11 @@ function Demo() {
         </g>
       </g>
 
-      {/* Cost of the line change. */}
-      <text
-        className="demo-plus4"
-        textAnchor="middle"
-        fontSize="13"
-        fontWeight="800"
-        fill="var(--color-warn)"
-      >
-        +4
-      </text>
+      {/* +1 per stop ridden; +4 for the line change. */}
+      <Plus className="demo-plus1-b" colour="var(--color-progress)">+1</Plus>
+      <Plus className="demo-plus1-c" colour="var(--color-progress)">+1</Plus>
+      <Plus className="demo-plus4" colour="var(--color-warn)">+4</Plus>
+      <Plus className="demo-plus1-t" colour="var(--color-progress)">+1</Plus>
     </svg>
   )
 }
@@ -176,6 +182,40 @@ function Station({ x, y, className }: { x: number; y: number; className?: string
       strokeWidth="2"
       className={className}
     />
+  )
+}
+
+function Label({ x, y, children }: { x: number; y: number; children: React.ReactNode }) {
+  return (
+    <text x={x} y={y + 16} textAnchor="middle" fontSize="8.5" fontWeight="600" fill="var(--color-ink)">
+      {children}
+    </text>
+  )
+}
+
+/** A score popup; its position and timing come from the className keyframe. */
+function Plus({
+  className,
+  colour,
+  children,
+}: {
+  className: string
+  colour: string
+  children: React.ReactNode
+}) {
+  return (
+    <text className={className} textAnchor="middle" fontSize="12" fontWeight="800" fill={colour}>
+      {children}
+    </text>
+  )
+}
+
+function ScorePill({ colour, amount, label }: { colour: string; amount: string; label: string }) {
+  return (
+    <span className="inline-flex items-baseline gap-1.5">
+      <span className={`text-xl font-extrabold tabular-nums ${colour}`}>{amount}</span>
+      <span className="text-sm font-semibold text-ink">{label}</span>
+    </span>
   )
 }
 
