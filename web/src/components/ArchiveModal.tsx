@@ -7,9 +7,10 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Modal from './Modal'
+import { SummitIcon } from './icons'
 import type { Adjacency, DailyPuzzle, Tier, TubeGraph } from '../engine'
-import { dailyPuzzle, stationIndex } from '../engine'
-import { archiveDates, type ArchiveCompletions } from '../lib/archive'
+import { dailyExpert, dailyPuzzle, stationIndex } from '../engine'
+import { archiveDates, expertKey, type ArchiveCompletions } from '../lib/archive'
 import { displayName } from '../lib/format'
 
 interface ArchiveModalProps {
@@ -17,15 +18,19 @@ interface ArchiveModalProps {
   onClose: () => void
   graph: TubeGraph
   adj: Adjacency
-  /** Best results so far, keyed by puzzle date. */
+  /** Best results so far, keyed by puzzle date (Expert keyed apart, see lib/archive). */
   completions: ArchiveCompletions
   /** Date of the puzzle currently being played. */
   activeDate: string
+  /** Whether the puzzle in play is an Expert variant. */
+  activeExpert: boolean
   /** Today's ISO date (the daily puzzle's date). */
   todayISO: string
-  /** Select a puzzle date to play; null returns to today's daily. */
-  onSelect: (dateISO: string | null) => void
+  /** Select a puzzle date and whether to play its Expert variant; null date returns to today. */
+  onSelect: (dateISO: string | null, expert: boolean) => void
 }
+
+type Mode = 'daily' | 'expert'
 
 const TIER_STYLES: Record<Tier, string> = {
   easy: 'bg-progress text-white',
@@ -48,39 +53,56 @@ export default function ArchiveModal({
   adj,
   completions,
   activeDate,
+  activeExpert,
   todayISO,
   onSelect,
 }: ArchiveModalProps) {
   // Past dates (newest first) recomputed only when the day rolls over.
   const dates = useMemo(() => archiveDates(todayISO), [todayISO])
 
-  // Derive the archived puzzles lazily on first open; they are deterministic
-  // per date so this never needs recomputing.
-  const [puzzles, setPuzzles] = useState<DailyPuzzle[] | null>(null)
+  // Open on whichever track is in play, but let the toggle switch freely.
+  const [mode, setMode] = useState<Mode>(activeExpert ? 'expert' : 'daily')
   useEffect(() => {
-    if (!open || puzzles) return
-    setPuzzles(dates.map((d) => dailyPuzzle(graph, adj, d)))
-  }, [open, puzzles, dates, graph, adj])
+    if (open) setMode(activeExpert ? 'expert' : 'daily')
+  }, [open, activeExpert])
+
+  // Derive the archived puzzles lazily, per track, caching each once built;
+  // they are deterministic per date so a track never needs recomputing.
+  const [cache, setCache] = useState<Record<Mode, DailyPuzzle[] | null>>({
+    daily: null,
+    expert: null,
+  })
+  useEffect(() => {
+    if (!open || cache[mode]) return
+    const build = mode === 'expert' ? dailyExpert : dailyPuzzle
+    setCache((c) => ({ ...c, [mode]: dates.map((d) => build(graph, adj, d)) }))
+  }, [open, mode, cache, dates, graph, adj])
+  const puzzles = cache[mode]
 
   const stationsById = stationIndex(graph)
   const name = (id: string): string => displayName(stationsById.get(id)?.name ?? id)
+  const expert = mode === 'expert'
 
   return (
     <Modal open={open} onClose={onClose} title="Past puzzles">
       <p className="text-sm text-ink-soft">
-        Every past daily, newest first. A fresh one joins each day; your best run for each is kept.
+        {expert
+          ? 'The Expert variant of each past day: 3 or more changes, where the compass misleads hardest.'
+          : 'Every past daily, newest first. A fresh one joins each day; your best run for each is kept.'}
       </p>
 
-      <ol className="mt-4 flex flex-col gap-1.5">
+      <ModeToggle mode={mode} onChange={setMode} />
+
+      <ol className="mt-3 flex flex-col gap-1.5">
         {(puzzles ?? []).map((p) => {
-          const done = completions[p.date]
-          const active = p.date === activeDate
+          const done = completions[expert ? expertKey(p.date) : p.date]
+          const active = p.date === activeDate && expert === activeExpert
           return (
             <li key={p.date}>
               <button
                 type="button"
                 onClick={() => {
-                  onSelect(p.date)
+                  onSelect(p.date, expert)
                   onClose()
                 }}
                 aria-current={active ? 'true' : undefined}
@@ -134,11 +156,11 @@ export default function ArchiveModal({
         })}
       </ol>
 
-      {activeDate !== todayISO && (
+      {(activeDate !== todayISO || activeExpert) && (
         <button
           type="button"
           onClick={() => {
-            onSelect(null)
+            onSelect(null, false)
             onClose()
           }}
           className="mt-4 w-full rounded-xl bg-progress px-4 py-2.5 text-sm font-bold text-white transition hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress"
@@ -147,5 +169,42 @@ export default function ArchiveModal({
         </button>
       )}
     </Modal>
+  )
+}
+
+/** Daily / Expert segmented toggle for the archive list. */
+function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (m: Mode) => void }) {
+  return (
+    <div className="mt-4 inline-flex rounded-full border border-stone-200 bg-stone p-0.5" role="group" aria-label="Puzzle track">
+      <ModeButton active={mode === 'daily'} onClick={() => onChange('daily')}>
+        Daily
+      </ModeButton>
+      <ModeButton active={mode === 'expert'} onClick={() => onChange('expert')}>
+        <SummitIcon className="text-[14px]" /> Expert
+      </ModeButton>
+    </div>
+  )
+}
+
+function ModeButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1 text-xs font-bold transition ${
+        active ? 'bg-paper text-ink shadow-sm' : 'text-ink-soft hover:text-ink'
+      }`}
+    >
+      {children}
+    </button>
   )
 }

@@ -10,6 +10,7 @@ import { compass, score, stationIndex } from '../engine'
 import { useGameState } from '../hooks/useGameState'
 import { useStats } from '../hooks/useStats'
 import { useArchive } from '../hooks/useArchive'
+import { expertKey } from '../lib/archive'
 import { useOnboarding } from '../hooks/useOnboarding'
 import { useStationInfo } from '../hooks/useStationInfo'
 import type { StationInfo } from '../lib/stationInfo'
@@ -33,8 +34,11 @@ interface GameProps {
   puzzle: DailyPuzzle
   /** Today's ISO date; a puzzle dated differently is an archive replay. */
   today?: string
-  /** Swap the active puzzle to a past date (null returns to today's daily). */
-  onSelectDate?: (dateISO: string | null) => void
+  /**
+   * Swap the active puzzle to a past date, optionally its Expert variant (null
+   * date returns to today's ordinary daily).
+   */
+  onSelectDate?: (dateISO: string | null, expert?: boolean) => void
   /** True when this puzzle is the day's Expert challenge (off the daily streak). */
   isExpert?: boolean
   /** Toggle the Expert challenge on/off (returns to the ordinary daily). */
@@ -77,7 +81,7 @@ export default function Game({
   const isStreakDaily = isToday && !isExpert
   // Completions are kept per puzzle: the Expert track is keyed apart so it does
   // not collide with the day's ordinary daily.
-  const completionKey = isExpert ? `${dateISO}:expert` : dateISO
+  const completionKey = isExpert ? expertKey(dateISO) : dateISO
   const stationsById = useMemo(() => stationIndex(graph), [graph])
   const lineNames = useMemo(
     () => new Map(graph.lines.map((l) => [l.id, l.name])),
@@ -185,7 +189,15 @@ export default function Game({
     <div className="flex min-h-screen flex-col bg-stone text-ink">
       <Header
         date={prettyDate(dateISO)}
-        subtitle={isExpert ? 'Expert challenge' : isToday ? undefined : 'Past puzzle'}
+        subtitle={
+          isExpert
+            ? isToday
+              ? 'Expert challenge'
+              : 'Past Expert challenge'
+            : isToday
+              ? undefined
+              : 'Past puzzle'
+        }
         onHowToPlay={() => setOnboardingOpen(true)}
         onArchive={() => setArchiveOpen(true)}
         onStats={() => setStatsOpen(true)}
@@ -301,8 +313,9 @@ export default function Game({
         adj={adj}
         completions={completions}
         activeDate={dateISO}
+        activeExpert={isExpert}
         todayISO={todayISO}
-        onSelect={(d) => onSelectDate?.(d)}
+        onSelect={(d, asExpert) => onSelectDate?.(d, asExpert)}
       />
       <ResultCard
         open={resultOpen}

@@ -29,6 +29,15 @@ export function archiveDates(todayISO: string, max: number = MAX_ARCHIVE): strin
   return dates
 }
 
+/**
+ * Completion-map key for a date's Expert variant. The Expert track shares the
+ * day's date but is a different puzzle, so its result is stored under a
+ * distinct key rather than overwriting the ordinary daily's.
+ */
+export function expertKey(dateISO: string): string {
+  return `${dateISO}:expert`
+}
+
 /** Best result recorded for one archived puzzle. */
 export interface ArchiveCompletion {
   solved: boolean
