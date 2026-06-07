@@ -24,6 +24,7 @@ function setup(props: Partial<React.ComponentProps<typeof ArchiveModal>> = {}) {
       adj={adj}
       completions={{}}
       activeDate={REF_TODAY}
+      activeExpert={false}
       todayISO={REF_TODAY}
       onSelect={onSelect}
       {...props}
@@ -53,7 +54,7 @@ describe('ArchiveModal', () => {
     const { onSelect, onClose } = setup()
     const rows = await screen.findAllByRole('button', { name: / to / })
     fireEvent.click(rows[0])
-    expect(onSelect).toHaveBeenCalledWith(DATES[0])
+    expect(onSelect).toHaveBeenCalledWith(DATES[0], false)
     expect(onClose).toHaveBeenCalled()
   })
 
@@ -80,6 +81,30 @@ describe('ArchiveModal', () => {
   it('returns to the daily via onSelect(null)', async () => {
     const { onSelect } = setup({ activeDate: DATES[0] })
     fireEvent.click(await screen.findByRole('button', { name: /back to today/i }))
-    expect(onSelect).toHaveBeenCalledWith(null)
+    expect(onSelect).toHaveBeenCalledWith(null, false)
+  })
+
+  it('switches to the Expert track and selects an expert variant', async () => {
+    const { onSelect } = setup()
+    await screen.findAllByRole('button', { name: / to / })
+    // Exact name targets the toggle, not an 'expert' tier chip inside a row.
+    fireEvent.click(screen.getByRole('button', { name: 'Expert' }))
+    // The list re-derives for the expert track.
+    const rows = await screen.findAllByRole('button', { name: / to / })
+    fireEvent.click(rows[0])
+    expect(onSelect).toHaveBeenCalledWith(DATES[0], true)
+  })
+
+  it('opens on the Expert track when an expert puzzle is in play', async () => {
+    setup({ activeExpert: true })
+    expect(screen.getByRole('button', { name: 'Expert' })).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('reads expert completions from the expert key', async () => {
+    setup({
+      activeExpert: true,
+      completions: { [`${DATES[0]}:expert`]: { solved: true, score: 20, parScore: 18 } },
+    })
+    await screen.findByText('Solved: 20 (best 18)')
   })
 })

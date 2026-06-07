@@ -40,15 +40,18 @@ export default function App() {
   const [status, setStatus] = useState<Status>({ phase: 'loading' })
   // Non-null while replaying a past puzzle from the archive menu.
   const [archiveDate, setArchiveDate] = useState<string | null>(null)
-  // True while playing the day's Expert challenge (a separate track).
+  // True while playing the Expert track. Composes with archiveDate: an archive
+  // date + expert is the Expert variant of that past day; expert with no
+  // archive date is today's Expert challenge.
   const [expert, setExpert] = useState(false)
 
-  // Archive and Expert are mutually exclusive selections; picking one clears
-  // the other so the active puzzle is unambiguous.
-  const selectDate = (d: string | null) => {
-    setExpert(false)
+  // The archive menu picks a date and whether to play its Expert variant; a
+  // null date returns to today's ordinary daily.
+  const selectDate = (d: string | null, asExpert = false) => {
     setArchiveDate(d)
+    setExpert(asExpert)
   }
+  // The header toggle flips today's Expert challenge, returning to today.
   const toggleExpert = () => {
     setArchiveDate(null)
     setExpert((e) => !e)
@@ -104,13 +107,15 @@ export default function App() {
   }
 
   const { graph, adj, puzzle, today } = status.data
+  // The date in play: a chosen past date, else today.
+  const activeDate = archiveDate && archiveDate !== today ? archiveDate : today
   const activePuzzle = expert
-    ? dailyExpert(graph, adj, today)
-    : archiveDate && archiveDate !== today
-      ? dailyPuzzle(graph, adj, archiveDate)
+    ? dailyExpert(graph, adj, activeDate)
+    : activeDate !== today
+      ? dailyPuzzle(graph, adj, activeDate)
       : puzzle
-  // Expert shares today's date, so key it apart to force a fresh game on toggle.
-  const gameKey = expert ? `${today}:expert` : activePuzzle.date
+  // Expert shares the day's date, so key it apart to force a fresh game on toggle.
+  const gameKey = expert ? `${activePuzzle.date}:expert` : activePuzzle.date
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
       {/* Keyed so swapping puzzles (date or Expert track) resets per-run state. */}
