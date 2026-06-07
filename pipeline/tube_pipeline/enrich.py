@@ -2055,7 +2055,10 @@ def refresh_fun_facts(
     for sid, info in info_file.stations.items():
         data = info.model_dump(by_alias=True, exclude_none=True)
         name = clean_station_name(info.name)
-        curated = curated_by_norm.get(normalise_name(info.name))
+        # Match on the cleaned name so the override keys (cleaned display names)
+        # and the station names go through the same suffix stripping (e.g. the
+        # internal "ELL" marker), which plain normalise_name does not remove.
+        curated = curated_by_norm.get(normalise_name(name))
         if curated:
             # A curated fact wins, and we skip the (slow) Wikipedia fetch entirely.
             data["funFact"] = curated
