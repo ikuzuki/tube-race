@@ -12,6 +12,7 @@ import type { RouteLeg } from '../lib/route'
 import { stopsLabel } from '../lib/route'
 import { points } from '../lib/score'
 import { lineColour, lineTextColour } from '../theme'
+import { ChangeIcon, StopIcon } from './icons'
 
 /** Ribbon pixels per stop ridden. */
 const STOP_PX = 18
@@ -51,8 +52,13 @@ export default function StatusBar(props: StatusBarProps) {
       <div className="flex shrink-0 flex-col gap-1.5">
         <ScoreReadout score={score} parScore={parScore} />
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
-          <SubStat label="Stops" value={hops} overPar={hops > parHops} />
-          <SubStat label="Changes" value={changes} overPar={changes > parChanges} />
+          <SubStat label="Stops" value={hops} overPar={hops > parHops} icon={<StopIcon />} />
+          <SubStat
+            label="Changes"
+            value={changes}
+            overPar={changes > parChanges}
+            icon={<ChangeIcon />}
+          />
           <LineBadge lineId={currentLineId} lineName={currentLineName} />
         </div>
       </div>
@@ -100,10 +106,25 @@ function Label({ children }: { children: React.ReactNode }) {
   )
 }
 
-function SubStat({ label, value, overPar }: { label: string; value: number; overPar: boolean }) {
+function SubStat({
+  label,
+  value,
+  overPar,
+  icon,
+}: {
+  label: string
+  value: number
+  overPar: boolean
+  icon: React.ReactNode
+}) {
   return (
     <div className="flex flex-col">
-      <Label>{label}</Label>
+      <span className="flex items-center gap-1 text-ink-soft">
+        <span className="text-sm leading-none" aria-hidden="true">
+          {icon}
+        </span>
+        <Label>{label}</Label>
+      </span>
       <p className="text-sm font-semibold leading-tight tabular-nums">
         <span className={overPar ? 'text-warn' : 'text-ink'}>{value}</span>
       </p>

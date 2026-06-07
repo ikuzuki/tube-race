@@ -10,6 +10,7 @@
 import { useEffect, useState } from 'react'
 import Modal from './Modal'
 import StationInfoCard from './StationInfoCard'
+import { ChangeIcon, StopIcon } from './icons'
 import type { Station } from '../engine'
 import type { StationInfo } from '../lib/stationInfo'
 import { SQUARES_RULE } from '../lib/share'
@@ -105,8 +106,20 @@ export default function ResultCard({
       <ScoreHero score={score} parScore={parScore} overPar={!optimal && solved} />
 
       <div className="mt-3 grid grid-cols-2 gap-3">
-        <ResultStat label="Stops" value={stops} par={parStops} overPar={stops > parStops} />
-        <ResultStat label="Changes" value={changes} par={parChanges} overPar={changes > parChanges} />
+        <ResultStat
+          label="Stops"
+          value={stops}
+          par={parStops}
+          overPar={stops > parStops}
+          icon={<StopIcon />}
+        />
+        <ResultStat
+          label="Changes"
+          value={changes}
+          par={parChanges}
+          overPar={changes > parChanges}
+          icon={<ChangeIcon />}
+        />
       </div>
 
       <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-stone px-4 py-2.5 text-sm">
@@ -200,12 +213,16 @@ interface ResultStatProps {
   value: number
   par: number
   overPar: boolean
+  icon: React.ReactNode
 }
 
-function ResultStat({ label, value, par, overPar }: ResultStatProps) {
+function ResultStat({ label, value, par, overPar, icon }: ResultStatProps) {
   return (
     <div className="rounded-xl border border-stone-200 bg-paper px-3 py-2.5">
-      <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-ink-soft">
+      <span className="flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wider text-ink-soft">
+        <span className="text-sm leading-none" aria-hidden="true">
+          {icon}
+        </span>
         {label}
       </span>
       <p className="mt-0.5 text-lg font-bold leading-none tabular-nums">
