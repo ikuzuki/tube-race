@@ -9,6 +9,7 @@ import type { Adjacency, DailyPuzzle, GameState, Station, TubeGraph } from '../e
 import { compass, score, stationIndex } from '../engine'
 import { useGameState } from '../hooks/useGameState'
 import { useStats } from '../hooks/useStats'
+import { useArchive } from '../hooks/useArchive'
 import { useOnboarding } from '../hooks/useOnboarding'
 import { useStationInfo } from '../hooks/useStationInfo'
 import type { StationInfo } from '../lib/stationInfo'
@@ -25,13 +26,16 @@ import OnboardingModal from './OnboardingModal'
 import IntroModal from './IntroModal'
 import ResultCard from './ResultCard'
 import StatsModal from './StatsModal'
+import ArchiveModal from './ArchiveModal'
 
 interface GameProps {
   graph: TubeGraph
   adj: Adjacency
   puzzle: DailyPuzzle
-  /** ISO date used for the share grid; defaults to the puzzle's own date. */
+  /** Today's ISO date; a puzzle dated differently is an archive replay. */
   today?: string
+  /** Swap the active puzzle to a past date (null returns to today's daily). */
+  onSelectDate?: (dateISO: string | null) => void
   /** Optional seed state, primarily for tests. */
   initialState?: GameState
 }
@@ -43,13 +47,18 @@ function prettyDate(iso: string): string {
   return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
-export default function Game({ graph, adj, puzzle, today, initialState }: GameProps) {
+export default function Game({ graph, adj, puzzle, today, onSelectDate, initialState }: GameProps) {
   const { state, legalMoves, play, restart } = useGameState(puzzle, graph, adj, initialState)
   const { stats, recordResult } = useStats()
+  const { completions, record: recordCompletion } = useArchive()
   const { seen, markSeen } = useOnboarding()
   const { infoMap } = useStationInfo()
 
-  const dateISO = today ?? puzzle.date
+  // The puzzle's own date identifies the run (header, share, completion key);
+  // lifetime stats and the streak only move on the genuine daily.
+  const dateISO = puzzle.date
+  const todayISO = today ?? puzzle.date
+  const isDaily = dateISO === todayISO
   const stationsById = useMemo(() => stationIndex(graph), [graph])
   const lineNames = useMemo(
     () => new Map(graph.lines.map((l) => [l.id, l.name])),
@@ -84,6 +93,7 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
   const [onboardingOpen, setOnboardingOpen] = useState(false)
   const [introOpen, setIntroOpen] = useState(() => seen && !state.solved)
   const [statsOpen, setStatsOpen] = useState(false)
+  const [archiveOpen, setArchiveOpen] = useState(false)
   const [resultOpen, setResultOpen] = useState(false)
   const [showOptimal, setShowOptimal] = useState(false)
 
@@ -98,6 +108,8 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
   }, [markSeen, state.solved])
 
   // Record the result once per date when solved, then surface the result card.
+  // Archive completions are kept for every run; lifetime stats and the streak
+  // only when this is the genuine daily.
   const recordedRef = useRef<string | null>(null)
   useEffect(() => {
     if (!state.solved || recordedRef.current === dateISO) return
@@ -107,10 +119,17 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
       0,
       points(sc.hops, sc.changes) - points(sc.parHops, sc.parChanges),
     )
-    recordResult({ date: dateISO, solved: true, scoreOverPar, optimal: sc.optimal })
+    if (isDaily) {
+      recordResult({ date: dateISO, solved: true, scoreOverPar, optimal: sc.optimal })
+    }
+    recordCompletion(dateISO, {
+      solved: true,
+      score: points(sc.hops, sc.changes),
+      parScore: points(sc.parHops, sc.parChanges),
+    })
     setIntroOpen(false)
     setResultOpen(true)
-  }, [state, dateISO, recordResult])
+  }, [state, dateISO, isDaily, recordResult, recordCompletion])
 
   const sc = state.solved ? score(state) : null
   const playerScore = sc ? points(sc.hops, sc.changes) : points(state.path.length, state.changes)
@@ -145,7 +164,9 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
     <div className="flex min-h-screen flex-col bg-stone text-ink">
       <Header
         date={prettyDate(dateISO)}
+        subtitle={isDaily ? undefined : 'Past puzzle'}
         onHowToPlay={() => setOnboardingOpen(true)}
+        onArchive={() => setArchiveOpen(true)}
         onStats={() => setStatsOpen(true)}
       />
 
@@ -227,6 +248,16 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
         />
       )}
       <StatsModal open={statsOpen} onClose={() => setStatsOpen(false)} stats={stats} />
+      <ArchiveModal
+        open={archiveOpen}
+        onClose={() => setArchiveOpen(false)}
+        graph={graph}
+        adj={adj}
+        completions={completions}
+        activeDate={dateISO}
+        todayISO={todayISO}
+        onSelect={(d) => onSelectDate?.(d)}
+      />
       <ResultCard
         open={resultOpen}
         solved={state.solved}

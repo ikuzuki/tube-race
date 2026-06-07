@@ -37,6 +37,8 @@ function Centered({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   const [status, setStatus] = useState<Status>({ phase: 'loading' })
+  // Non-null while replaying a past puzzle from the archive menu.
+  const [archiveDate, setArchiveDate] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -88,9 +90,19 @@ export default function App() {
   }
 
   const { graph, adj, puzzle, today } = status.data
+  const activePuzzle =
+    archiveDate && archiveDate !== today ? dailyPuzzle(graph, adj, archiveDate) : puzzle
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <Game graph={graph} adj={adj} puzzle={puzzle} today={today} />
+      {/* Keyed by date so swapping puzzles resets all per-run state. */}
+      <Game
+        key={activePuzzle.date}
+        graph={graph}
+        adj={adj}
+        puzzle={activePuzzle}
+        today={today}
+        onSelectDate={setArchiveDate}
+      />
     </div>
   )
 }
