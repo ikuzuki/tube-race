@@ -52,9 +52,9 @@ def test_curated_daily_traffic_is_positive() -> None:
 
 def test_apply_curated_stats_fills_gaps_and_reranks() -> None:
     """Missing values are filled from the overrides and both ranks recomputed."""
-    cutty_sark = StationInfo.model_validate(
-        {"name": "Cutty Sark (for Maritime Greenwich) DLR Station"}
-    )
+    # Kentish Town: missing both. Its traffic is filled from the override; it has
+    # no opening-year override (a tube station the source normally covers).
+    kentish = StationInfo.model_validate({"name": "Kentish Town Underground Station"})
     oval = StationInfo.model_validate(
         {
             "name": "Oval Underground Station",
@@ -64,19 +64,19 @@ def test_apply_curated_stats_fills_gaps_and_reranks() -> None:
             "dailyTrafficRank": 1,
         }
     )
-    merged = apply_curated_stats(_info_file({"sark": cutty_sark, "oval": oval}))
+    merged = apply_curated_stats(_info_file({"kt": kentish, "oval": oval}))
 
-    sark = merged.stations["sark"]
-    assert sark.opened_year == CURATED_OPENED_YEARS["Cutty Sark"]
-    assert sark.daily_traffic == CURATED_DAILY_TRAFFIC["Cutty Sark"]
-    # Ranks recomputed over the grown pool: Oval (1890) is older than Cutty
-    # Sark (1999); Cutty Sark (16k) is busier than Oval (15.4k).
-    assert merged.stations["oval"].opened_rank == 1
-    assert sark.opened_rank == 2
-    assert sark.daily_traffic_rank == 1
+    kt = merged.stations["kt"]
+    assert kt.daily_traffic == CURATED_DAILY_TRAFFIC["Kentish Town"]
+    assert kt.opened_year is None  # no year override for this one
+    # Traffic ranks recomputed over the pool: Kentish Town (16k) is busier than
+    # Oval (15.4k). Only Oval has an opening year, so it alone gets an opened rank.
+    assert kt.daily_traffic_rank == 1
     assert merged.stations["oval"].daily_traffic_rank == 2
+    assert merged.stations["oval"].opened_rank == 1
+    assert kt.opened_rank is None
     # Counts reflect the post-fill coverage.
-    assert merged.counts.with_opened == 2
+    assert merged.counts.with_opened == 1
     assert merged.counts.with_traffic == 2
 
 

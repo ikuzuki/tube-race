@@ -285,7 +285,9 @@ def normalise_name(name: str) -> str:
     return " ".join(text.split())
 
 
-_MODE_TAIL_RE: re.Pattern[str] = re.compile(r"\b(?:lu|dlr|tfl|elr|nr|lo)\s*$", re.IGNORECASE)
+_MODE_TAIL_RE: re.Pattern[str] = re.compile(
+    r"\b(?:lu|dlr|tfl|elr|nr|lo|ell|ezl)\s*$", re.IGNORECASE
+)
 """Trailing mode token TfL appends to disambiguate co-located stations.
 
 In the Annual Station Counts file a station that shares a name with a National
@@ -425,6 +427,15 @@ _USAGE_ANNUAL_GROUP: str = "annualised"
 _UNDERGROUND_MODE: str = "lu"
 """Value in the mode column identifying a London Underground row."""
 
+_USAGE_MODES: frozenset[str] = frozenset({"lu", "lo", "dlr", "ezl"})
+"""Mode-column values the game counts: Underground, Overground, DLR, Elizabeth.
+
+The Annual Station Counts workbook covers every TfL rail mode; we include all of
+them so the expanded network (Overground/DLR/Elizabeth stations) gets real
+gateline figures rather than estimates. Interchanges that appear under several
+modes collapse on the match key, where the larger figure wins.
+"""
+
 
 def _header_row_index(rows: list[tuple[Any, ...]]) -> int | None:
     """Find the column-header row in an Annual Station Counts sheet.
@@ -504,10 +515,11 @@ def _annualised_column_index(header: tuple[Any, ...], group_row: tuple[Any, ...]
 
 
 def parse_station_usage(data: bytes) -> dict[str, float]:
-    """Parse annualised Underground entries+exits from the TfL counts XLSX.
+    """Parse annualised entries+exits from the TfL counts XLSX.
 
-    Reads TfL's Annual Station Counts workbook and returns, for every London
-    Underground row carrying a numeric annualised total, the annual
+    Reads TfL's Annual Station Counts workbook and returns, for every counted
+    TfL rail row (Underground, Overground, DLR or Elizabeth; see
+    :data:`_USAGE_MODES`) carrying a numeric annualised total, the annual
     entries+exits keyed by graph match key (:func:`usage_match_keys`). The
     header is self-located (see :func:`_header_row_index` and
     :func:`_annualised_column_index`) rather than hardcoded by offset.
@@ -564,7 +576,7 @@ def parse_station_usage(data: bytes) -> dict[str, float]:
         if max(mode_col, name_col, annual_col) >= len(row):
             continue
         mode = row[mode_col]
-        if mode is None or str(mode).strip().lower() != _UNDERGROUND_MODE:
+        if mode is None or str(mode).strip().lower() not in _USAGE_MODES:
             continue
         name = row[name_col]
         annual = _coerce_float(row[annual_col])
@@ -1688,7 +1700,13 @@ def build_station_infos(
     for station in graph_stations:
         match = match_candidate(station, candidates, name_index, radius_m=radius_m)
         opened_year = match.opened_year if match else None
-        annual = usage.get(normalise_name(station.name))
+        # Match usage with the same key derivation used to build the dict
+        # (usage_match_keys strips TfL mode tails like the ELL/EZL marker), not a
+        # plain normalise_name, or stations such as "New Cross ELL" miss.
+        annual = next(
+            (usage[k] for k in usage_match_keys(station.name) if k in usage),
+            None,
+        )
         if annual is None and match is not None:
             annual = match.annual_patronage
         daily_traffic = _daily_from_annual(annual)

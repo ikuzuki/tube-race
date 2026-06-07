@@ -583,6 +583,10 @@ def test_enrich_stations_dump_matches_camelcase_schema() -> None:
         ("Euston LU", ("euston",)),
         ("Paddington TfL", ("paddington",)),
         ("Victoria LU", ("victoria",)),
+        # Elizabeth/East-London-line mode tails are stripped too, so the file's
+        # "Woolwich EZL" and the graph's "New Cross ELL" land on one key.
+        ("Woolwich EZL", ("woolwich",)),
+        ("New Cross ELL", ("new cross",)),
         # St. expansion still applies via normalise_name.
         ("King's Cross St. Pancras", ("kings cross saint pancras",)),
         # Structural aliases: one row -> several / renamed graph keys.
@@ -677,6 +681,24 @@ def test_parse_station_usage_extracts_lu_annualised() -> None:
         "euston": 29_965_071.0,
     }
     assert "kentish town" not in usage
+
+
+def test_parse_station_usage_includes_all_modelled_modes() -> None:
+    """Overground, DLR and Elizabeth rows are parsed; an unmodelled mode is not."""
+    data = _sample_usage_xlsx(
+        [
+            ["LO", "100", "Dalston Junction", "Gateline", 1, 1, 5_581_140],
+            ["DLR", "200", "Cutty Sark", "Gateline", 1, 1, 6_000_000],
+            ["EZL", "300", "Woolwich EZL", "Gateline", 1, 1, 11_050_099],
+            # National Rail is not a modelled mode and must still be excluded.
+            ["NR", "999", "Clapham High Street", "Gateline", 1, 1, 99_999_999],
+        ]
+    )
+    usage = parse_station_usage(data)
+    assert usage["dalston junction"] == 5_581_140.0
+    assert usage["cutty sark"] == 6_000_000.0
+    assert usage["woolwich"] == 11_050_099.0  # EZL tail stripped
+    assert "clapham high street" not in usage
 
 
 def test_parse_station_usage_combined_row_feeds_two_stations() -> None:
