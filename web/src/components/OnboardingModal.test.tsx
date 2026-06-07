@@ -5,12 +5,12 @@ import OnboardingModal from './OnboardingModal'
 describe('OnboardingModal', () => {
   it('renders nothing when closed', () => {
     render(<OnboardingModal open={false} onClose={vi.fn()} />)
-    expect(screen.queryByText(/how to play/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/mind the gap/i)).not.toBeInTheDocument()
   })
 
   it('renders the title and a set of rules when open', () => {
     render(<OnboardingModal open onClose={vi.fn()} />)
-    expect(screen.getByRole('heading', { name: /how to play/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /mind the gap/i })).toBeInTheDocument()
     // Three rules, rendered as list items.
     expect(screen.getAllByRole('listitem')).toHaveLength(3)
     // Touches the core mechanics in the copy.

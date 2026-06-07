@@ -7,6 +7,7 @@
 import type { Station } from '../engine'
 import type { StationInfo } from '../lib/stationInfo'
 import { displayName } from '../lib/format'
+import { DestFlagIcon, StartPinIcon } from './icons'
 
 interface StationInfoCardProps {
   roleLabel: 'Start' | 'Destination'
@@ -55,15 +56,17 @@ export default function StationInfoCard({ roleLabel, station, info }: StationInf
     </Fact>,
   )
 
+  const isStart = roleLabel === 'Start'
   return (
-    <article className="rounded-xl border border-stone-200 bg-paper p-4 text-ink">
+    <article className="rounded-xl border border-stone-200 bg-paper p-3.5 text-ink">
       <span
-        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${
-          roleLabel === 'Start'
-            ? 'bg-progress/10 text-progress'
-            : 'bg-warn/10 text-warn'
+        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${
+          isStart ? 'bg-progress/10 text-progress' : 'bg-warn/10 text-warn'
         }`}
       >
+        <span className="text-xs leading-none" aria-hidden="true">
+          {isStart ? <StartPinIcon /> : <DestFlagIcon />}
+        </span>
         {roleLabel}
       </span>
 
@@ -71,10 +74,12 @@ export default function StationInfoCard({ roleLabel, station, info }: StationInf
         {displayName(station.name)}
       </h3>
 
-      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5">{facts}</dl>
+      <dl className="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-2">{facts}</dl>
 
       {info?.funFact && (
-        <p className="mt-3 text-sm italic leading-snug text-ink-soft">{info.funFact}</p>
+        <p className="mt-2.5 line-clamp-4 text-sm italic leading-snug text-ink-soft">
+          {info.funFact}
+        </p>
       )}
 
       {info?.wikiUrl && (

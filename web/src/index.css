@@ -21,7 +21,8 @@
   /* Semantic */
   --color-progress: #1ea672; /* good / solved / "you are here" */
   --color-progress-ring: #34d399;
-  --color-warn: #f5a524; /* over par */
+  --color-warn: #f5a524; /* over par (amber) */
+  --color-danger: #e0362a; /* well over par (red) */
   --color-flag: #ffd300; /* target marker (circle-line yellow) */
 
   /* Official TfL line palette */

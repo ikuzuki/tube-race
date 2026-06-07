@@ -3,6 +3,7 @@
 // card and the stats panel. Presentational — all actions come in as props.
 
 import Roundel from './Roundel'
+import { SummitIcon } from './icons'
 
 interface HeaderProps {
   /** Display date, e.g. "2026-06-06" or a prettier formatted string. */
@@ -66,9 +67,7 @@ export default function Header({
           onClick={onExpert}
           active={expertActive}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M13 2L4 14h6l-1 8 9-12h-6z" />
-          </svg>
+          <SummitIcon className="text-[20px]" />
         </IconButton>
 
         <IconButton label="Past puzzles" onClick={onArchive}>

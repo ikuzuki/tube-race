@@ -8,7 +8,10 @@ import ArchiveModal from './ArchiveModal'
 
 const graph = fixture as TubeGraph
 const adj = buildAdjacency(graph)
-const DATES = archiveDates('2026-06-07') // matches the todayISO used in setup
+// A near-launch reference date keeps the derived list tiny (3 puzzles), so the
+// fixture's full-attempt-budget derivation stays fast under parallel suite load.
+const REF_TODAY = '2026-05-11'
+const DATES = archiveDates(REF_TODAY)
 
 function setup(props: Partial<React.ComponentProps<typeof ArchiveModal>> = {}) {
   const onSelect = vi.fn()
@@ -20,8 +23,8 @@ function setup(props: Partial<React.ComponentProps<typeof ArchiveModal>> = {}) {
       graph={graph}
       adj={adj}
       completions={{}}
-      activeDate="2026-06-07"
-      todayISO="2026-06-07"
+      activeDate={REF_TODAY}
+      todayISO={REF_TODAY}
       onSelect={onSelect}
       {...props}
     />,
