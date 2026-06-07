@@ -9,7 +9,7 @@ import respx
 
 from tube_pipeline.cli import DEFAULT_OUT_PATH, build_parser, main
 from tube_pipeline.models import TubeGraph
-from tube_pipeline.tfl_client import BASE_URL, TUBE_LINE_IDS
+from tube_pipeline.tfl_client import BASE_URL, MODELLED_LINE_IDS
 
 
 def _mock_empty_network(router: respx.Router) -> None:
@@ -20,7 +20,7 @@ def _mock_empty_network(router: respx.Router) -> None:
     router : respx.Router
         The active respx router.
     """
-    for line_id in TUBE_LINE_IDS:
+    for line_id in MODELLED_LINE_IDS:
         for direction in ("inbound", "outbound"):
             router.get(f"{BASE_URL}/Line/{line_id}/Route/Sequence/{direction}").mock(
                 return_value=httpx.Response(200, json={"stopPointSequences": []})
@@ -52,7 +52,7 @@ def test_build_writes_file_and_returns_zero(tmp_path: Path) -> None:
     assert code == 0
     assert out.exists()
     graph = TubeGraph.model_validate_json(out.read_text(encoding="utf-8"))
-    # Empty network -> 11 lines, no stations, no edges.
-    assert len(graph.lines) == len(TUBE_LINE_IDS)
+    # Empty network -> 19 lines, no stations, no edges.
+    assert len(graph.lines) == len(MODELLED_LINE_IDS)
     assert graph.stations == []
     assert graph.edges == []

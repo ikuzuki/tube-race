@@ -2,9 +2,11 @@
 
 The flow is: for every tube line, fetch both directions of its route sequence,
 walk each ordered ``stopPoint`` list to derive undirected edges, and merge the
-stop points into station nodes keyed by their station-level Naptan id. Line
-display names and colours are hardcoded (the colour endpoint is flaky and the
-set is fixed at 11 lines).
+stop points into station nodes. Stations are keyed by their station-level Naptan
+id, except that co-located stops on different modes (e.g. a tube and an
+Overground station at one interchange) are fused via TfL's multi-modal hub id so
+the network connects across modes. Line display names and colours are hardcoded
+(the colour endpoint is flaky and the modelled set is fixed at 19 lines).
 
 See ``SPEC.md`` ("Data contract: graph.json", "TfL data source") for the rules
 this module enforces -- in particular undirected, de-duplicated edges that
@@ -27,12 +29,14 @@ from collections.abc import Iterable, Iterator
 from typing import Any
 
 from tube_pipeline.models import Edge, Line, Station, TubeGraph
-from tube_pipeline.tfl_client import TUBE_LINE_IDS, TflClient
+from tube_pipeline.tfl_client import MODELLED_LINE_IDS, TflClient
 
 DIRECTIONS: tuple[str, ...] = ("inbound", "outbound")
 """The two directions fetched per line; their edges are collapsed together."""
 
-# Official TfL line colours (hex, including the leading '#').
+# Official TfL line colours (hex, including the leading '#'). Tube + DLR +
+# Elizabeth use TfL's long-standing values; the six Overground colours follow
+# the 2024 rebrand palette.
 LINE_COLOURS: dict[str, str] = {
     "bakerloo": "#B36305",
     "central": "#E32017",
@@ -45,9 +49,17 @@ LINE_COLOURS: dict[str, str] = {
     "piccadilly": "#003688",
     "victoria": "#0098D4",
     "waterloo-city": "#95CDBA",
+    "dlr": "#00A4A7",
+    "elizabeth": "#6950A1",
+    "liberty": "#676767",
+    "lioness": "#F1B41C",
+    "mildmay": "#437EC1",
+    "suffragette": "#39B97A",
+    "weaver": "#972861",
+    "windrush": "#EF4D5E",
 }
 
-# Display names for the 11 tube lines.
+# Display names for every modelled line.
 LINE_NAMES: dict[str, str] = {
     "bakerloo": "Bakerloo",
     "central": "Central",
@@ -60,9 +72,17 @@ LINE_NAMES: dict[str, str] = {
     "piccadilly": "Piccadilly",
     "victoria": "Victoria",
     "waterloo-city": "Waterloo & City",
+    "dlr": "DLR",
+    "elizabeth": "Elizabeth line",
+    "liberty": "Liberty",
+    "lioness": "Lioness",
+    "mildmay": "Mildmay",
+    "suffragette": "Suffragette",
+    "weaver": "Weaver",
+    "windrush": "Windrush",
 }
 
-_TUBE_LINE_SET: frozenset[str] = frozenset(TUBE_LINE_IDS)
+_MODELLED_LINE_SET: frozenset[str] = frozenset(MODELLED_LINE_IDS)
 
 
 def _station_id(stop_point: dict[str, Any]) -> str:
@@ -89,11 +109,73 @@ def _station_id(stop_point: dict[str, Any]) -> str:
     return own_id
 
 
+def _canonical_id(ids: set[str]) -> str:
+    """Pick the canonical station id for a group of stops sharing an interchange.
+
+    Prefers a tube Naptan (``940GZZLU...``) so existing tube station ids stay
+    stable when non-tube modes are merged onto them; otherwise the lexically
+    smallest id (deterministic).
+
+    Parameters
+    ----------
+    ids : set of str
+        The base station ids grouped under one interchange hub.
+
+    Returns
+    -------
+    str
+        The id all stops in the group collapse to.
+    """
+    tube = sorted(i for i in ids if i.startswith("940GZZLU"))
+    return tube[0] if tube else min(ids)
+
+
+def _build_resolver(responses: Iterable[dict[str, Any]]) -> dict[str, str]:
+    """Map each station id to the interchange node it belongs to.
+
+    Cross-mode interchanges (a tube station and a co-located Overground/DLR/rail
+    station) carry different Naptan ids but share a multi-modal hub id
+    (``HUB...``) in TfL's ``topMostParentId``. Grouping by that hub and choosing
+    one canonical id per group lets the graph connect modes at interchanges, so
+    a player can change between, say, the Victoria line and the Overground.
+
+    Stops with no hub map to themselves (omitted from the result).
+
+    Parameters
+    ----------
+    responses : iterable of dict
+        Decoded route-sequence responses across all lines/directions.
+
+    Returns
+    -------
+    dict of str to str
+        ``base station id -> canonical station id`` for every id that should be
+        remapped. Ids absent from the dict are their own canonical id.
+    """
+    hub_groups: dict[str, set[str]] = {}
+    for response in responses:
+        for seq in response.get("stopPointSequences", []):
+            for stop_point in seq.get("stopPoint", []):
+                parent = stop_point.get("topMostParentId")
+                if isinstance(parent, str) and parent.startswith("HUB"):
+                    hub_groups.setdefault(parent, set()).add(_station_id(stop_point))
+
+    resolver: dict[str, str] = {}
+    for ids in hub_groups.values():
+        if len(ids) < 2:
+            continue  # nothing to merge
+        canonical = _canonical_id(ids)
+        for station_id in ids:
+            if station_id != canonical:
+                resolver[station_id] = canonical
+    return resolver
+
+
 def _stop_line_ids(stop_point: dict[str, Any]) -> set[str]:
-    """Extract the tube line ids a stop point serves.
+    """Extract the modelled line ids a stop point serves.
 
     Reads the stop point's ``lines`` array and intersects the reported line
-    ids with the 11 modelled tube lines.
+    ids with the lines the game models (see ``MODELLED_LINE_IDS``).
 
     Parameters
     ----------
@@ -103,14 +185,14 @@ def _stop_line_ids(stop_point: dict[str, Any]) -> set[str]:
     Returns
     -------
     set of str
-        Tube line ids serving this stop point (possibly empty).
+        Modelled line ids serving this stop point (possibly empty).
     """
     reported = {
         str(line["id"])
         for line in stop_point.get("lines", [])
         if isinstance(line, dict) and "id" in line
     }
-    return reported & _TUBE_LINE_SET
+    return reported & _MODELLED_LINE_SET
 
 
 def _zone_of(stop_point: dict[str, Any]) -> str | None:
@@ -169,9 +251,10 @@ class _GraphAccumulator:
     edges on different lines are preserved).
     """
 
-    def __init__(self) -> None:
+    def __init__(self, resolver: dict[str, str] | None = None) -> None:
         self._stations: dict[str, Station] = {}
         self._edges: dict[tuple[str, str, str], Edge] = {}
+        self._resolver: dict[str, str] = resolver or {}
 
     def add_stop_point(self, stop_point: dict[str, Any], line_id: str) -> str:
         """Merge a stop point into the station set and return its id.
@@ -189,7 +272,8 @@ class _GraphAccumulator:
         str
             The merged station id for this stop point.
         """
-        station_id = _station_id(stop_point)
+        base_id = _station_id(stop_point)
+        station_id = self._resolver.get(base_id, base_id)
         lines = _stop_line_ids(stop_point)
         lines.add(line_id)
 
@@ -307,14 +391,22 @@ def build_graph(client: TflClient, generated_at: str) -> TubeGraph:
     Returns
     -------
     TubeGraph
-        The merged graph: 11 lines, deduped stations, and undirected,
-        line-distinct edges.
+        The merged graph: 19 lines, stations deduped (and cross-mode
+        interchanges merged), and undirected, line-distinct edges.
     """
-    acc = _GraphAccumulator()
-    for line_id in TUBE_LINE_IDS:
+    # Fetch every line/direction once, then make two passes: the first builds
+    # the interchange resolver (needs all stops to group hubs), the second
+    # ingests edges with station ids already collapsed to their interchange.
+    fetched: list[tuple[str, dict[str, Any]]] = []
+    for line_id in MODELLED_LINE_IDS:
         for direction in DIRECTIONS:
-            response = client.route_sequence(line_id, direction)
-            _ingest_line(acc, line_id, response)
+            fetched.append((line_id, client.route_sequence(line_id, direction)))
+
+    resolver = _build_resolver(response for _, response in fetched)
+
+    acc = _GraphAccumulator(resolver)
+    for line_id, response in fetched:
+        _ingest_line(acc, line_id, response)
 
     # Build via model_validate so the aliased ``generatedAt`` field is set
     # without relying on alias-named kwargs (keeps the type checker happy).
@@ -322,7 +414,7 @@ def build_graph(client: TflClient, generated_at: str) -> TubeGraph:
         {
             "version": "1.0",
             "generatedAt": generated_at,
-            "lines": _build_lines(TUBE_LINE_IDS),
+            "lines": _build_lines(MODELLED_LINE_IDS),
             "stations": acc.stations(),
             "edges": acc.edges(),
         }

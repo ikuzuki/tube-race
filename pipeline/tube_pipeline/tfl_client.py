@@ -28,7 +28,31 @@ TUBE_LINE_IDS: list[str] = [
     "victoria",
     "waterloo-city",
 ]
-"""The 11 London Underground line ids the game models."""
+"""The 11 London Underground line ids."""
+
+OVERGROUND_LINE_IDS: list[str] = [
+    "liberty",
+    "lioness",
+    "mildmay",
+    "suffragette",
+    "weaver",
+    "windrush",
+]
+"""The six London Overground lines (named in the 2024 rebrand)."""
+
+OTHER_LINE_IDS: list[str] = [
+    "dlr",
+    "elizabeth",
+]
+"""Non-tube, non-Overground rapid-transit lines the game models (DLR, Elizabeth)."""
+
+MODELLED_LINE_IDS: list[str] = [*TUBE_LINE_IDS, *OVERGROUND_LINE_IDS, *OTHER_LINE_IDS]
+"""Every line id the graph models: 11 tube + 6 Overground + DLR + Elizabeth = 19.
+
+Stops are merged into single station nodes across modes at shared interchanges
+(see :mod:`tube_pipeline.build_graph`), so the network is fully connected and a
+change between, say, a tube line and the Overground is modelled as a line change.
+"""
 
 BASE_URL: str = "https://api.tfl.gov.uk"
 """Base URL of the TfL Open Data API."""
