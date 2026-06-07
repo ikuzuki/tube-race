@@ -74,7 +74,9 @@ export default function StationInfoCard({ roleLabel, station, info }: StationInf
         {displayName(station.name)}
       </h3>
 
-      <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5">{facts}</dl>
+      {/* One fact per row (label left, value right) so each value gets the full
+          card width and never wraps to a second line. */}
+      <dl className="mt-2 flex flex-col gap-1">{facts}</dl>
 
       {/* Show the fun fact in full: facts are one bounded sentence (max ~260
           chars), so the card height stays sensible without truncating them. */}
@@ -104,11 +106,11 @@ interface FactProps {
 
 function Fact({ label, children }: FactProps) {
   return (
-    <div className="min-w-0">
-      <dt className="text-[0.65rem] font-semibold uppercase tracking-wider text-ink-soft">
+    <div className="flex items-baseline justify-between gap-3">
+      <dt className="shrink-0 text-[0.65rem] font-semibold uppercase tracking-wider text-ink-soft">
         {label}
       </dt>
-      <dd className="mt-0.5 text-sm font-semibold leading-tight tabular-nums">{children}</dd>
+      <dd className="text-right text-sm font-semibold leading-tight tabular-nums">{children}</dd>
     </div>
   )
 }
