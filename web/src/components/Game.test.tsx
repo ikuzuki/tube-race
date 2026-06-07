@@ -57,4 +57,36 @@ describe('Game shell', () => {
     expect(stats.solved).toBe(1)
     expect(stats.curStreak).toBe(1)
   })
+
+  it('never offers a replay on the solved daily (one attempt per day)', () => {
+    localStorage.setItem('tube-race:onboarded:v1', '1')
+    render(
+      <Game graph={graph} adj={adj} puzzle={puzzle} today="2026-06-06" initialState={solvedState()} />,
+    )
+    expect(screen.queryByRole('button', { name: /play again/i })).not.toBeInTheDocument()
+  })
+
+  it('offers Play again on a solved archive replay', () => {
+    localStorage.setItem('tube-race:onboarded:v1', '1')
+    // The puzzle's own date is in the past relative to today -> archive replay.
+    render(
+      <Game graph={graph} adj={adj} puzzle={puzzle} today="2026-06-07" initialState={solvedState()} />,
+    )
+    expect(screen.getByRole('button', { name: /play again/i })).toBeInTheDocument()
+  })
+
+  it('offers a mid-run Start again only on archive replays', () => {
+    localStorage.setItem('tube-race:onboarded:v1', '1')
+    // One move into the run, unsolved.
+    let s = initGame(puzzle, graph, adj)
+    s = move(s, legalMoves(s, adj)[0], adj)
+    const { unmount } = render(
+      <Game graph={graph} adj={adj} puzzle={puzzle} today="2026-06-07" initialState={s} />,
+    )
+    expect(screen.getByRole('button', { name: /start again/i })).toBeInTheDocument()
+    unmount()
+
+    render(<Game graph={graph} adj={adj} puzzle={puzzle} today="2026-06-06" initialState={s} />)
+    expect(screen.queryByRole('button', { name: /start again/i })).not.toBeInTheDocument()
+  })
 })

@@ -32,9 +32,15 @@ function setup(props: Partial<React.ComponentProps<typeof ArchiveModal>> = {}) {
 describe('ArchiveModal', () => {
   it('lists every curated puzzle once derived', async () => {
     setup()
-    await waitFor(() => {
-      expect(screen.getAllByRole('listitem')).toHaveLength(DATES.length)
-    })
+    // Deriving the archive's puzzles is compute-heavy (fixture days that miss
+    // their tier run the full attempt budget), so allow well beyond the
+    // default 1s before calling it a failure under parallel suite load.
+    await waitFor(
+      () => {
+        expect(screen.getAllByRole('listitem')).toHaveLength(DATES.length)
+      },
+      { timeout: 10_000 },
+    )
     // Every row reads "X to Y" and shows an unplayed state by default.
     expect(screen.getAllByRole('button', { name: / to / })).toHaveLength(DATES.length)
     expect(screen.getAllByText('Not played')).toHaveLength(DATES.length)

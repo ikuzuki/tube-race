@@ -120,6 +120,11 @@ describe('ResultCard', () => {
     expect(onPlayAgain).toHaveBeenCalledTimes(1)
   })
 
+  it('omits Play again when onPlayAgain is absent (the daily is one attempt)', () => {
+    setup({ onPlayAgain: undefined })
+    expect(screen.queryByRole('button', { name: /play again/i })).not.toBeInTheDocument()
+  })
+
   it('renders a "no streak yet" hint when the streak is zero', () => {
     setup({ streak: 0 })
     expect(screen.getByText(/no streak yet/i)).toBeInTheDocument()

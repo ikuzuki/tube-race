@@ -41,7 +41,11 @@ interface ResultCardProps {
   destination?: Endpoint
   /** Reveal the optimal route on the map. Omit to hide the button. */
   onShowOptimal?: () => void
-  onPlayAgain: () => void
+  /**
+   * Restart the same puzzle. Omit to hide the button: the genuine daily is one
+   * attempt per day (the streak's integrity), so only archive replays get it.
+   */
+  onPlayAgain?: () => void
   onClose: () => void
 }
 
@@ -156,13 +160,15 @@ export default function ResultCard({
             </>
           )}
         </button>
-        <button
-          type="button"
-          onClick={onPlayAgain}
-          className="flex-1 rounded-xl border border-stone-200 bg-paper px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-stone focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress"
-        >
-          Play again
-        </button>
+        {onPlayAgain && (
+          <button
+            type="button"
+            onClick={onPlayAgain}
+            className="flex-1 rounded-xl border border-stone-200 bg-paper px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-stone focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress"
+          >
+            Play again
+          </button>
+        )}
       </div>
 
       {onShowOptimal && (

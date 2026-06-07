@@ -1,3 +1,98 @@
+# Overnight log, round 2, 7 June 2026
+
+Targeted polish from the playtest review plus three owner requests, on
+`feat/polish-round-2` (branched from main after the #4/#5 merges). Final
+status: web 221 tests green, `tsc` clean, `vite build` clean; pipeline
+untouched but re-verified green (154 tests, ruff, mypy); Playwright passes at
+1440px and 390px with zero console errors on a fresh load. Nothing merged to
+`main`.
+
+## What was built, per task
+
+**1. Shared-route rendering** (`mapgeo.ts`, `PlayfieldMap.tsx`). Edges are now
+grouped per station pair and each co-located line gets a signed `offsetIdx`
+centred on zero, rendered with MapLibre `line-offset` (6px per slot) so a
+segment served by Circle and District shows both colours as TfL-style parallel
+strokes. Coordinates are normalised lo-id to hi-id so offsets always land on
+consistent sides. The minimum bar (the current line always visibly continues)
+falls out of drawing every line. Verified live on the Notting Hill Gate to
+High Street Kensington corridor. Note the ridden-path stroke still overdraws
+the centre of a shared segment you have already travelled; the fan-out is most
+visible on unridden segments, which is where the decision matters.
+
+**2. Overground texture** (`theme.ts`, `PlayfieldMap.tsx`, `StatusBar.tsx`).
+New `OVERGROUND_LINE_IDS`/`isOverground` in the theme; the map draws those six
+lines via dashed twin layers (`line-dasharray` is not data-drivable, so solid
+and dashed layers filter one source), for both the revealed network and the
+ridden path. The journey ribbon mirrors it with a striped CSS gradient on
+Overground legs. Hues untouched, as asked. The weaver/metropolitan,
+mildmay/victoria and lioness/circle clashes now differ by texture. Line chips
+and the route narration are unchanged (they carry the line name in text).
+
+**3. Archive-only replay** (`Game.tsx`, `ResultCard.tsx`). A floating "Start
+again" pill appears mid-run on archive replays only (after the first move);
+the post-solve "Play again" (floating row and result card) is now also gated
+to archive puzzles. The genuine daily offers no replay anywhere, keeping one
+attempt per day. `onPlayAgain` on the result card became optional; best
+results per date still win in the completion store, so an improved retry
+updates it. Verified live: appears after move one, resets the run, absent on
+the daily; covered by component tests.
+
+**4. No degree-1 endpoints** (`daily.ts`). The tier draw rejects endpoints
+with fewer than two distinct neighbours (with a defensive escape for
+degenerate graphs). On the real graph that excludes 33 termini (Stratford
+International, Morden, Brixton and friends); a 40-day probe showed zero
+terminus endpoints and zero tier fallbacks. Today's daily changed from
+Stratford International to Latimer Road to Bond Street as a result, which is
+the intended effect. The legacy band-override path is untouched.
+
+**5. Touch targets** (`PlayfieldMap.tsx`). Click hit box raised from a 16px to
+a 22px half-width (~44px effective), keeping nearest-legal-within-box. A
+deliberate 20px-off-centre tap at 390px registers the move.
+
+**6. Mobile chrome** (`StatusBar.tsx`, `Game.tsx`). Before the first move the
+journey row collapses to a one-line "Start to Destination" on narrow screens
+(the ribbon appears with the first leg); the compass shrinks to 44px on
+mobile; paddings tightened. The map container is now flex-fill rather than a
+fixed 62vh slice (still capped at 640px), so the freed chrome becomes map.
+Status bar at 390x844: 181px to 149px; map share of the viewport 62% to 70%.
+
+**7. Cold-start framing** (`PlayfieldMap.tsx`). The opening frame fits to a
+wider 11.8 max zoom before any move (verified 11.80 at launch, tightening to
+12.50 after move one), so launch shows surrounding city instead of a blank
+basemap around one station.
+
+**8. Backtrack de-emphasis** (`mapgeo.ts`, `PlayfieldMap.tsx`). The
+immediately-previous station carries a `prev` flag and renders dimmed (ring
+0.35, dot 0.45 opacity) while staying fully legal. Right after move one that
+is the start marker, which is correct (it IS the backtrack target).
+
+## Decisions that may need your call
+
+- The replay gating also removed the daily's post-solve "Play again" button,
+  which previously allowed casual same-day retries. That follows the
+  one-attempt-a-day rationale in the request, but it is a behaviour removal;
+  easy to restore if you want daily retries that simply do not re-record.
+- Parallel-stroke spacing is 6px per slot at all zooms. Four-line corridors
+  (Baker Street to Liverpool Street) get wide; looked fine in testing but
+  worth an eyeball on the City corridors.
+- Dashes for the Overground are texture-only, as requested; DLR and Elizabeth
+  stay solid (their hues are distinct).
+
+## Known gaps
+
+- The vitest suite can flake under heavy machine load (default 5s per-test
+  timeout; the archive menu test derives ten puzzles in jsdom and fixture days
+  that miss their tier burn the full attempt budget). I raised that test's
+  waitFor to 10s; a tidier fix would be capping fixture attempt budgets.
+- Stray dev servers from earlier sessions still hold ports 5173-5179; this
+  round's server ran on 5180. Harmless, but a machine restart would tidy them.
+- The route narration keeps solid colour pills for Overground lines (name text
+  carries the information); extend the stripe treatment there if you want full
+  consistency.
+
+---
+
 # Overnight log, 7 June 2026
 
 Everything below landed on `feat/expand-network` (now pushed, draft PR

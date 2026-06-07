@@ -206,6 +206,40 @@ describe('stationsGeoJSON — fog + roles', () => {
     expect(byId.get('oxford-circus')?.moveClass).toBeUndefined()
   })
 
+  it('flags only the just-left station as prev', () => {
+    // Two moves in: oxford-circus -> warren-street -> euston. Warren Street is
+    // the immediately-previous station; the start is not.
+    const state = makeState({
+      currentId: 'euston',
+      path: [
+        { stationId: 'warren-street', line: 'victoria' },
+        { stationId: 'euston', line: 'victoria' },
+      ],
+      revealed: new Set(['oxford-circus', 'warren-street', 'euston']),
+    })
+    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], 'victoria', 'kings-cross')
+    const byId = new Map(fc.features.map((f) => [f.properties.id, f.properties]))
+    expect(byId.get('warren-street')?.prev).toBe(true)
+    expect(byId.get('oxford-circus')?.prev).toBeUndefined()
+    expect(byId.get('euston')?.prev).toBeUndefined()
+  })
+
+  it('flags the start as prev right after the first move', () => {
+    const state = makeState({
+      currentId: 'warren-street',
+      path: [{ stationId: 'warren-street', line: 'victoria' }],
+      revealed: new Set(['oxford-circus', 'warren-street']),
+    })
+    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], 'victoria', 'kings-cross')
+    const byId = new Map(fc.features.map((f) => [f.properties.id, f.properties]))
+    expect(byId.get('oxford-circus')?.prev).toBe(true)
+  })
+
+  it('flags nothing as prev before the first move', () => {
+    const fc = stationsGeoJSON(GRAPH, makeState(), STATIONS_BY_ID, [], null, 'kings-cross')
+    expect(fc.features.every((f) => f.properties.prev === undefined)).toBe(true)
+  })
+
   it('emits [lon, lat] order', () => {
     const state = makeState({ revealed: new Set(['oxford-circus']) })
     const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], null, 'kings-cross')
@@ -242,6 +276,42 @@ describe('revealedEdgesGeoJSON — fog', () => {
     const fc = revealedEdgesGeoJSON(GRAPH, state, STATIONS_BY_ID)
     expect(fc.features).toHaveLength(2)
     expect(fc.features.map((f) => f.properties.line).sort()).toEqual(['northern', 'victoria'])
+  })
+
+  it('fans co-located lines out with offsets centred around zero', () => {
+    const state = makeState({ revealed: new Set(['warren-street', 'euston']) })
+    const fc = revealedEdgesGeoJSON(GRAPH, state, STATIONS_BY_ID)
+    const byLine = new Map(fc.features.map((f) => [f.properties.line, f.properties.offsetIdx]))
+    // Alphabetical: northern takes the first slot, victoria the second.
+    expect(byLine.get('northern')).toBe(-0.5)
+    expect(byLine.get('victoria')).toBe(0.5)
+    // Both features share identical lo->hi coordinates so the offsets land on
+    // consistent opposite sides.
+    expect(fc.features[0].geometry.coordinates).toEqual(fc.features[1].geometry.coordinates)
+  })
+
+  it('gives a single-line segment a zero offset', () => {
+    const state = makeState({ revealed: new Set(['oxford-circus', 'warren-street']) })
+    const fc = revealedEdgesGeoJSON(GRAPH, state, STATIONS_BY_ID)
+    expect(fc.features[0].properties.offsetIdx).toBe(0)
+  })
+
+  it('flags Overground edges as dashed and tube edges as solid', () => {
+    const og: TubeGraph = {
+      ...GRAPH,
+      lines: [...GRAPH.lines, { id: 'mildmay', name: 'Mildmay', colour: '#437EC1' }],
+      edges: [...GRAPH.edges, { from: 'oxford-circus', to: 'goodge-street', line: 'mildmay' }],
+    }
+    const state = makeState({ revealed: new Set(['oxford-circus', 'goodge-street']) })
+    const fc = revealedEdgesGeoJSON(og, state, STATIONS_BY_ID)
+    const mildmay = fc.features.find((f) => f.properties.line === 'mildmay')
+    expect(mildmay?.properties.dashed).toBe(true)
+    const victoria = revealedEdgesGeoJSON(
+      og,
+      makeState({ revealed: new Set(['oxford-circus', 'warren-street']) }),
+      STATIONS_BY_ID,
+    ).features[0]
+    expect(victoria.properties.dashed).toBe(false)
   })
 })
 

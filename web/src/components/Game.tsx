@@ -171,7 +171,7 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
         onStats={() => setStatsOpen(true)}
       />
 
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-3 p-3 sm:p-4 lg:px-6">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-3 p-3 sm:p-4 lg:px-6">
         <StatusBar
           startName={startName}
           targetName={targetName}
@@ -189,7 +189,9 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
           km={km}
         />
 
-        <div className="relative h-[62vh] max-h-[640px] min-h-[380px] w-full overflow-hidden rounded-2xl bg-map shadow-xl ring-1 ring-black/40">
+        {/* The map takes whatever the chrome leaves: flex-fill rather than a
+            fixed vh slice, so a slimmer status bar directly buys map height. */}
+        <div className="relative max-h-[640px] min-h-[380px] w-full flex-1 overflow-hidden rounded-2xl bg-map shadow-xl ring-1 ring-black/40">
           <PlayfieldMap
             graph={graph}
             state={state}
@@ -218,7 +220,8 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
       </main>
 
       {/* When the result card is dismissed (e.g. to view the best route), keep a
-          way back to it and to a fresh game. */}
+          way back to it; archive replays also get a fresh-game shortcut. The
+          genuine daily is one attempt per day, so it never offers a replay. */}
       {state.solved && !resultOpen && (
         <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center gap-2">
           <button
@@ -227,11 +230,27 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
           >
             View result
           </button>
+          {!isDaily && (
+            <button
+              onClick={handlePlayAgain}
+              className="rounded-full bg-progress px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+            >
+              Play again
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Mid-run restart for archive replays only: retry the past puzzle from
+          scratch (the best result per date is kept, so an improved retry counts). */}
+      {!isDaily && !state.solved && state.path.length > 0 && (
+        <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center">
           <button
             onClick={handlePlayAgain}
-            className="rounded-full bg-progress px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
+            className="flex items-center gap-1.5 rounded-full bg-paper px-4 py-2 text-sm font-semibold text-ink shadow-lg ring-1 ring-black/10 transition hover:bg-stone"
           >
-            Play again
+            <RestartIcon />
+            Start again
           </button>
         </div>
       )}
@@ -272,9 +291,28 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
         start={startCard ?? undefined}
         destination={destCard ?? undefined}
         onShowOptimal={handleShowOptimal}
-        onPlayAgain={handlePlayAgain}
+        onPlayAgain={isDaily ? undefined : handlePlayAgain}
         onClose={() => setResultOpen(false)}
       />
     </div>
+  )
+}
+
+function RestartIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M3 12a9 9 0 1 0 3-6.7" />
+      <path d="M3 4v5h5" />
+    </svg>
   )
 }

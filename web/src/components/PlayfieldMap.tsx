@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import maplibregl, {
   type LngLatLike,
   type GeoJSONSource,
+  type LineLayerSpecification,
   type MapGeoJSONFeature,
   type StyleSpecification,
 } from 'maplibre-gl'
@@ -46,6 +47,9 @@ const LONDON_CENTRE: LngLatLike = [-0.118, 51.51]
 const INITIAL_ZOOM = 12
 /** Ceiling for the follow-cam zoom: it never zooms in past this. */
 const FOLLOW_ZOOM = 12.5
+/** Wider ceiling for the opening frame, before any move has been made, so the
+ *  player sees a hint of the surrounding area instead of a blank basemap. */
+const COLD_START_ZOOM = 11.8
 const FOLLOW_MS = 600
 /** Screen padding (px) kept around the current station + its legal moves. */
 const FOLLOW_PADDING = 64
@@ -77,7 +81,9 @@ const SRC_OPTIMAL = 'tr-optimal'
 const SRC_STATIONS = 'tr-stations'
 
 const LYR_EDGES = 'tr-edges-line'
+const LYR_EDGES_DASH = 'tr-edges-line-dash' // Overground edges, dashed texture
 const LYR_PATH = 'tr-path-line'
+const LYR_PATH_DASH = 'tr-path-line-dash' // Overground hops of the ridden path
 const LYR_OPTIMAL = 'tr-optimal-line'
 const LYR_STATION_DOT = 'tr-station-dot'
 const LYR_STATION_RING = 'tr-station-ring'
@@ -196,17 +202,34 @@ export default function PlayfieldMap({
         map.addSource(id, { type: 'geojson', data: EMPTY_FC })
       }
 
-      // Revealed network edges, coloured per line.
+      // Revealed network edges, coloured per line. Co-located lines fan out as
+      // parallel strokes via the precomputed offsetIdx (see mapgeo), so a
+      // segment shared by, say, Circle and District shows BOTH colours and the
+      // player's current line always reads as continuing. Overground lines are
+      // drawn by a dashed twin layer (line-dasharray is not data-drivable), so
+      // each layer filters to its half of the source.
+      const edgePaint: LineLayerSpecification['paint'] = {
+        'line-color': ['get', 'colour'],
+        'line-width': 3,
+        'line-opacity': 0.55,
+        'line-offset': ['*', ['get', 'offsetIdx'], 6],
+      }
       map.addLayer({
         id: LYR_EDGES,
         type: 'line',
         source: SRC_EDGES,
+        filter: ['!=', ['get', 'dashed'], true],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-color': ['get', 'colour'],
-          'line-width': 3,
-          'line-opacity': 0.55,
-        },
+        paint: { ...edgePaint },
+      })
+      map.addLayer({
+        id: LYR_EDGES_DASH,
+        type: 'line',
+        source: SRC_EDGES,
+        filter: ['==', ['get', 'dashed'], true],
+        // Butt caps keep the dash rhythm crisp; round caps would blob them.
+        layout: { 'line-cap': 'butt', 'line-join': 'round' },
+        paint: { ...edgePaint, 'line-dasharray': [2.2, 1.6] },
       })
 
       // Optimal/par route (post-game): dashed gold, above edges, below path.
@@ -223,17 +246,28 @@ export default function PlayfieldMap({
         },
       })
 
-      // The travelled path — thicker + brighter than the revealed edges.
+      // The travelled path — thicker + brighter than the revealed edges, with
+      // the same dashed twin for Overground hops.
+      const pathPaint: LineLayerSpecification['paint'] = {
+        'line-color': ['get', 'colour'],
+        'line-width': 6,
+        'line-opacity': 0.95,
+      }
       map.addLayer({
         id: LYR_PATH,
         type: 'line',
         source: SRC_PATH,
+        filter: ['!=', ['get', 'dashed'], true],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-color': ['get', 'colour'],
-          'line-width': 6,
-          'line-opacity': 0.95,
-        },
+        paint: { ...pathPaint },
+      })
+      map.addLayer({
+        id: LYR_PATH_DASH,
+        type: 'line',
+        source: SRC_PATH,
+        filter: ['==', ['get', 'dashed'], true],
+        layout: { 'line-cap': 'butt', 'line-join': 'round' },
+        paint: { ...pathPaint, 'line-dasharray': [1.6, 0.9] },
       })
 
       // Station outer ring — emphasis for current/target/start/legal.
@@ -269,9 +303,12 @@ export default function PlayfieldMap({
             // Legal/visited rings tint by line continuation vs switch.
             ['case', ['==', ['get', 'moveClass'], 'continue'], COLOUR_CURRENT, '#9aa3af'],
           ],
-          // Switch moves read as muted/secondary; continuations are bold.
+          // The just-left station reads dimmest (backtracking is legal but
+          // discouraged); switch moves muted; continuations bold.
           'circle-stroke-opacity': [
             'case',
+            ['==', ['get', 'prev'], true],
+            0.35,
             ['==', ['get', 'moveClass'], 'switch'],
             0.6,
             1,
@@ -305,6 +342,9 @@ export default function PlayfieldMap({
           ],
           'circle-stroke-width': 1.5,
           'circle-stroke-color': '#ffffff',
+          // Dim the just-left station's dot along with its ring.
+          'circle-opacity': ['case', ['==', ['get', 'prev'], true], 0.45, 1],
+          'circle-stroke-opacity': ['case', ['==', ['get', 'prev'], true], 0.45, 1],
         },
       })
 
@@ -356,9 +396,10 @@ export default function PlayfieldMap({
 
       // General click with a generous hit box so the small dots are easy to tap
       // — a layer-scoped click only fires on a pixel-perfect hit, which felt
-      // unresponsive. Pick the nearest LEGAL station within the box.
+      // unresponsive. Pick the nearest LEGAL station within the box. The 22px
+      // half-width gives a ~44px effective target, matching the touch guideline.
       map.on('click', (e) => {
-        const r = 16
+        const r = 22
         const feats = map.queryRenderedFeatures(
           [
             [e.point.x - r, e.point.y - r],
@@ -438,7 +479,10 @@ export default function PlayfieldMap({
 
   // --- Follow-camera: keep the current station AND every legal next move on
   // screen (long Elizabeth/Overground hops would otherwise land off-screen at
-  // a fixed zoom), without ever zooming in past FOLLOW_ZOOM. ---
+  // a fixed zoom), without ever zooming in past FOLLOW_ZOOM. Before the first
+  // move the frame is allowed wider (COLD_START_ZOOM) so launch shows some
+  // surrounding city rather than one station on a blank basemap; it tightens
+  // to the normal follow-cam as soon as the player moves. ---
   const flyToPlayfield = useCallback(() => {
     const map = mapRef.current
     if (!map) return
@@ -449,17 +493,18 @@ export default function PlayfieldMap({
       const pos = stationLngLat(stationsById, nb.stationId)
       if (pos) bounds.extend(pos)
     }
+    const maxZoom = state.path.length === 0 ? COLD_START_ZOOM : FOLLOW_ZOOM
     try {
       map.fitBounds(bounds, {
         padding: FOLLOW_PADDING,
-        maxZoom: FOLLOW_ZOOM,
+        maxZoom,
         duration: FOLLOW_MS,
       })
     } catch {
       // Degenerate container (padding exceeds canvas): fall back to a plain ease.
-      map.easeTo({ center: centre, zoom: FOLLOW_ZOOM, duration: FOLLOW_MS })
+      map.easeTo({ center: centre, zoom: maxZoom, duration: FOLLOW_MS })
     }
-  }, [stationsById, state.currentId, legalMoves])
+  }, [stationsById, state.currentId, state.path.length, legalMoves])
 
   useEffect(() => {
     if (!ready) return

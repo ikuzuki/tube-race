@@ -11,7 +11,7 @@ import { displayName } from '../lib/format'
 import type { RouteLeg } from '../lib/route'
 import { stopsLabel } from '../lib/route'
 import { points } from '../lib/score'
-import { lineColour, lineTextColour } from '../theme'
+import { isOverground, lineColour, lineTextColour } from '../theme'
 import { ChangeIcon, StopIcon } from './icons'
 
 /** Ribbon pixels per stop ridden. */
@@ -46,7 +46,7 @@ export default function StatusBar(props: StatusBarProps) {
 
   return (
     <section
-      className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-stone-200 bg-paper px-4 py-3"
+      className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-stone-200 bg-paper px-4 py-2.5 sm:gap-y-3 sm:py-3"
       aria-label="Game status"
     >
       <div className="flex shrink-0 flex-col gap-1.5">
@@ -173,6 +173,7 @@ interface JourneyProps {
 function Journey({ startName, targetName, legs, lineNames, stationsById, solved }: JourneyProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const ridden = legs.reduce((n, l) => n + l.stops, 0)
+  const empty = legs.length === 0
 
   useEffect(() => {
     const el = scrollRef.current
@@ -182,18 +183,30 @@ function Journey({ startName, targetName, legs, lineNames, stationsById, solved 
   const name = (id: string): string => displayName(stationsById.get(id)?.name ?? id)
   const line = (id: string): string => lineNames.get(id) ?? id
 
-  const journeyText =
-    legs.length === 0
-      ? 'No moves yet'
-      : legs
-          .map(
-            (leg, i) =>
-              `${i > 0 ? `change at ${name(leg.fromId)}, ` : ''}${stopsLabel(leg.stops)} on ${line(leg.lineId)}`,
-          )
-          .join(', ')
+  const journeyText = empty
+    ? 'No moves yet'
+    : legs
+        .map(
+          (leg, i) =>
+            `${i > 0 ? `change at ${name(leg.fromId)}, ` : ''}${stopsLabel(leg.stops)} on ${line(leg.lineId)}`,
+        )
+        .join(', ')
 
+  // Before the first move there is no ride to show, so narrow screens get a
+  // one-line "Start to Destination" instead of the full ribbon row; the ribbon
+  // appears with the first leg. From sm up the full row always shows.
   return (
-    <div className="order-last flex min-w-0 basis-full items-center gap-3 sm:order-none sm:flex-1 sm:basis-0">
+    <>
+      {empty && (
+        <p className="order-last min-w-0 basis-full truncate text-sm font-bold leading-tight text-ink sm:hidden">
+          {startName} <span className="font-semibold text-ink-soft">to</span> {targetName}
+        </p>
+      )}
+      <div
+        className={`order-last min-w-0 basis-full items-center gap-3 sm:order-none sm:flex sm:flex-1 sm:basis-0 ${
+          empty ? 'hidden' : 'flex'
+        }`}
+      >
       <Endpoint label="Start" name={startName} align="left" />
 
       <div
@@ -218,7 +231,7 @@ function Journey({ startName, targetName, legs, lineNames, stationsById, solved 
               )}
               <span
                 className="h-2 shrink-0"
-                style={{ width: leg.stops * STOP_PX, backgroundColor: lineColour(leg.lineId) }}
+                style={{ width: leg.stops * STOP_PX, ...legStyle(leg.lineId) }}
                 title={`${line(leg.lineId)}: ${stopsLabel(leg.stops)} to ${name(leg.toId)}`}
               />
             </span>
@@ -243,8 +256,21 @@ function Journey({ startName, targetName, legs, lineNames, stationsById, solved 
       </div>
 
       <Endpoint label="Destination" name={targetName} align="right" />
-    </div>
+      </div>
+    </>
   )
+}
+
+/**
+ * Ribbon fill for a leg: solid line colour, except Overground lines which get
+ * a dashed (striped) texture to match their rendering on the map.
+ */
+function legStyle(lineId: string): React.CSSProperties {
+  const colour = lineColour(lineId)
+  if (!isOverground(lineId)) return { backgroundColor: colour }
+  return {
+    background: `repeating-linear-gradient(90deg, ${colour} 0 9px, transparent 9px 13px)`,
+  }
 }
 
 function Endpoint({
@@ -289,7 +315,12 @@ function Compass({ bearingDeg, km }: { bearingDeg: number; km: number }) {
       className="flex flex-col items-center gap-1"
       aria-label={`Destination is ${formatKm(km)} away, bearing ${Math.round(bearingDeg)} degrees`}
     >
-      <svg width="56" height="56" viewBox="0 0 100 100" role="img" aria-hidden="true">
+      <svg
+        viewBox="0 0 100 100"
+        role="img"
+        aria-hidden="true"
+        className="h-11 w-11 sm:h-14 sm:w-14"
+      >
         <circle cx="50" cy="50" r="44" fill="var(--color-map)" stroke="var(--color-stone-200)" strokeWidth="3" />
         {[0, 90, 180, 270].map((a) => (
           <line
