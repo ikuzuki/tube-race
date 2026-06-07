@@ -12,9 +12,21 @@ interface HeaderProps {
   onHowToPlay: () => void
   onArchive: () => void
   onStats: () => void
+  /** Toggle the day's Expert challenge on/off. */
+  onExpert: () => void
+  /** Whether the Expert challenge is currently active (highlights the button). */
+  expertActive: boolean
 }
 
-export default function Header({ date, subtitle, onHowToPlay, onArchive, onStats }: HeaderProps) {
+export default function Header({
+  date,
+  subtitle,
+  onHowToPlay,
+  onArchive,
+  onStats,
+  onExpert,
+  expertActive,
+}: HeaderProps) {
   return (
     <header className="flex items-center justify-between gap-3 border-b border-stone-200 bg-paper px-4 py-3">
       <div className="flex min-w-0 items-center gap-2.5">
@@ -46,6 +58,16 @@ export default function Header({ date, subtitle, onHowToPlay, onArchive, onStats
             <circle cx="12" cy="12" r="9" />
             <path d="M9.5 9a2.5 2.5 0 0 1 4.5 1.5c0 1.5-2 2-2 3.5" />
             <path d="M12 17.5h.01" />
+          </svg>
+        </IconButton>
+
+        <IconButton
+          label={expertActive ? 'Back to the daily' : 'Expert challenge'}
+          onClick={onExpert}
+          active={expertActive}
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M13 2L4 14h6l-1 8 9-12h-6z" />
           </svg>
         </IconButton>
 
@@ -92,16 +114,23 @@ interface IconButtonProps {
   label: string
   onClick: () => void
   children: React.ReactNode
+  /** Render in the active (selected) state. */
+  active?: boolean
 }
 
-function IconButton({ label, onClick, children }: IconButtonProps) {
+function IconButton({ label, onClick, children, active = false }: IconButtonProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
+      aria-pressed={active}
       title={label}
-      className="grid h-9 w-9 place-items-center rounded-full text-ink-soft transition hover:bg-stone hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress"
+      className={`grid h-9 w-9 place-items-center rounded-full transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress ${
+        active
+          ? 'bg-progress/15 text-progress'
+          : 'text-ink-soft hover:bg-stone hover:text-ink'
+      }`}
     >
       {children}
     </button>

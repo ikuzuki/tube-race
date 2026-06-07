@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react'
 import {
   buildAdjacency,
+  dailyExpert,
   dailyPuzzle,
   loadGraph,
 } from './engine'
@@ -39,6 +40,19 @@ export default function App() {
   const [status, setStatus] = useState<Status>({ phase: 'loading' })
   // Non-null while replaying a past puzzle from the archive menu.
   const [archiveDate, setArchiveDate] = useState<string | null>(null)
+  // True while playing the day's Expert challenge (a separate track).
+  const [expert, setExpert] = useState(false)
+
+  // Archive and Expert are mutually exclusive selections; picking one clears
+  // the other so the active puzzle is unambiguous.
+  const selectDate = (d: string | null) => {
+    setExpert(false)
+    setArchiveDate(d)
+  }
+  const toggleExpert = () => {
+    setArchiveDate(null)
+    setExpert((e) => !e)
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -90,18 +104,25 @@ export default function App() {
   }
 
   const { graph, adj, puzzle, today } = status.data
-  const activePuzzle =
-    archiveDate && archiveDate !== today ? dailyPuzzle(graph, adj, archiveDate) : puzzle
+  const activePuzzle = expert
+    ? dailyExpert(graph, adj, today)
+    : archiveDate && archiveDate !== today
+      ? dailyPuzzle(graph, adj, archiveDate)
+      : puzzle
+  // Expert shares today's date, so key it apart to force a fresh game on toggle.
+  const gameKey = expert ? `${today}:expert` : activePuzzle.date
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      {/* Keyed by date so swapping puzzles resets all per-run state. */}
+      {/* Keyed so swapping puzzles (date or Expert track) resets per-run state. */}
       <Game
-        key={activePuzzle.date}
+        key={gameKey}
         graph={graph}
         adj={adj}
         puzzle={activePuzzle}
         today={today}
-        onSelectDate={setArchiveDate}
+        onSelectDate={selectDate}
+        isExpert={expert}
+        onToggleExpert={toggleExpert}
       />
     </div>
   )

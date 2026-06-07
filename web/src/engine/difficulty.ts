@@ -6,7 +6,7 @@
 import type { PathResult } from './types'
 import { seededRng } from './rng'
 
-export type Tier = 'easy' | 'medium' | 'hard'
+export type Tier = 'easy' | 'medium' | 'hard' | 'expert'
 
 export interface TierSpec {
   /** Hop guardrails: below is trivial, above is tedious rather than hard. */
@@ -29,6 +29,11 @@ export const TIER_SPECS: Record<Tier, TierSpec> = {
   easy: { minHops: 5, maxHops: 9, minChanges: 1, minGap: 1.0, maxGap: 1.15 },
   medium: { minHops: 8, maxHops: 13, minChanges: 2, minGap: 1.15, maxGap: 1.4 },
   hard: { minHops: 10, maxHops: 16, minChanges: 2, minGap: 1.4, maxGap: Infinity },
+  // Expert sits above the daily rotation: 3+ interchanges (the compass cannot
+  // shortcut multi-line routing) and a gap of 2+ (the naive route is at least
+  // twice the optimal). Reached only via the Daily Expert track, never the
+  // ordinary daily, so the daily stays accessible.
+  expert: { minHops: 12, maxHops: 20, minChanges: 3, minGap: 2.0, maxGap: Infinity },
 }
 
 /** Does an optimal route plus its greedy gap fall inside a tier's band? */
@@ -48,7 +53,7 @@ export function matchesTier(par: PathResult, gap: number, tier: Tier): boolean {
  * none (e.g. a no-change route, or one shorter than every tier's floor).
  */
 export function classifyDifficulty(par: PathResult, gap: number): Tier | null {
-  for (const tier of ['easy', 'medium', 'hard'] as const) {
+  for (const tier of ['easy', 'medium', 'hard', 'expert'] as const) {
     if (matchesTier(par, gap, tier)) return tier
   }
   return null

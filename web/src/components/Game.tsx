@@ -35,6 +35,10 @@ interface GameProps {
   today?: string
   /** Swap the active puzzle to a past date (null returns to today's daily). */
   onSelectDate?: (dateISO: string | null) => void
+  /** True when this puzzle is the day's Expert challenge (off the daily streak). */
+  isExpert?: boolean
+  /** Toggle the Expert challenge on/off (returns to the ordinary daily). */
+  onToggleExpert?: () => void
   /** Optional seed state, primarily for tests. */
   initialState?: GameState
 }
@@ -46,7 +50,16 @@ function prettyDate(iso: string): string {
   return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
-export default function Game({ graph, adj, puzzle, today, onSelectDate, initialState }: GameProps) {
+export default function Game({
+  graph,
+  adj,
+  puzzle,
+  today,
+  onSelectDate,
+  isExpert = false,
+  onToggleExpert,
+  initialState,
+}: GameProps) {
   const { state, legalMoves, play, restart } = useGameState(puzzle, graph, adj, initialState)
   const { stats, recordResult } = useStats()
   const { completions, record: recordCompletion } = useArchive()
@@ -57,7 +70,14 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
   // lifetime stats and the streak only move on the genuine daily.
   const dateISO = puzzle.date
   const todayISO = today ?? puzzle.date
-  const isDaily = dateISO === todayISO
+  const isToday = dateISO === todayISO
+  // Only the ordinary daily feeds the streak and is one-attempt. The Expert
+  // challenge shares today's date but runs on its own track; archive replays
+  // are past dates.
+  const isStreakDaily = isToday && !isExpert
+  // Completions are kept per puzzle: the Expert track is keyed apart so it does
+  // not collide with the day's ordinary daily.
+  const completionKey = isExpert ? `${dateISO}:expert` : dateISO
   const stationsById = useMemo(() => stationIndex(graph), [graph])
   const lineNames = useMemo(
     () => new Map(graph.lines.map((l) => [l.id, l.name])),
@@ -113,24 +133,24 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
   // only when this is the genuine daily.
   const recordedRef = useRef<string | null>(null)
   useEffect(() => {
-    if (!state.solved || recordedRef.current === dateISO) return
-    recordedRef.current = dateISO
+    if (!state.solved || recordedRef.current === completionKey) return
+    recordedRef.current = completionKey
     const sc = score(state)
     const scoreOverPar = Math.max(
       0,
       points(sc.hops, sc.changes) - points(sc.parHops, sc.parChanges),
     )
-    if (isDaily) {
+    if (isStreakDaily) {
       recordResult({ date: dateISO, solved: true, scoreOverPar, optimal: sc.optimal })
     }
-    recordCompletion(dateISO, {
+    recordCompletion(completionKey, {
       solved: true,
       score: points(sc.hops, sc.changes),
       parScore: points(sc.parHops, sc.parChanges),
     })
     setIntroOpen(false)
     setResultOpen(true)
-  }, [state, dateISO, isDaily, recordResult, recordCompletion])
+  }, [state, dateISO, completionKey, isStreakDaily, recordResult, recordCompletion])
 
   const sc = state.solved ? score(state) : null
   const playerScore = sc ? points(sc.hops, sc.changes) : points(state.path.length, state.changes)
@@ -165,10 +185,12 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
     <div className="flex min-h-screen flex-col bg-stone text-ink">
       <Header
         date={prettyDate(dateISO)}
-        subtitle={isDaily ? undefined : 'Past puzzle'}
+        subtitle={isExpert ? 'Expert challenge' : isToday ? undefined : 'Past puzzle'}
         onHowToPlay={() => setOnboardingOpen(true)}
         onArchive={() => setArchiveOpen(true)}
         onStats={() => setStatsOpen(true)}
+        onExpert={() => onToggleExpert?.()}
+        expertActive={isExpert}
       />
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-3 p-3 sm:p-4 lg:px-6">
@@ -230,7 +252,7 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
           >
             View result
           </button>
-          {!isDaily && (
+          {!isStreakDaily && (
             <button
               onClick={handlePlayAgain}
               className="rounded-full bg-progress px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
@@ -243,7 +265,7 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
 
       {/* Mid-run restart for archive replays only: retry the past puzzle from
           scratch (the best result per date is kept, so an improved retry counts). */}
-      {!isDaily && !state.solved && state.path.length > 0 && (
+      {!isStreakDaily && !state.solved && state.path.length > 0 && (
         <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center">
           <button
             onClick={handlePlayAgain}
@@ -262,7 +284,13 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
           onClose={() => setIntroOpen(false)}
           start={startCard}
           destination={destCard}
-          title={isDaily ? "Today's journey" : 'Journey from the archive'}
+          title={
+            isExpert
+              ? 'Expert challenge'
+              : isToday
+                ? "Today's journey"
+                : 'Journey from the archive'
+          }
         />
       )}
       <StatsModal open={statsOpen} onClose={() => setStatsOpen(false)} stats={stats} />
@@ -291,7 +319,7 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
         start={startCard ?? undefined}
         destination={destCard ?? undefined}
         onShowOptimal={handleShowOptimal}
-        onPlayAgain={isDaily ? undefined : handlePlayAgain}
+        onPlayAgain={isStreakDaily ? undefined : handlePlayAgain}
         onClose={() => setResultOpen(false)}
       />
     </div>

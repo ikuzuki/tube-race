@@ -31,6 +31,7 @@ const TIER_STYLES: Record<Tier, string> = {
   easy: 'bg-progress text-white',
   medium: 'bg-warn text-ink',
   hard: 'bg-central text-white',
+  expert: 'bg-ink text-white',
 }
 
 /** "2026-05-18" -> "18 May" (falls back to the raw string if unparseable). */

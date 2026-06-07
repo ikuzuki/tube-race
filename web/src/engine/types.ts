@@ -73,7 +73,7 @@ export interface DifficultyBand {
 }
 
 /** Difficulty tier a puzzle is selected for. See engine/difficulty.ts. */
-export type Tier = 'easy' | 'medium' | 'hard'
+export type Tier = 'easy' | 'medium' | 'hard' | 'expert'
 
 export interface DailyPuzzle {
   /** ISO date string used as the seed, e.g. "2026-06-06". */
