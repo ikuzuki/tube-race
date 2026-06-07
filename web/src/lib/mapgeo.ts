@@ -5,7 +5,7 @@
 // Coordinate convention throughout is GeoJSON order: [lon, lat].
 
 import type { GameState, Neighbour, Station, TubeGraph } from '../engine'
-import { lineColour } from '../theme'
+import { isOverground, lineColour } from '../theme'
 import { displayName } from './format'
 
 // --- Minimal GeoJSON shapes -------------------------------------------------
@@ -51,6 +51,15 @@ export interface StationProps {
 export interface EdgeProps {
   line: string
   colour: string
+  /**
+   * Signed parallel-offset index for co-located lines on the same station
+   * pair: 0 when the segment carries one line, otherwise centred around 0
+   * (e.g. -0.5/+0.5 for two lines). The layer multiplies it into pixels so
+   * shared segments render as TfL-style side-by-side strokes.
+   */
+  offsetIdx: number
+  /** True for Overground lines, which render with a dashed stroke. */
+  dashed: boolean
 }
 
 /** A neighbour annotated with whether taking it keeps the player on their line. */
@@ -220,37 +229,62 @@ export function stationsGeoJSON(
 // --- Edge GeoJSON -----------------------------------------------------------
 
 /**
- * One LineString per graph edge whose BOTH endpoints are revealed (fog rule:
- * never draw an edge into the unknown). Coloured by line. De-duplicates the
- * undirected edge so parallel A->B / B->A entries on the same line draw once.
+ * One LineString per (station pair, line) whose BOTH endpoints are revealed
+ * (fog rule: never draw an edge into the unknown). Coloured by line and
+ * de-duplicated per undirected pair. Where several lines share a pair (Circle
+ * and District through Westminster, say), each gets a distinct `offsetIdx`
+ * centred around 0 so the map can fan them out as parallel strokes — the
+ * player's current line is then always visibly present on a shared segment.
+ * Coordinates run lo-id -> hi-id so every co-located feature offsets to a
+ * consistent side regardless of how the source edge was oriented.
  */
 export function revealedEdgesGeoJSON(
   graph: TubeGraph,
   state: GameState,
   stationsById: Map<string, Station>,
 ): FeatureCollection<LineFeature<EdgeProps>> {
-  const features: LineFeature<EdgeProps>[] = []
-  const seen = new Set<string>()
+  // Group revealed edges by undirected station pair, collecting their lines.
+  const byPair = new Map<string, { a: Station; b: Station; lines: string[] }>()
+  const pairOrder: string[] = []
   for (const edge of graph.edges) {
     if (!state.revealed.has(edge.from) || !state.revealed.has(edge.to)) continue
-    const a = stationsById.get(edge.from)
-    const b = stationsById.get(edge.to)
-    if (!a || !b) continue
     const lo = edge.from < edge.to ? edge.from : edge.to
     const hi = edge.from < edge.to ? edge.to : edge.from
-    const key = `${lo}|${hi}|${edge.line}`
-    if (seen.has(key)) continue
-    seen.add(key)
-    features.push({
-      type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates: [
-          [a.lon, a.lat],
-          [b.lon, b.lat],
-        ],
-      },
-      properties: { line: edge.line, colour: lineColourOf(graph, edge.line) },
+    const a = stationsById.get(lo)
+    const b = stationsById.get(hi)
+    if (!a || !b) continue
+    const key = `${lo}|${hi}`
+    let entry = byPair.get(key)
+    if (!entry) {
+      entry = { a, b, lines: [] }
+      byPair.set(key, entry)
+      pairOrder.push(key)
+    }
+    if (!entry.lines.includes(edge.line)) entry.lines.push(edge.line)
+  }
+
+  const features: LineFeature<EdgeProps>[] = []
+  for (const key of pairOrder) {
+    const { a, b, lines } = byPair.get(key)!
+    // Alphabetical order keeps each line on a stable side of the corridor.
+    const sorted = [...lines].sort()
+    sorted.forEach((line, i) => {
+      features.push({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [a.lon, a.lat],
+            [b.lon, b.lat],
+          ],
+        },
+        properties: {
+          line,
+          colour: lineColourOf(graph, line),
+          offsetIdx: i - (sorted.length - 1) / 2,
+          dashed: isOverground(line),
+        },
+      })
     })
   }
   return { type: 'FeatureCollection', features }
@@ -282,7 +316,12 @@ export function travelledPathGeoJSON(
             [b.lon, b.lat],
           ],
         },
-        properties: { line: mv.line, colour: lineColourOf(graph, mv.line) },
+        properties: {
+          line: mv.line,
+          colour: lineColourOf(graph, mv.line),
+          offsetIdx: 0,
+          dashed: isOverground(mv.line),
+        },
       })
     }
     prevId = mv.stationId

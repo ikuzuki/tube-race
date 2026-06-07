@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import maplibregl, {
   type LngLatLike,
   type GeoJSONSource,
+  type LineLayerSpecification,
   type MapGeoJSONFeature,
   type StyleSpecification,
 } from 'maplibre-gl'
@@ -77,7 +78,9 @@ const SRC_OPTIMAL = 'tr-optimal'
 const SRC_STATIONS = 'tr-stations'
 
 const LYR_EDGES = 'tr-edges-line'
+const LYR_EDGES_DASH = 'tr-edges-line-dash' // Overground edges, dashed texture
 const LYR_PATH = 'tr-path-line'
+const LYR_PATH_DASH = 'tr-path-line-dash' // Overground hops of the ridden path
 const LYR_OPTIMAL = 'tr-optimal-line'
 const LYR_STATION_DOT = 'tr-station-dot'
 const LYR_STATION_RING = 'tr-station-ring'
@@ -196,17 +199,34 @@ export default function PlayfieldMap({
         map.addSource(id, { type: 'geojson', data: EMPTY_FC })
       }
 
-      // Revealed network edges, coloured per line.
+      // Revealed network edges, coloured per line. Co-located lines fan out as
+      // parallel strokes via the precomputed offsetIdx (see mapgeo), so a
+      // segment shared by, say, Circle and District shows BOTH colours and the
+      // player's current line always reads as continuing. Overground lines are
+      // drawn by a dashed twin layer (line-dasharray is not data-drivable), so
+      // each layer filters to its half of the source.
+      const edgePaint: LineLayerSpecification['paint'] = {
+        'line-color': ['get', 'colour'],
+        'line-width': 3,
+        'line-opacity': 0.55,
+        'line-offset': ['*', ['get', 'offsetIdx'], 6],
+      }
       map.addLayer({
         id: LYR_EDGES,
         type: 'line',
         source: SRC_EDGES,
+        filter: ['!=', ['get', 'dashed'], true],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-color': ['get', 'colour'],
-          'line-width': 3,
-          'line-opacity': 0.55,
-        },
+        paint: { ...edgePaint },
+      })
+      map.addLayer({
+        id: LYR_EDGES_DASH,
+        type: 'line',
+        source: SRC_EDGES,
+        filter: ['==', ['get', 'dashed'], true],
+        // Butt caps keep the dash rhythm crisp; round caps would blob them.
+        layout: { 'line-cap': 'butt', 'line-join': 'round' },
+        paint: { ...edgePaint, 'line-dasharray': [2.2, 1.6] },
       })
 
       // Optimal/par route (post-game): dashed gold, above edges, below path.
@@ -223,17 +243,28 @@ export default function PlayfieldMap({
         },
       })
 
-      // The travelled path — thicker + brighter than the revealed edges.
+      // The travelled path — thicker + brighter than the revealed edges, with
+      // the same dashed twin for Overground hops.
+      const pathPaint: LineLayerSpecification['paint'] = {
+        'line-color': ['get', 'colour'],
+        'line-width': 6,
+        'line-opacity': 0.95,
+      }
       map.addLayer({
         id: LYR_PATH,
         type: 'line',
         source: SRC_PATH,
+        filter: ['!=', ['get', 'dashed'], true],
         layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: {
-          'line-color': ['get', 'colour'],
-          'line-width': 6,
-          'line-opacity': 0.95,
-        },
+        paint: { ...pathPaint },
+      })
+      map.addLayer({
+        id: LYR_PATH_DASH,
+        type: 'line',
+        source: SRC_PATH,
+        filter: ['==', ['get', 'dashed'], true],
+        layout: { 'line-cap': 'butt', 'line-join': 'round' },
+        paint: { ...pathPaint, 'line-dasharray': [1.6, 0.9] },
       })
 
       // Station outer ring — emphasis for current/target/start/legal.

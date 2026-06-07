@@ -11,7 +11,7 @@ import { displayName } from '../lib/format'
 import type { RouteLeg } from '../lib/route'
 import { stopsLabel } from '../lib/route'
 import { points } from '../lib/score'
-import { lineColour, lineTextColour } from '../theme'
+import { isOverground, lineColour, lineTextColour } from '../theme'
 import { ChangeIcon, StopIcon } from './icons'
 
 /** Ribbon pixels per stop ridden. */
@@ -218,7 +218,7 @@ function Journey({ startName, targetName, legs, lineNames, stationsById, solved 
               )}
               <span
                 className="h-2 shrink-0"
-                style={{ width: leg.stops * STOP_PX, backgroundColor: lineColour(leg.lineId) }}
+                style={{ width: leg.stops * STOP_PX, ...legStyle(leg.lineId) }}
                 title={`${line(leg.lineId)}: ${stopsLabel(leg.stops)} to ${name(leg.toId)}`}
               />
             </span>
@@ -245,6 +245,18 @@ function Journey({ startName, targetName, legs, lineNames, stationsById, solved 
       <Endpoint label="Destination" name={targetName} align="right" />
     </div>
   )
+}
+
+/**
+ * Ribbon fill for a leg: solid line colour, except Overground lines which get
+ * a dashed (striped) texture to match their rendering on the map.
+ */
+function legStyle(lineId: string): React.CSSProperties {
+  const colour = lineColour(lineId)
+  if (!isOverground(lineId)) return { backgroundColor: colour }
+  return {
+    background: `repeating-linear-gradient(90deg, ${colour} 0 9px, transparent 9px 13px)`,
+  }
 }
 
 function Endpoint({

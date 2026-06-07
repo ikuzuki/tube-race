@@ -243,6 +243,42 @@ describe('revealedEdgesGeoJSON — fog', () => {
     expect(fc.features).toHaveLength(2)
     expect(fc.features.map((f) => f.properties.line).sort()).toEqual(['northern', 'victoria'])
   })
+
+  it('fans co-located lines out with offsets centred around zero', () => {
+    const state = makeState({ revealed: new Set(['warren-street', 'euston']) })
+    const fc = revealedEdgesGeoJSON(GRAPH, state, STATIONS_BY_ID)
+    const byLine = new Map(fc.features.map((f) => [f.properties.line, f.properties.offsetIdx]))
+    // Alphabetical: northern takes the first slot, victoria the second.
+    expect(byLine.get('northern')).toBe(-0.5)
+    expect(byLine.get('victoria')).toBe(0.5)
+    // Both features share identical lo->hi coordinates so the offsets land on
+    // consistent opposite sides.
+    expect(fc.features[0].geometry.coordinates).toEqual(fc.features[1].geometry.coordinates)
+  })
+
+  it('gives a single-line segment a zero offset', () => {
+    const state = makeState({ revealed: new Set(['oxford-circus', 'warren-street']) })
+    const fc = revealedEdgesGeoJSON(GRAPH, state, STATIONS_BY_ID)
+    expect(fc.features[0].properties.offsetIdx).toBe(0)
+  })
+
+  it('flags Overground edges as dashed and tube edges as solid', () => {
+    const og: TubeGraph = {
+      ...GRAPH,
+      lines: [...GRAPH.lines, { id: 'mildmay', name: 'Mildmay', colour: '#437EC1' }],
+      edges: [...GRAPH.edges, { from: 'oxford-circus', to: 'goodge-street', line: 'mildmay' }],
+    }
+    const state = makeState({ revealed: new Set(['oxford-circus', 'goodge-street']) })
+    const fc = revealedEdgesGeoJSON(og, state, STATIONS_BY_ID)
+    const mildmay = fc.features.find((f) => f.properties.line === 'mildmay')
+    expect(mildmay?.properties.dashed).toBe(true)
+    const victoria = revealedEdgesGeoJSON(
+      og,
+      makeState({ revealed: new Set(['oxford-circus', 'warren-street']) }),
+      STATIONS_BY_ID,
+    ).features[0]
+    expect(victoria.properties.dashed).toBe(false)
+  })
 })
 
 describe('travelledPathGeoJSON', () => {

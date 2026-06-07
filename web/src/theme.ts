@@ -24,6 +24,25 @@ export const LINE_COLOURS: Record<string, string> = {
   windrush: '#EF4D5E',
 }
 
+/**
+ * The six Overground line ids. Their hues sit close to tube lines (weaver vs
+ * metropolitan, mildmay vs victoria, lioness vs circle), so anywhere colour is
+ * the only signal they are rendered with a dashed texture instead of a new hue.
+ */
+export const OVERGROUND_LINE_IDS: ReadonlySet<string> = new Set([
+  'liberty',
+  'lioness',
+  'mildmay',
+  'suffragette',
+  'weaver',
+  'windrush',
+])
+
+/** Whether a line id is one of the Overground lines (dashed texture). */
+export function isOverground(lineId: string): boolean {
+  return OVERGROUND_LINE_IDS.has(lineId)
+}
+
 /** Line colour for a line id, falling back to a neutral grey. */
 export function lineColour(lineId: string, fallback = '#9aa3af'): string {
   return LINE_COLOURS[lineId] ?? fallback
