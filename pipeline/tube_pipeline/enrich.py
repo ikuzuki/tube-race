@@ -168,7 +168,10 @@ _STATION_SUFFIX_RE: re.Pattern[str] = re.compile(
 """Strips parentheticals and ``... [underground] station`` suffixes for name matching."""
 
 _TITLE_SUFFIX_RE: re.Pattern[str] = re.compile(
-    r"\s*\([^)]*\)\s*$|[\s-]*(?:underground|tube)?\s*station\s*$|-underground\s*$",
+    r"\s*\([^)]*\)\s*$"
+    r"|[\s-]*(?:underground|tube|rail|dlr)\s*station\s*$"
+    r"|-underground\s*$"
+    r"|\s+(?:rail|dlr|ell)\s*$",
     re.IGNORECASE,
 )
 """End-anchored strip for building a fallback Wikipedia title.
@@ -1894,8 +1897,14 @@ def clean_station_name(name: str) -> str:
     # trailing "[-/ ]Underground[ Station]" / "tube station" suffix. Done in this
     # order because the suffix strip in _TITLE_SUFFIX_RE is end-anchored and would
     # otherwise leave a parenthetical that is not flush with the end of the name.
-    without_parens = re.sub(r"\s*\([^)]*\)", "", name)
-    return _TITLE_SUFFIX_RE.sub("", without_parens).strip()
+    cleaned = re.sub(r"\s*\([^)]*\)", "", name)
+    # Strip repeatedly so stacked suffixes collapse, e.g.
+    # "New Cross ELL Rail Station" -> "New Cross ELL Rail" -> "New Cross".
+    while True:
+        stripped = _TITLE_SUFFIX_RE.sub("", cleaned).strip()
+        if stripped == cleaned:
+            return stripped
+        cleaned = stripped
 
 
 def select_fun_fact(
