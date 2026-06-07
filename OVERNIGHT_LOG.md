@@ -1,3 +1,71 @@
+# Overnight log, round 4: mobile bar, result-card fit, % optimal, celebration
+
+Branch `feat/mobile-and-result` off the latest `main` (draft PR opened). Web
+only. Final status: `tsc --noEmit` clean, `vitest run` 232 passing, `vite
+build` clean; Playwright verified at 1440px and 390px with no console errors.
+
+## What was built, per task
+
+1. Compact mobile status bar (`StatusBar.tsx`). On narrow screens the captions
+   ("Score", "Stops", "Changes", "Line", "Start", "Destination") are dropped,
+   stops/changes/line collapse to one inline icon+value row, the compass shrinks
+   to ~36px and the start/destination journey is a single slim row. Everything
+   restores at the `sm` breakpoint, so desktop is unchanged. Measured at
+   390x844: the bar fell from ~149px to ~99px pre-move (~106px after a move) and
+   the map's share of the viewport rose from ~62% to ~76% (>70% target met).
+
+2. Result card fits with no inner scroll (`ResultCard.tsx`,
+   `StationInfoCard.tsx`). Fun facts clamp to three whole lines (line-clamp ends
+   at a line boundary, never mid-word; the Wikipedia link carries the rest), so
+   a card's height no longer grows with fact length. Verified by injecting a
+   12x-long fact: the fact box stayed 58px and the dialog's scrollHeight equalled
+   its clientHeight (774 = 774, within a 900 viewport: no scrollbar). Vertical
+   spacing tightened throughout. The two-up station layout now keys off the
+   container width via a Tailwind container query (`@container` + `@md:grid-cols-2`)
+   rather than the viewport `sm:`, so the cards sit side by side inside the modal
+   on desktop and stack on a phone.
+
+3. Wider result modal (`Modal.tsx`). Added an optional `size` prop ('md' default,
+   'wide' = `max-w-xl` ~576px). Only the result card opts into 'wide'; the
+   onboarding/stats/intro modals are untouched. Below the breakpoint the modal is
+   already full-width-minus-padding, so phone fit is unaffected.
+
+4. "% optimal" replaces the square grid (`lib/share.ts`, `share.test.ts`,
+   `ResultCard.tsx`). `percentOptimal = round(best / score * 100)`, clamped to
+   [0,100]; an optimal run reads 100%. The share text is now title / "Score 9
+   (best 9), 100% optimal" / stops·changes / streak, still spoiler-free (a unit
+   test asserts no emoji grid and no station names). The `SQUARES_RULE`
+   small-print footer is gone; the % is surfaced prominently on the score block.
+
+5. Count-up + celebration (`ResultCard.tsx`, new `Confetti.tsx`). On a solved
+   open the score tweens 0 to final over ~0.5s (cubic ease, rAF) and a canvas
+   confetti burst fires, 90 flecks when optimal vs 40 otherwise. Both are gated
+   on `open && solved && !prefers-reduced-motion`, so they fire once per open
+   (the modal remounts its body each open) and are fully suppressed under reduced
+   motion, which shows the final score immediately and no canvas. Confetti is
+   dependency-free and no-ops if the 2d context is unavailable. Locked with three
+   component tests (reduced-motion shows final + no canvas; motion-allowed mounts
+   a canvas; an unsolved run never celebrates).
+
+Scrubbed the difficulty mechanism from display copy (owner's top note). On this
+branch (from main) no user-facing copy exposed it. The "3 or more changes, where
+the compass misleads hardest" line lived only in the unmerged expert-archive PR
+(#10); I scrubbed it there at source to "the toughest routes the network can
+throw at you" and pushed, so it lands whenever that PR is reconciled.
+
+## Decisions / notes for the owner
+- The reduced-motion and celebration paths are verified by deterministic
+  component tests rather than a live Playwright solve: the headless optimal-route
+  driver flaked on follow-cam timing (a test-harness issue, not the feature). The
+  non-reduced celebration was confirmed live (confetti + count-up + "100%
+  optimal" captured at 1440px).
+- This branch was cut from `main`, which does not yet contain the expert-archive
+  work (PR #10 is still open). These changes touch `ResultCard`/`StatusBar`/
+  `Modal`/`share`, which #10 also touches lightly; expect a small reconcile when
+  both merge. No `main` commits, no force-pushes.
+
+---
+
 # Overnight log, round 2, 7 June 2026
 
 Targeted polish from the playtest review plus three owner requests, on
