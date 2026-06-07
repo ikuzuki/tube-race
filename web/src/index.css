@@ -94,6 +94,147 @@
   }
 }
 
+/* --- Onboarding mini-demo (OnboardingModal) -------------------------------
+   One shared 9s loop: ride two stops on the red line, change at the
+   interchange (+4 flashes), ride the blue line to the target. Stations reveal
+   as the fog lifts; the compass needle tracks the target until arrival. */
+
+.demo-player {
+  animation: demo-player 9s infinite;
+}
+@keyframes demo-player {
+  0%, 12% { transform: translate(48px, 80px); }
+  22%, 34% { transform: translate(123px, 80px); }
+  46%, 64% { transform: translate(198px, 80px); }
+  76%, 100% { transform: translate(273px, 30px); }
+}
+
+.demo-compass {
+  animation: demo-compass 9s infinite;
+}
+@keyframes demo-compass {
+  0%, 12% { transform: rotate(77deg); opacity: 1; }
+  22%, 34% { transform: rotate(71deg); opacity: 1; }
+  46%, 64% { transform: rotate(56deg); opacity: 1; }
+  70% { opacity: 1; }
+  76%, 100% { transform: rotate(56deg); opacity: 0; }
+}
+
+/* Fog reveals: Oxford Circus lights up on reaching Bond Street; the decoy and
+   the target on reaching Oxford Circus. */
+.demo-reveal-c {
+  animation: demo-reveal-c 9s infinite;
+}
+@keyframes demo-reveal-c {
+  0%, 20% { opacity: 0.18; }
+  28%, 100% { opacity: 1; }
+}
+.demo-reveal-d {
+  animation: demo-reveal-d 9s infinite;
+}
+@keyframes demo-reveal-d {
+  0%, 44% { opacity: 0.18; }
+  52%, 100% { opacity: 1; }
+}
+
+/* Ridden-line trails draw in behind the player. */
+.demo-trail-red {
+  stroke-dasharray: 150;
+  animation: demo-trail-red 9s infinite;
+}
+@keyframes demo-trail-red {
+  0%, 12% { stroke-dashoffset: 150; }
+  22%, 34% { stroke-dashoffset: 75; }
+  46%, 100% { stroke-dashoffset: 0; }
+}
+.demo-trail-blue {
+  stroke-dasharray: 90;
+  animation: demo-trail-blue 9s infinite;
+}
+@keyframes demo-trail-blue {
+  0%, 64% { stroke-dashoffset: 90; }
+  76%, 100% { stroke-dashoffset: 0; }
+}
+
+/* "+1" per stop ridden (Bond Street, then Oxford Circus, then Green Park) and
+   "+4" for the line change at Oxford Circus. Positioned purely by transform. */
+.demo-plus1-b { animation: demo-plus1-b 9s infinite; }
+@keyframes demo-plus1-b {
+  0%, 18% { opacity: 0; transform: translate(123px, 72px); }
+  24% { opacity: 1; transform: translate(123px, 58px); }
+  34% { opacity: 1; transform: translate(123px, 57px); }
+  42%, 100% { opacity: 0; transform: translate(123px, 57px); }
+}
+.demo-plus1-c { animation: demo-plus1-c 9s infinite; }
+@keyframes demo-plus1-c {
+  0%, 42% { opacity: 0; transform: translate(184px, 72px); }
+  48% { opacity: 1; transform: translate(184px, 58px); }
+  54% { opacity: 1; transform: translate(184px, 57px); }
+  60%, 100% { opacity: 0; transform: translate(184px, 57px); }
+}
+.demo-plus4 { animation: demo-plus4 9s infinite; }
+@keyframes demo-plus4 {
+  0%, 52% { opacity: 0; transform: translate(214px, 72px); }
+  58% { opacity: 1; transform: translate(214px, 56px); }
+  70% { opacity: 1; transform: translate(214px, 54px); }
+  78%, 100% { opacity: 0; transform: translate(214px, 54px); }
+}
+.demo-plus1-t { animation: demo-plus1-t 9s infinite; }
+@keyframes demo-plus1-t {
+  0%, 74% { opacity: 0; transform: translate(298px, 30px); }
+  80% { opacity: 1; transform: translate(298px, 18px); }
+  90% { opacity: 1; transform: translate(298px, 17px); }
+  96%, 100% { opacity: 0; transform: translate(298px, 17px); }
+}
+
+/* Arrival pulse on the target. */
+.demo-done {
+  animation: demo-done 9s infinite;
+}
+@keyframes demo-done {
+  0%, 74% { opacity: 0; }
+  80%, 96% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-player,
+  .demo-compass,
+  .demo-reveal-c,
+  .demo-reveal-d,
+  .demo-trail-red,
+  .demo-trail-blue,
+  .demo-plus1-b,
+  .demo-plus1-c,
+  .demo-plus1-t,
+  .demo-plus4,
+  .demo-done {
+    animation: none;
+  }
+  /* Without the loop, show the finished journey rather than the foggy start. */
+  .demo-reveal-c,
+  .demo-reveal-d {
+    opacity: 1;
+  }
+  .demo-trail-red,
+  .demo-trail-blue {
+    stroke-dashoffset: 0;
+  }
+  .demo-player {
+    transform: translate(273px, 30px);
+  }
+  .demo-compass,
+  .demo-plus1-b,
+  .demo-plus1-c,
+  .demo-plus1-t,
+  .demo-plus4 {
+    opacity: 0;
+  }
+  .demo-done {
+    opacity: 1;
+  }
+}
+
 /* Move popup (line picker / switch confirm) — softer card, breathing room,
    and the close button pulled off the edge. */
 .tr-popup .maplibregl-popup-content {

@@ -44,10 +44,11 @@ export interface PlayfieldMapProps {
 
 const LONDON_CENTRE: LngLatLike = [-0.118, 51.51]
 const INITIAL_ZOOM = 12
-/** Zoom the follow-cam eases to — wide enough that the next stations are usually
- *  already on screen, so you rarely need to pan or zoom to make a move. */
+/** Ceiling for the follow-cam zoom: it never zooms in past this. */
 const FOLLOW_ZOOM = 12.5
 const FOLLOW_MS = 600
+/** Screen padding (px) kept around the current station + its legal moves. */
+const FOLLOW_PADDING = 64
 
 /** CARTO Positron raster basemap — keyless, clean and light. */
 const POSITRON_STYLE: StyleSpecification = {
@@ -182,6 +183,10 @@ export default function PlayfieldMap({
       pitchWithRotate: false,
     })
     mapRef.current = map
+    if (import.meta.env.DEV) {
+      // Dev-only handle so browser-driven tests can project coordinates.
+      ;(window as unknown as Record<string, unknown>).__trMap = map
+    }
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
 
@@ -431,21 +436,40 @@ export default function PlayfieldMap({
     ;(map.getSource(SRC_OPTIMAL) as GeoJSONSource | undefined)?.setData(overlay.optimal)
   }, [overlay, ready])
 
-  // --- Follow-camera: ease onto the current station when it changes. ---
-  useEffect(() => {
-    const map = mapRef.current
-    if (!map || !ready) return
-    const centre = stationLngLat(stationsById, state.currentId)
-    if (!centre) return
-    map.easeTo({ center: centre, zoom: FOLLOW_ZOOM, duration: FOLLOW_MS })
-  }, [state.currentId, stationsById, ready])
-
-  const recenter = useCallback(() => {
+  // --- Follow-camera: keep the current station AND every legal next move on
+  // screen (long Elizabeth/Overground hops would otherwise land off-screen at
+  // a fixed zoom), without ever zooming in past FOLLOW_ZOOM. ---
+  const flyToPlayfield = useCallback(() => {
     const map = mapRef.current
     if (!map) return
     const centre = stationLngLat(stationsById, state.currentId)
-    if (centre) map.easeTo({ center: centre, zoom: FOLLOW_ZOOM, duration: FOLLOW_MS })
-  }, [stationsById, state.currentId])
+    if (!centre) return
+    const bounds = new maplibregl.LngLatBounds(centre, centre)
+    for (const nb of legalMoves) {
+      const pos = stationLngLat(stationsById, nb.stationId)
+      if (pos) bounds.extend(pos)
+    }
+    try {
+      map.fitBounds(bounds, {
+        padding: FOLLOW_PADDING,
+        maxZoom: FOLLOW_ZOOM,
+        duration: FOLLOW_MS,
+      })
+    } catch {
+      // Degenerate container (padding exceeds canvas): fall back to a plain ease.
+      map.easeTo({ center: centre, zoom: FOLLOW_ZOOM, duration: FOLLOW_MS })
+    }
+  }, [stationsById, state.currentId, legalMoves])
+
+  useEffect(() => {
+    if (!ready) return
+    flyToPlayfield()
+    // Deliberately keyed on the station, not flyToPlayfield identity: the camera
+    // should move when the player does, not on every legalMoves re-derivation.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.currentId, ready])
+
+  const recenter = flyToPlayfield
 
   return (
     <div className={className}>

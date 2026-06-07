@@ -21,7 +21,7 @@ from tube_pipeline.build_graph import (
     write_graph,
 )
 from tube_pipeline.models import TubeGraph
-from tube_pipeline.tfl_client import BASE_URL, TUBE_LINE_IDS, TflClient
+from tube_pipeline.tfl_client import BASE_URL, MODELLED_LINE_IDS, TflClient
 
 
 def _stop(
@@ -187,7 +187,7 @@ def _mock_all_lines(router: respx.Router, *, victoria: bool, northern: bool) -> 
     """Register respx routes for every tube line and direction.
 
     Lines other than the ones populated return empty sequences, so the full
-    11-line iteration in :func:`build_graph` succeeds without network access.
+    19-line iteration in :func:`build_graph` succeeds without network access.
 
     Parameters
     ----------
@@ -198,7 +198,7 @@ def _mock_all_lines(router: respx.Router, *, victoria: bool, northern: bool) -> 
     northern : bool
         When True, the northern line returns populated inbound data.
     """
-    for line_id in TUBE_LINE_IDS:
+    for line_id in MODELLED_LINE_IDS:
         for direction in ("inbound", "outbound"):
             url = f"{BASE_URL}/Line/{line_id}/Route/Sequence/{direction}"
             if line_id == "victoria" and victoria:
@@ -264,10 +264,10 @@ def test_station_lines_union(graph: TubeGraph) -> None:
     assert ksx.lines == ["northern", "piccadilly", "victoria"]
 
 
-def test_station_lines_intersected_with_tube_only(graph: TubeGraph) -> None:
-    """Only modelled tube line ids survive on a station's line list."""
+def test_station_lines_intersected_with_modelled_only(graph: TubeGraph) -> None:
+    """Only modelled line ids survive on a station's line list."""
     for station in graph.stations:
-        assert set(station.lines) <= set(TUBE_LINE_IDS)
+        assert set(station.lines) <= set(MODELLED_LINE_IDS)
 
 
 def test_interchange_detection(graph: TubeGraph) -> None:
@@ -336,10 +336,10 @@ def test_zone_retained_when_later_seen_null(graph: TubeGraph) -> None:
 
 
 def test_lines_metadata_names_and_colours(graph: TubeGraph) -> None:
-    """All 11 lines are present with the hardcoded names and colours."""
-    assert len(graph.lines) == len(TUBE_LINE_IDS)
+    """All 19 modelled lines are present with the hardcoded names and colours."""
+    assert len(graph.lines) == len(MODELLED_LINE_IDS)
     by_id = {line.id: line for line in graph.lines}
-    assert set(by_id) == set(TUBE_LINE_IDS)
+    assert set(by_id) == set(MODELLED_LINE_IDS)
     for line_id, line in by_id.items():
         assert line.colour == LINE_COLOURS[line_id]
         assert line.name == LINE_NAMES[line_id]
@@ -382,3 +382,81 @@ def test_write_graph_round_trips(graph: TubeGraph, tmp_path: Any) -> None:
     assert '"generatedAt"' in text
     reparsed = TubeGraph.model_validate_json(text)
     assert {s.id for s in reparsed.stations} == {s.id for s in graph.stations}
+
+
+# --- Cross-mode interchange merging (DLR/Elizabeth/Overground onto the tube) ---
+
+RAIL_EUS = "910GEUSTON"  # a non-tube (Elizabeth) stop co-located with tube Euston
+ELZ_FAR = "910GFAKEFR"  # an Elizabeth-only stop with no tube counterpart
+
+
+def _elizabeth_inbound() -> dict[str, Any]:
+    """Elizabeth line inbound sharing Euston's hub with the tube, then one solo stop.
+
+    The Euston stop carries a distinct Naptan but the same ``HUBEUS`` as the
+    tube's Euston, so the two must fuse into one node.
+
+    Returns
+    -------
+    dict
+        Route-sequence response for the elizabeth line, inbound.
+    """
+    return _sequence(
+        [
+            _stop(
+                RAIL_EUS,
+                "Euston",
+                51.5282,
+                -0.1337,
+                ["elizabeth"],
+                zone="1",
+                top_most_parent_id="HUBEUS",
+            ),
+            _stop(ELZ_FAR, "Faketon", 51.50, -0.10, ["elizabeth"], zone="2"),
+        ]
+    )
+
+
+def _mock_with_elizabeth(router: respx.Router) -> None:
+    """Mock all lines empty except a populated victoria + elizabeth pair."""
+    for line_id in MODELLED_LINE_IDS:
+        for direction in ("inbound", "outbound"):
+            url = f"{BASE_URL}/Line/{line_id}/Route/Sequence/{direction}"
+            if line_id == "victoria":
+                body = _victoria_inbound() if direction == "inbound" else _victoria_outbound()
+            elif line_id == "elizabeth" and direction == "inbound":
+                body = _elizabeth_inbound()
+            else:
+                body = _empty_sequence()
+            router.get(url).mock(return_value=httpx.Response(200, json=body))
+
+
+def test_cross_mode_interchange_fuses_into_one_node() -> None:
+    """A co-located non-tube stop merges into the tube node via the shared hub."""
+    with respx.mock(assert_all_called=False) as router:
+        _mock_with_elizabeth(router)
+        with TflClient(client=httpx.Client()) as client:
+            g = build_graph(client, generated_at="2026-06-06")
+
+    ids = {s.id for s in g.stations}
+    # The rail Naptan collapses into the tube Euston; it is not a separate node.
+    assert RAIL_EUS not in ids
+    assert EUS in ids
+    euston = _station_by_id(g, EUS)
+    # Euston now carries both the tube line and the Elizabeth line.
+    assert "victoria" in euston.lines
+    assert "elizabeth" in euston.lines
+    # A genuinely solo non-tube stop keeps its own id.
+    assert ELZ_FAR in ids
+
+
+def test_solo_hub_is_not_remapped() -> None:
+    """A hub with only one stop (no second mode) leaves the id unchanged."""
+    with respx.mock(assert_all_called=False) as router:
+        _mock_all_lines(router, victoria=True, northern=True)
+        with TflClient(client=httpx.Client()) as client:
+            g = build_graph(client, generated_at="2026-06-06")
+    ids = {s.id for s in g.stations}
+    # KSX has HUBKGX but no co-located second-mode stop in this fixture.
+    assert KSX in ids
+    assert "HUBKGX" not in ids

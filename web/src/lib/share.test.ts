@@ -83,12 +83,24 @@ describe('buildShareText — square row reflects closeness to optimal', () => {
     expect(text).toContain('Optimal!')
   })
 
-  it('shows fewer green cells as the run runs further over par', () => {
+  it('maps points-over-best to fixed three-point bands of green', () => {
     const count = (s: string, ch: string) => [...s].filter((c) => c === ch).length
-    // one point over par (one extra stop) vs three over par.
-    const one = buildShareText(input({ stops: 8, parStops: 7 })).split('\n')[3]
-    const three = buildShareText(input({ stops: 10, parStops: 7 })).split('\n')[3]
-    expect(count(one, '🟩')).toBeGreaterThan(count(three, '🟩'))
+    const row = (over: number) =>
+      buildShareText(input({ stops: 7 + over, parStops: 7 })).split('\n')[3]
+    // 0 over -> 5 green; 1-3 over -> 4; 4-6 -> 3; 7-9 -> 2; 10-12 -> 1; 13+ -> 0.
+    expect(count(row(0), '🟩')).toBe(5)
+    expect(count(row(1), '🟩')).toBe(4)
+    expect(count(row(3), '🟩')).toBe(4)
+    expect(count(row(4), '🟩')).toBe(3)
+    expect(count(row(6), '🟩')).toBe(3)
+    expect(count(row(7), '🟩')).toBe(2)
+    expect(count(row(12), '🟩')).toBe(1)
+    expect(count(row(13), '🟩')).toBe(0)
+  })
+
+  it('keeps one amber cell on any solved run so it never reads as a DNF', () => {
+    const row = buildShareText(input({ stops: 27, parStops: 7 })).split('\n')[3]
+    expect(row).toBe('🟨⬛⬛⬛⬛')
   })
 
   it('counts an extra change as a heavier penalty than an extra stop', () => {

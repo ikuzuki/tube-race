@@ -30,22 +30,27 @@ const GREY = '⬛'
 
 const ROW_LEN = 5
 
+/** Points over best covered by each lost square. */
+export const SQUARE_BAND = 3
+
+/** One-line legend for the square row, shown wherever the squares appear. */
+export const SQUARES_RULE = `Five green means you matched the best score; one square drops for every ${SQUARE_BAND} points over.`
+
 /**
- * Build the square row conveying closeness to optimal, based on how far over par
- * the run's weighted score was. A glanceable "how close were you" bar that
- * reveals nothing about the route:
- *   - optimal (0 over)      -> all green
- *   - a little over par     -> some green then amber
- *   - further over (or DNF) -> green/amber shrink, trailing cells go grey
- * More green is better; cells fill green, then amber, then grey, left to right.
+ * Build the square row conveying closeness to optimal. Fixed, legible bands on
+ * points-over-best (score = stops + 4*changes, so a band is less than one line
+ * change):
+ *   - 0 over (optimal)  -> 5 green
+ *   - 1-3 over          -> 4 green
+ *   - 4-6 over          -> 3 green   ...and so on, one fewer green per 3 over.
+ * A solved run always shows one amber cell after its greens (so even a rough
+ * solve differs from the all-grey DNF row); the rest are grey. Reveals nothing
+ * about the route.
  */
 function squares(solved: boolean, over: number): string {
   if (!solved) return GREY.repeat(ROW_LEN)
-  // Green = how close to optimal: a perfect run is all green; each point over par
-  // converts one green cell to amber, up to a 2-cell amber band, after which
-  // remaining cells are grey.
-  const green = Math.max(0, ROW_LEN - over)
-  const amber = Math.min(ROW_LEN - green, 2)
+  const green = Math.max(0, ROW_LEN - Math.ceil(over / SQUARE_BAND))
+  const amber = green < ROW_LEN ? 1 : 0
   const grey = ROW_LEN - green - amber
   return GREEN.repeat(green) + AMBER.repeat(amber) + GREY.repeat(grey)
 }

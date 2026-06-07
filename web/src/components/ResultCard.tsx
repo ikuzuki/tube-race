@@ -12,6 +12,7 @@ import Modal from './Modal'
 import StationInfoCard from './StationInfoCard'
 import type { Station } from '../engine'
 import type { StationInfo } from '../lib/stationInfo'
+import { SQUARES_RULE } from '../lib/share'
 
 interface Endpoint {
   station: Station
@@ -98,7 +99,7 @@ export default function ResultCard({
       <p className="text-sm text-ink-soft">
         {solved
           ? 'Here is how your run stacked up against the best possible route.'
-          : 'No worries — the line was tricky today. Here is the best route you were chasing.'}
+          : 'No worries, the line was tricky today. Here is the best route you were chasing.'}
       </p>
 
       <ScoreHero score={score} parScore={parScore} overPar={!optimal && solved} />
@@ -160,6 +161,10 @@ export default function ResultCard({
           Show best route
         </button>
       )}
+
+      <p className="mt-3 text-center text-[0.7rem] leading-snug text-ink-soft">
+        Share squares: {SQUARES_RULE}
+      </p>
     </Modal>
   )
 }

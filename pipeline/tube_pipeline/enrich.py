@@ -44,6 +44,12 @@ from typing import Any
 import httpx
 
 from tube_pipeline.curated_facts import CURATED_FACTS
+from tube_pipeline.curated_stats import (
+    CURATED_DAILY_TRAFFIC,
+    CURATED_OPENED_YEARS,
+    CURATED_WIKI_URLS,
+    CURATED_YEAR_CORRECTIONS,
+)
 from tube_pipeline.models import (
     StationInfo,
     StationInfoCounts,
@@ -168,7 +174,10 @@ _STATION_SUFFIX_RE: re.Pattern[str] = re.compile(
 """Strips parentheticals and ``... [underground] station`` suffixes for name matching."""
 
 _TITLE_SUFFIX_RE: re.Pattern[str] = re.compile(
-    r"\s*\([^)]*\)\s*$|[\s-]*(?:underground|tube)?\s*station\s*$|-underground\s*$",
+    r"\s*\([^)]*\)\s*$"
+    r"|[\s-]*(?:underground|tube|rail|dlr)\s*station\s*$"
+    r"|-underground\s*$"
+    r"|\s+(?:rail|dlr|ell)\s*$",
     re.IGNORECASE,
 )
 """End-anchored strip for building a fallback Wikipedia title.
@@ -277,7 +286,9 @@ def normalise_name(name: str) -> str:
     return " ".join(text.split())
 
 
-_MODE_TAIL_RE: re.Pattern[str] = re.compile(r"\b(?:lu|dlr|tfl|elr|nr|lo)\s*$", re.IGNORECASE)
+_MODE_TAIL_RE: re.Pattern[str] = re.compile(
+    r"\b(?:lu|dlr|tfl|elr|nr|lo|ell|ezl)\s*$", re.IGNORECASE
+)
 """Trailing mode token TfL appends to disambiguate co-located stations.
 
 In the Annual Station Counts file a station that shares a name with a National
@@ -417,6 +428,15 @@ _USAGE_ANNUAL_GROUP: str = "annualised"
 _UNDERGROUND_MODE: str = "lu"
 """Value in the mode column identifying a London Underground row."""
 
+_USAGE_MODES: frozenset[str] = frozenset({"lu", "lo", "dlr", "ezl"})
+"""Mode-column values the game counts: Underground, Overground, DLR, Elizabeth.
+
+The Annual Station Counts workbook covers every TfL rail mode; we include all of
+them so the expanded network (Overground/DLR/Elizabeth stations) gets real
+gateline figures rather than estimates. Interchanges that appear under several
+modes collapse on the match key, where the larger figure wins.
+"""
+
 
 def _header_row_index(rows: list[tuple[Any, ...]]) -> int | None:
     """Find the column-header row in an Annual Station Counts sheet.
@@ -496,10 +516,11 @@ def _annualised_column_index(header: tuple[Any, ...], group_row: tuple[Any, ...]
 
 
 def parse_station_usage(data: bytes) -> dict[str, float]:
-    """Parse annualised Underground entries+exits from the TfL counts XLSX.
+    """Parse annualised entries+exits from the TfL counts XLSX.
 
-    Reads TfL's Annual Station Counts workbook and returns, for every London
-    Underground row carrying a numeric annualised total, the annual
+    Reads TfL's Annual Station Counts workbook and returns, for every counted
+    TfL rail row (Underground, Overground, DLR or Elizabeth; see
+    :data:`_USAGE_MODES`) carrying a numeric annualised total, the annual
     entries+exits keyed by graph match key (:func:`usage_match_keys`). The
     header is self-located (see :func:`_header_row_index` and
     :func:`_annualised_column_index`) rather than hardcoded by offset.
@@ -556,7 +577,7 @@ def parse_station_usage(data: bytes) -> dict[str, float]:
         if max(mode_col, name_col, annual_col) >= len(row):
             continue
         mode = row[mode_col]
-        if mode is None or str(mode).strip().lower() != _UNDERGROUND_MODE:
+        if mode is None or str(mode).strip().lower() not in _USAGE_MODES:
             continue
         name = row[name_col]
         annual = _coerce_float(row[annual_col])
@@ -1680,7 +1701,13 @@ def build_station_infos(
     for station in graph_stations:
         match = match_candidate(station, candidates, name_index, radius_m=radius_m)
         opened_year = match.opened_year if match else None
-        annual = usage.get(normalise_name(station.name))
+        # Match usage with the same key derivation used to build the dict
+        # (usage_match_keys strips TfL mode tails like the ELL/EZL marker), not a
+        # plain normalise_name, or stations such as "New Cross ELL" miss.
+        annual = next(
+            (usage[k] for k in usage_match_keys(station.name) if k in usage),
+            None,
+        )
         if annual is None and match is not None:
             annual = match.annual_patronage
         daily_traffic = _daily_from_annual(annual)
@@ -1894,8 +1921,14 @@ def clean_station_name(name: str) -> str:
     # trailing "[-/ ]Underground[ Station]" / "tube station" suffix. Done in this
     # order because the suffix strip in _TITLE_SUFFIX_RE is end-anchored and would
     # otherwise leave a parenthetical that is not flush with the end of the name.
-    without_parens = re.sub(r"\s*\([^)]*\)", "", name)
-    return _TITLE_SUFFIX_RE.sub("", without_parens).strip()
+    cleaned = re.sub(r"\s*\([^)]*\)", "", name)
+    # Strip repeatedly so stacked suffixes collapse, e.g.
+    # "New Cross ELL Rail Station" -> "New Cross ELL Rail" -> "New Cross".
+    while True:
+        stripped = _TITLE_SUFFIX_RE.sub("", cleaned).strip()
+        if stripped == cleaned:
+            return stripped
+        cleaned = stripped
 
 
 def select_fun_fact(
@@ -2046,7 +2079,10 @@ def refresh_fun_facts(
     for sid, info in info_file.stations.items():
         data = info.model_dump(by_alias=True, exclude_none=True)
         name = clean_station_name(info.name)
-        curated = curated_by_norm.get(normalise_name(info.name))
+        # Match on the cleaned name so the override keys (cleaned display names)
+        # and the station names go through the same suffix stripping (e.g. the
+        # internal "ELL" marker), which plain normalise_name does not remove.
+        curated = curated_by_norm.get(normalise_name(name))
         if curated:
             # A curated fact wins, and we skip the (slow) Wikipedia fetch entirely.
             data["funFact"] = curated
@@ -2062,6 +2098,79 @@ def refresh_fun_facts(
             "version": info_file.version,
             "generatedAt": info_file.generated_at,
             "counts": info_file.counts.model_dump(by_alias=True),
+            "stations": stations,
+        }
+    )
+
+
+def apply_curated_stats(info_file: StationInfoFile) -> StationInfoFile:
+    """Fill missing stats from the curated overrides and recompute the ranks.
+
+    For every station whose ``openedYear`` or ``dailyTraffic`` is absent, the
+    curated override (``curated_stats``, matched on the cleaned name like the
+    fun-fact overrides) is applied; values already resolved from an automated
+    source are never overwritten -- except by the explicit
+    ``CURATED_YEAR_CORRECTIONS``, which fix known-bad Wikidata opening dates
+    unconditionally. Both ``openedRank`` and ``dailyTrafficRank``
+    are then recomputed across the full post-fill coverage -- the ranks are
+    relative claims ("Nth oldest"), so they must always be derived from the
+    whole population, never hand-patched per station. The file-level ``counts``
+    are refreshed to match. Pure merge: no network access.
+
+    Parameters
+    ----------
+    info_file : StationInfoFile
+        The existing, validated artefact.
+
+    Returns
+    -------
+    StationInfoFile
+        A new, re-validated artefact with gaps filled and ranks recomputed.
+    """
+    opened_by_norm = {normalise_name(k): v for k, v in CURATED_OPENED_YEARS.items()}
+    traffic_by_norm = {normalise_name(k): v for k, v in CURATED_DAILY_TRAFFIC.items()}
+    corrections_by_norm = {normalise_name(k): v for k, v in CURATED_YEAR_CORRECTIONS.items()}
+    wiki_by_norm = {normalise_name(k): v for k, v in CURATED_WIKI_URLS.items()}
+
+    stations: dict[str, dict[str, Any]] = {}
+    opened_values: dict[str, int] = {}
+    traffic_values: dict[str, int] = {}
+    for sid, info in info_file.stations.items():
+        data = info.model_dump(by_alias=True, exclude_none=True)
+        key = normalise_name(clean_station_name(info.name))
+        if info.wiki_url is None and key in wiki_by_norm:
+            data["wikiUrl"] = wiki_by_norm[key]
+        if key in corrections_by_norm:
+            data["openedYear"] = corrections_by_norm[key]
+        elif info.opened_year is None and key in opened_by_norm:
+            data["openedYear"] = opened_by_norm[key]
+        if info.daily_traffic is None and key in traffic_by_norm:
+            data["dailyTraffic"] = traffic_by_norm[key]
+        if "openedYear" in data:
+            opened_values[sid] = int(data["openedYear"])
+        if "dailyTraffic" in data:
+            traffic_values[sid] = int(data["dailyTraffic"])
+        stations[sid] = data
+
+    opened_ranks = _assign_ranks(opened_values, descending=False)
+    traffic_ranks = _assign_ranks(traffic_values, descending=True)
+    for sid, data in stations.items():
+        data.pop("openedRank", None)
+        data.pop("dailyTrafficRank", None)
+        if sid in opened_ranks:
+            data["openedRank"] = opened_ranks[sid]
+        if sid in traffic_ranks:
+            data["dailyTrafficRank"] = traffic_ranks[sid]
+
+    return StationInfoFile.model_validate(
+        {
+            "version": info_file.version,
+            "generatedAt": info_file.generated_at,
+            "counts": {
+                "total": len(stations),
+                "withOpened": len(opened_values),
+                "withTraffic": len(traffic_values),
+            },
             "stations": stations,
         }
     )
