@@ -5,6 +5,7 @@ from __future__ import annotations
 from tube_pipeline.curated_stats import (
     CURATED_DAILY_TRAFFIC,
     CURATED_OPENED_YEARS,
+    CURATED_WIKI_URLS,
     CURATED_YEAR_CORRECTIONS,
 )
 from tube_pipeline.enrich import apply_curated_stats
@@ -133,3 +134,14 @@ def test_apply_curated_stats_preserves_other_fields() -> None:
     assert out.opened_year == CURATED_OPENED_YEARS["Wapping"]
     assert merged.version == "1.0"
     assert merged.generated_at == "2026-06-06"
+
+
+def test_apply_curated_stats_fills_missing_wiki_url() -> None:
+    """A station with no wikiUrl gets one from the override; a present one wins."""
+    missing = StationInfo.model_validate({"name": "Brockley Rail Station"})
+    present = StationInfo.model_validate(
+        {"name": "Homerton Rail Station", "wikiUrl": "https://example.com/already"}
+    )
+    merged = apply_curated_stats(_info_file({"b": missing, "h": present}))
+    assert merged.stations["b"].wiki_url == CURATED_WIKI_URLS["Brockley"]
+    assert merged.stations["h"].wiki_url == "https://example.com/already"

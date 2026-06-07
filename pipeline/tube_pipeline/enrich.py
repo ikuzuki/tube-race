@@ -47,6 +47,7 @@ from tube_pipeline.curated_facts import CURATED_FACTS
 from tube_pipeline.curated_stats import (
     CURATED_DAILY_TRAFFIC,
     CURATED_OPENED_YEARS,
+    CURATED_WIKI_URLS,
     CURATED_YEAR_CORRECTIONS,
 )
 from tube_pipeline.models import (
@@ -2129,6 +2130,7 @@ def apply_curated_stats(info_file: StationInfoFile) -> StationInfoFile:
     opened_by_norm = {normalise_name(k): v for k, v in CURATED_OPENED_YEARS.items()}
     traffic_by_norm = {normalise_name(k): v for k, v in CURATED_DAILY_TRAFFIC.items()}
     corrections_by_norm = {normalise_name(k): v for k, v in CURATED_YEAR_CORRECTIONS.items()}
+    wiki_by_norm = {normalise_name(k): v for k, v in CURATED_WIKI_URLS.items()}
 
     stations: dict[str, dict[str, Any]] = {}
     opened_values: dict[str, int] = {}
@@ -2136,6 +2138,8 @@ def apply_curated_stats(info_file: StationInfoFile) -> StationInfoFile:
     for sid, info in info_file.stations.items():
         data = info.model_dump(by_alias=True, exclude_none=True)
         key = normalise_name(clean_station_name(info.name))
+        if info.wiki_url is None and key in wiki_by_norm:
+            data["wikiUrl"] = wiki_by_norm[key]
         if key in corrections_by_norm:
             data["openedYear"] = corrections_by_norm[key]
         elif info.opened_year is None and key in opened_by_norm:
