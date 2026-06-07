@@ -46,15 +46,32 @@ export function dailyPuzzle(
 }
 
 /**
+ * Stations eligible as puzzle endpoints: those with at least two distinct
+ * neighbouring stations. Starting (or finishing) at a degree-1 terminus makes
+ * the first move a forced non-decision, so such stations are rejected at the
+ * draw. Defensive: a degenerate graph with fewer than two eligible stations
+ * keeps everything eligible rather than dead-locking the draw loop.
+ */
+function eligibleEndpoints(graph: TubeGraph, adj: Adjacency): boolean[] {
+  const flags = graph.stations.map((s) => {
+    const neighbours = adj.get(s.id) ?? []
+    return new Set(neighbours.map((nb) => nb.stationId)).size >= 2
+  })
+  return flags.filter(Boolean).length >= 2 ? flags : graph.stations.map(() => true)
+}
+
+/**
  * Tier-calibrated selection: draw landmark-biased endpoint pairs and accept the
- * first whose optimal route and greedy gap satisfy the date's tier. If none
- * qualifies within {@link MAX_ATTEMPTS}, the closest candidate (deterministic
- * penalty ranking, see difficulty.ts tierPenalty) is used instead.
+ * first whose optimal route and greedy gap satisfy the date's tier. Degree-1
+ * endpoints are rejected (see {@link eligibleEndpoints}). If nothing qualifies
+ * within {@link MAX_ATTEMPTS}, the closest candidate (deterministic penalty
+ * ranking, see difficulty.ts tierPenalty) is used instead.
  */
 function tierPuzzle(graph: TubeGraph, adj: Adjacency, dateISO: string, tier: Tier): DailyPuzzle {
   const stations = graph.stations
   const n = stations.length
   const rng = seededRng(dateISO)
+  const eligible = eligibleEndpoints(graph, adj)
 
   const pool: number[] = []
   stations.forEach((s, i) => {
@@ -70,6 +87,7 @@ function tierPuzzle(graph: TubeGraph, adj: Adjacency, dateISO: string, tier: Tie
     const i = draw()
     let j = draw()
     if (i === j) j = (j + 1) % n // ensure distinct without consuming an extra draw
+    if (!eligible[i] || !eligible[j]) continue // a terminus start/end is a non-decision
 
     const startId = stations[i].id
     const targetId = stations[j].id

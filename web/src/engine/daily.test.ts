@@ -46,6 +46,19 @@ describe('dailyPuzzle', () => {
     }
   })
 
+  it('never starts or ends at a degree-1 terminus', () => {
+    // In the fixture, brixton and walthamstow-central each have one neighbour,
+    // so move one (or the arrival) there would be a forced non-decision.
+    const termini = new Set(['brixton', 'walthamstow-central'])
+    const start = new Date('2026-01-01T00:00:00Z')
+    for (let i = 0; i < 40; i++) {
+      const d = new Date(start.getTime() + i * 86_400_000).toISOString().slice(0, 10)
+      const p = dailyPuzzle(graph, adj, d)
+      expect(termini.has(p.startId)).toBe(false)
+      expect(termini.has(p.targetId)).toBe(false)
+    }
+  })
+
   it('labels tier-selected puzzles with a tier and a greedy gap', () => {
     const p = dailyPuzzle(graph, adj, '2026-06-06')
     expect(['easy', 'medium', 'hard']).toContain(p.tier)
