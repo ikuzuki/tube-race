@@ -1,6 +1,9 @@
-// First-run "how to play" card. A short, friendly, tube-flavoured rundown of the
-// rules with small visual cues, wrapped in the shared Modal. The primary
-// "Got it" button is the only way out beyond the usual close/escape.
+// First-run "how to play" card. Leads with a looping animated mini-demo of
+// actual gameplay (fog lifting, two stops ridden, a line change costing +4,
+// arrival), followed by three tight rules and an explicit scoring strip:
+// score = stops + 4 x changes, lower is better, you are racing the optimal
+// route. The animation timeline lives in index.css (demo-* keyframes). The
+// primary "Got it" button is the only way out beyond the usual close/escape.
 
 import Modal from './Modal'
 
@@ -13,39 +16,170 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
   return (
     <Modal open={open} onClose={onClose} title="How to play">
       <p className="text-sm text-ink-soft">
-        Mind the gap. You&apos;ve been dropped somewhere on the Underground and need to find your way
+        Mind the gap. You&apos;ve been dropped somewhere on the network and need to find your way
         across town.
       </p>
 
-      <ol className="mt-4 flex flex-col gap-3.5">
+      <Demo />
+
+      <ol className="mt-4 flex flex-col gap-3">
         <Rule icon={<FogIcon />}>
-          You start at a station with the fog down: only the stops one hop away are lit. Anywhere
-          you visit stays on your map.
+          You start with the fog down: only the stops one hop away are lit. Anywhere you visit
+          stays on your map.
         </Rule>
         <Rule icon={<CompassIcon />}>
           The compass points to your destination and shows how far it is. It tells you{' '}
           <em>where</em>, never <em>which line</em>. That&apos;s the puzzle.
         </Rule>
         <Rule icon={<ChangeIcon />}>
-          You ride your current line by default. Tap a lit station on another line to change, but
-          each change counts against you.
-        </Rule>
-        <Rule icon={<FlagIcon />}>
-          Reach the destination in as few stops and changes as you can. Come back each day to keep
-          your streak alive.
+          You ride your current line by default. Tap a lit station on another line to change.
         </Rule>
       </ol>
+
+      <div className="mt-4 rounded-xl border border-stone-200 bg-stone/60 px-4 py-3 text-center">
+        <p className="text-base font-extrabold tracking-tight text-ink">
+          Score = stops + 4 × changes
+        </p>
+        <p className="mt-1 text-xs leading-snug text-ink-soft">
+          Lower is better: you&apos;re racing the best possible route. Changes are expensive, so
+          think before switching lines. Come back each day to keep your streak alive.
+        </p>
+      </div>
 
       <button
         type="button"
         onClick={onClose}
-        className="mt-6 w-full rounded-xl bg-progress px-4 py-2.5 text-sm font-bold text-white transition hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress"
+        className="mt-5 w-full rounded-xl bg-progress px-4 py-2.5 text-sm font-bold text-white transition hover:brightness-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress"
       >
         Got it
       </button>
     </Modal>
   )
 }
+
+// --- Animated mini-demo ------------------------------------------------------
+
+/** Demo network geometry (viewBox coordinates). */
+const A = { x: 35, y: 85 }
+const B = { x: 110, y: 85 }
+const C = { x: 185, y: 85 }
+const D = { x: 285, y: 85 }
+const T = { x: 265, y: 30 }
+
+const RED = '#e32017'
+const BLUE = '#0098d4'
+
+/**
+ * A looping SVG storyboard of one tiny game: ride the red line two stops as the
+ * fog lifts, change to the blue line (+4 pops up), arrive at the flagged
+ * target. All timing lives in the demo-* keyframes in index.css.
+ */
+function Demo() {
+  return (
+    <svg
+      viewBox="0 0 320 120"
+      className="mt-4 w-full rounded-xl bg-map"
+      role="img"
+      aria-label="Demo of a run: two stops on one line, a change costing four points, then the target"
+    >
+      {/* Network edges. C-D and C-T start fogged and reveal as the player nears. */}
+      <line x1={A.x} y1={A.y} x2={B.x} y2={B.y} stroke={RED} strokeWidth="4" opacity="0.55" />
+      <line
+        x1={B.x}
+        y1={B.y}
+        x2={C.x}
+        y2={C.y}
+        stroke={RED}
+        strokeWidth="4"
+        opacity="0.55"
+        className="demo-reveal-c"
+      />
+      <g className="demo-reveal-d" opacity="0.55">
+        <line x1={C.x} y1={C.y} x2={D.x} y2={D.y} stroke={RED} strokeWidth="4" />
+        <line x1={C.x} y1={C.y} x2={T.x} y2={T.y} stroke={BLUE} strokeWidth="4" />
+      </g>
+
+      {/* Ridden trail, drawn in behind the player. */}
+      <line
+        x1={A.x}
+        y1={A.y}
+        x2={C.x}
+        y2={C.y}
+        stroke={RED}
+        strokeWidth="5"
+        strokeLinecap="round"
+        className="demo-trail-red"
+      />
+      <line
+        x1={C.x}
+        y1={C.y}
+        x2={T.x}
+        y2={T.y}
+        stroke={BLUE}
+        strokeWidth="5"
+        strokeLinecap="round"
+        className="demo-trail-blue"
+      />
+
+      {/* Stations. */}
+      <Station x={A.x} y={A.y} />
+      <Station x={B.x} y={B.y} />
+      <Station x={C.x} y={C.y} className="demo-reveal-c" />
+      <Station x={D.x} y={D.y} className="demo-reveal-d" />
+      {/* Target: flagged ring, revealed with the rest of the fog. */}
+      <g className="demo-reveal-d">
+        <circle cx={T.x} cy={T.y} r="8" fill="none" stroke="var(--color-flag)" strokeWidth="2.5" />
+        <circle cx={T.x} cy={T.y} r="3" fill="var(--color-flag)" />
+      </g>
+      {/* Arrival pulse. */}
+      <circle
+        cx={T.x}
+        cy={T.y}
+        r="13"
+        fill="none"
+        stroke="var(--color-progress-ring)"
+        strokeWidth="2"
+        className="demo-done"
+      />
+
+      {/* The player: green dot with a compass needle tracking the target. */}
+      <g className="demo-player">
+        <circle r="6.5" fill="var(--color-progress)" stroke="#fff" strokeWidth="2" />
+        <g className="demo-compass">
+          <line x1="0" y1="-9" x2="0" y2="-17" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+          <path d="M0,-21 L3.5,-15.5 L-3.5,-15.5 Z" fill="var(--color-progress-ring)" />
+        </g>
+      </g>
+
+      {/* Cost of the line change. */}
+      <text
+        className="demo-plus4"
+        textAnchor="middle"
+        fontSize="13"
+        fontWeight="800"
+        fill="var(--color-warn)"
+      >
+        +4
+      </text>
+    </svg>
+  )
+}
+
+function Station({ x, y, className }: { x: number; y: number; className?: string }) {
+  return (
+    <circle
+      cx={x}
+      cy={y}
+      r="5"
+      fill="#fff"
+      stroke="var(--color-map-500)"
+      strokeWidth="2"
+      className={className}
+    />
+  )
+}
+
+// --- Rules -------------------------------------------------------------------
 
 interface RuleProps {
   icon: React.ReactNode
@@ -99,15 +233,6 @@ function ChangeIcon() {
     <svg {...svgProps}>
       <path d="M4 8h13l-3-3" />
       <path d="M20 16H7l3 3" />
-    </svg>
-  )
-}
-
-function FlagIcon() {
-  return (
-    <svg {...svgProps}>
-      <path d="M5 21V4" />
-      <path d="M5 4h12l-2 3.5L17 11H5" />
     </svg>
   )
 }

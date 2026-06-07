@@ -11,13 +11,25 @@ describe('OnboardingModal', () => {
   it('renders the title and a set of rules when open', () => {
     render(<OnboardingModal open onClose={vi.fn()} />)
     expect(screen.getByRole('heading', { name: /how to play/i })).toBeInTheDocument()
-    // Four rules, rendered as list items.
-    expect(screen.getAllByRole('listitem')).toHaveLength(4)
+    // Three rules, rendered as list items.
+    expect(screen.getAllByRole('listitem')).toHaveLength(3)
     // Touches the core mechanics in the copy.
     expect(screen.getByText(/fog/i)).toBeInTheDocument()
     expect(screen.getByText(/compass/i)).toBeInTheDocument()
     expect(screen.getByText(/tap a lit station/i)).toBeInTheDocument()
     expect(screen.getByText(/streak/i)).toBeInTheDocument()
+  })
+
+  it('shows the animated gameplay demo', () => {
+    render(<OnboardingModal open onClose={vi.fn()} />)
+    expect(screen.getByRole('img', { name: /demo of a run/i })).toBeInTheDocument()
+  })
+
+  it('explains the scoring system and the goal', () => {
+    render(<OnboardingModal open onClose={vi.fn()} />)
+    expect(screen.getByText('Score = stops + 4 × changes')).toBeInTheDocument()
+    expect(screen.getByText(/lower is better/i)).toBeInTheDocument()
+    expect(screen.getByText(/racing the best possible route/i)).toBeInTheDocument()
   })
 
   it('calls onClose when "Got it" is clicked', () => {
