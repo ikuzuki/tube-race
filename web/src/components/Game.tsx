@@ -171,7 +171,7 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
         onStats={() => setStatsOpen(true)}
       />
 
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-3 p-3 sm:p-4 lg:px-6">
+      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-3 p-3 sm:p-4 lg:px-6">
         <StatusBar
           startName={startName}
           targetName={targetName}
@@ -189,7 +189,9 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
           km={km}
         />
 
-        <div className="relative h-[62vh] max-h-[640px] min-h-[380px] w-full overflow-hidden rounded-2xl bg-map shadow-xl ring-1 ring-black/40">
+        {/* The map takes whatever the chrome leaves: flex-fill rather than a
+            fixed vh slice, so a slimmer status bar directly buys map height. */}
+        <div className="relative max-h-[640px] min-h-[380px] w-full flex-1 overflow-hidden rounded-2xl bg-map shadow-xl ring-1 ring-black/40">
           <PlayfieldMap
             graph={graph}
             state={state}

@@ -81,6 +81,20 @@ describe('StatusBar journey', () => {
     expect(screen.getByLabelText('Journey so far: No moves yet')).toBeInTheDocument()
   })
 
+  const compactLine = (_: string, el: Element | null): boolean =>
+    el?.tagName === 'P' && el.textContent === 'Brixton to Bank'
+
+  it('offers a compact one-line start-to-destination before the first move', () => {
+    // The mobile-only collapsed form (CSS hides it from sm up).
+    setup()
+    expect(screen.getByText(compactLine)).toBeInTheDocument()
+  })
+
+  it('drops the compact line once the ride ribbon has content', () => {
+    setup({ legs: [{ lineId: 'victoria', fromId: 'a', toId: 'b', stops: 2 }] })
+    expect(screen.queryByText(compactLine)).not.toBeInTheDocument()
+  })
+
   it('narrates the legs ridden, including changes', () => {
     setup({
       legs: [
