@@ -76,13 +76,10 @@ export default function StationInfoCard({ roleLabel, station, info }: StationInf
 
       <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5">{facts}</dl>
 
-      {/* Clamp the fun fact to a few whole lines (ends at a line boundary, never
-          mid-word) so a long fact never grows the card; the Wikipedia link
-          below carries the reader on to the full article. */}
+      {/* Show the fun fact in full: facts are one bounded sentence (max ~260
+          chars), so the card height stays sensible without truncating them. */}
       {info?.funFact && (
-        <p className="mt-2 line-clamp-3 text-sm italic leading-snug text-ink-soft">
-          {info.funFact}
-        </p>
+        <p className="mt-2 text-sm italic leading-snug text-ink-soft">{info.funFact}</p>
       )}
 
       {info?.wikiUrl && (
