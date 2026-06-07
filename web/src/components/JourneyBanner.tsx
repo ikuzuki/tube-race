@@ -59,14 +59,16 @@ export default function JourneyBanner({
 
   return (
     <section
-      className="flex items-center gap-3 rounded-xl border border-stone-200 bg-paper px-4 py-2.5"
+      className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 rounded-xl border border-stone-200 bg-paper px-4 py-2.5"
       aria-label="Journey"
     >
       <Endpoint label="Start" name={startName} align="left" />
 
+      {/* On narrow screens the ribbon wraps onto its own full-width row below
+          the endpoints; from sm up it sits between them. */}
       <div
         ref={scrollRef}
-        className="min-w-0 flex-1 overflow-x-auto overflow-y-hidden"
+        className="order-last min-w-0 basis-full overflow-x-auto overflow-y-hidden sm:order-none sm:flex-1 sm:basis-0"
         role="img"
         aria-label={`Journey so far: ${journeyText}`}
       >
