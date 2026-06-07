@@ -46,6 +46,12 @@ export interface StationProps {
    * change. Undefined for non-legal stations.
    */
   moveClass?: 'continue' | 'switch'
+  /**
+   * True for the station the player just left. Backtracking stays legal but
+   * costs a stop, so the marker is dimmed to read as a deliberate choice
+   * rather than an inviting next move.
+   */
+  prev?: boolean
 }
 
 export interface EdgeProps {
@@ -205,6 +211,15 @@ export function stationsGeoJSON(
   const ids = new Set<string>(state.revealed)
   ids.add(targetId)
 
+  // The station the player just left: the second-to-last path entry, or the
+  // start right after the first move. Null before any move.
+  const prevId =
+    state.path.length >= 2
+      ? state.path[state.path.length - 2].stationId
+      : state.path.length === 1
+        ? state.startId
+        : null
+
   const features: PointFeature<StationProps>[] = []
   for (const id of ids) {
     const station = stationsById.get(id)
@@ -220,6 +235,7 @@ export function stationsGeoJSON(
         kind,
         legal,
         ...(legal ? { moveClass: moveClassById.get(id) } : {}),
+        ...(id === prevId ? { prev: true } : {}),
       },
     })
   }
