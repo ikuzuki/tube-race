@@ -18,8 +18,7 @@ import { points } from '../lib/score'
 import { displayName } from '../lib/format'
 import { journeyLegs } from '../lib/route'
 import Header from './Header'
-import Hud from './Hud'
-import JourneyBanner from './JourneyBanner'
+import StatusBar from './StatusBar'
 import PlayfieldMap from './PlayfieldMap'
 import RouteNarration from './RouteNarration'
 import OnboardingModal from './OnboardingModal'
@@ -171,16 +170,13 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
       />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-3 p-3 sm:p-4 lg:px-6">
-        <JourneyBanner
+        <StatusBar
           startName={startName}
           targetName={targetName}
           legs={legs}
           lineNames={lineNames}
           stationsById={stationsById}
           solved={state.solved}
-        />
-
-        <Hud
           currentLineId={currentLine}
           currentLineName={currentLineName}
           hops={state.path.length}

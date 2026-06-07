@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import type { Station } from '../engine'
-import JourneyBanner from './JourneyBanner'
+import { points } from '../lib/score'
+import StatusBar from './StatusBar'
 
 const stationsById = new Map<string, Station>(
   [
@@ -16,21 +17,57 @@ const lineNames = new Map([
   ['central', 'Central'],
 ])
 
-function setup(props: Partial<React.ComponentProps<typeof JourneyBanner>> = {}) {
+function setup(props: Partial<React.ComponentProps<typeof StatusBar>> = {}) {
   render(
-    <JourneyBanner
+    <StatusBar
       startName="Brixton"
       targetName="Bank"
       legs={[]}
       lineNames={lineNames}
       stationsById={stationsById}
       solved={false}
+      currentLineId="victoria"
+      currentLineName="Victoria"
+      hops={5}
+      parHops={4}
+      changes={1}
+      parChanges={1}
+      bearingDeg={45}
+      km={2.3}
       {...props}
     />,
   )
 }
 
-describe('JourneyBanner', () => {
+describe('StatusBar score', () => {
+  it('shows the weighted score against par as the hero number', () => {
+    // hops 5, changes 1 -> 5 + 4 = 9; par 4 + 4 = 8.
+    setup({ hops: 5, parHops: 4, changes: 1, parChanges: 1 })
+    expect(points(5, 1)).toBe(9)
+    expect(screen.getByLabelText('Score 9, best possible 8')).toBeInTheDocument()
+    expect(screen.getByText('9')).toBeInTheDocument()
+    expect(screen.getByText('/ 8 best')).toBeInTheDocument()
+  })
+
+  it('shows stops and changes as plain counts (no denominator)', () => {
+    setup({ hops: 5, parHops: 4, changes: 2, parChanges: 1 })
+    expect(screen.getByText('Stops')).toBeInTheDocument()
+    expect(screen.getByText('Changes')).toBeInTheDocument()
+    expect(screen.queryByText('/ 4')).not.toBeInTheDocument()
+  })
+
+  it('renders the current line badge', () => {
+    setup()
+    expect(screen.getByText('Victoria')).toBeInTheDocument()
+  })
+
+  it('shows a boarding placeholder before the first move', () => {
+    setup({ currentLineId: null, currentLineName: null })
+    expect(screen.getByText(/boarding/i)).toBeInTheDocument()
+  })
+})
+
+describe('StatusBar journey', () => {
   it('always shows start and destination', () => {
     setup()
     expect(screen.getByText('Start')).toBeInTheDocument()
@@ -57,19 +94,20 @@ describe('JourneyBanner', () => {
       ),
     ).toBeInTheDocument()
     expect(screen.getByTitle('Change at Oxford Circus')).toBeInTheDocument()
-    expect(screen.getByTitle('Victoria: 6 stops to Oxford Circus')).toBeInTheDocument()
   })
 
-  it('marks the player position while live and drops it when solved', () => {
+  it('marks the player position while the run is live', () => {
     setup({ legs: [{ lineId: 'victoria', fromId: 'a', toId: 'b', stops: 6 }] })
     expect(screen.getByTitle('You are here')).toBeInTheDocument()
   })
 
-  it('shows no live marker once solved', () => {
-    setup({
-      legs: [{ lineId: 'victoria', fromId: 'a', toId: 'b', stops: 6 }],
-      solved: true,
-    })
+  it('drops the live marker once solved', () => {
+    setup({ legs: [{ lineId: 'victoria', fromId: 'a', toId: 'b', stops: 6 }], solved: true })
     expect(screen.queryByTitle('You are here')).not.toBeInTheDocument()
+  })
+
+  it('exposes the compass bearing and distance', () => {
+    setup({ km: 2.3 })
+    expect(screen.getByLabelText(/Destination is 2\.3 km away/)).toBeInTheDocument()
   })
 })
