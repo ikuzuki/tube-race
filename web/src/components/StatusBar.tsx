@@ -52,12 +52,12 @@ export default function StatusBar(props: StatusBarProps) {
 
   return (
     <section
-      className="flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-stone-200 bg-paper px-4 py-2.5 sm:gap-y-3 sm:py-3"
+      className="flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-xl border border-stone-200 bg-paper px-3 py-2 sm:gap-x-6 sm:gap-y-3 sm:px-4 sm:py-3"
       aria-label="Game status"
     >
-      <div className="flex shrink-0 flex-col gap-1.5">
+      <div className="flex shrink-0 flex-col gap-0.5 sm:gap-1.5">
         <ScoreReadout score={score} parScore={parScore} />
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 sm:gap-x-4">
           <SubStat
             label="Stops"
             value={hops}
@@ -100,7 +100,11 @@ function ScoreReadout({ score, parScore }: { score: number; parScore: number }) 
   const tone = liveTone(deltaTone(score, parScore, AMBER_LIMIT.score(parScore)))
   return (
     <div className="min-w-0" aria-label={`Score ${score}, best possible ${parScore}`}>
-      <Label>Score</Label>
+      {/* The "Score" caption is redundant on a phone where space is dear; the
+          big tonal number with "/ N best" reads on its own. */}
+      <span className="hidden sm:block">
+        <Label>Score</Label>
+      </span>
       <p className="leading-none tabular-nums">
         <span className={`text-3xl font-extrabold ${tone}`}>{score}</span>
         <span className="ml-1 text-base font-semibold text-ink-soft">/ {parScore} best</span>
@@ -131,13 +135,17 @@ function SubStat({
   icon: React.ReactNode
 }) {
   const tone = liveTone(deltaTone(value, best, amber))
+  // Phone: icon + value on one inline line (the icon names the stat, the colour
+  // grades it). Desktop (sm+): caption above the value, as before.
   return (
-    <div className="flex flex-col">
+    <div className="flex items-center gap-1 sm:flex-col sm:items-start sm:gap-0">
       <span className="flex items-center gap-1 text-ink-soft">
         <span className="text-sm leading-none" aria-hidden="true">
           {icon}
         </span>
-        <Label>{label}</Label>
+        <span className="hidden sm:inline">
+          <Label>{label}</Label>
+        </span>
       </span>
       <p className="text-sm font-semibold leading-tight tabular-nums">
         <span className={tone}>{value}</span>
@@ -150,7 +158,9 @@ function LineBadge({ lineId, lineName }: { lineId: string | null; lineName: stri
   if (!lineId) {
     return (
       <div className="flex flex-col">
-        <Label>Line</Label>
+        <span className="hidden sm:block">
+          <Label>Line</Label>
+        </span>
         <span className="inline-flex w-fit items-center rounded-full bg-stone px-2.5 py-0.5 text-xs font-semibold text-ink-soft">
           Boarding…
         </span>
@@ -159,7 +169,9 @@ function LineBadge({ lineId, lineName }: { lineId: string | null; lineName: stri
   }
   return (
     <div className="flex min-w-0 flex-col">
-      <Label>Line</Label>
+      <span className="hidden sm:block">
+        <Label>Line</Label>
+      </span>
       <span
         className="inline-flex w-fit max-w-[10rem] items-center truncate rounded-full px-2.5 py-0.5 text-xs font-semibold"
         style={{ backgroundColor: lineColour(lineId), color: lineTextColour(lineId) }}
@@ -297,9 +309,16 @@ function Endpoint({
   align: 'left' | 'right'
 }) {
   return (
-    <div className={`w-[7rem] min-w-0 shrink-0 sm:w-32 ${align === 'right' ? 'text-right' : ''}`}>
-      <Label>{label}</Label>
-      <p className="break-words text-sm font-bold leading-tight text-ink" title={name}>
+    <div className={`w-[6rem] min-w-0 shrink-0 sm:w-32 ${align === 'right' ? 'text-right' : ''}`}>
+      {/* The Start/Destination caption is dropped on a phone to keep the journey
+          to a single slim row; the pin/flag context lives on the result card. */}
+      <span className="hidden sm:block">
+        <Label>{label}</Label>
+      </span>
+      <p
+        className="truncate text-sm font-bold leading-tight text-ink sm:whitespace-normal sm:break-words"
+        title={name}
+      >
         {name}
       </p>
     </div>
@@ -326,14 +345,14 @@ function FlagMarker({ title, reached }: { title: string; reached: boolean }) {
 function Compass({ bearingDeg, km }: { bearingDeg: number; km: number }) {
   return (
     <div
-      className="flex flex-col items-center gap-1"
+      className="flex flex-col items-center gap-0.5 sm:gap-1"
       aria-label={`Destination is ${formatKm(km)} away, bearing ${Math.round(bearingDeg)} degrees`}
     >
       <svg
         viewBox="0 0 100 100"
         role="img"
         aria-hidden="true"
-        className="h-11 w-11 sm:h-14 sm:w-14"
+        className="h-9 w-9 sm:h-14 sm:w-14"
       >
         <circle cx="50" cy="50" r="44" fill="var(--color-map)" stroke="var(--color-stone-200)" strokeWidth="3" />
         {[0, 90, 180, 270].map((a) => (
@@ -358,7 +377,9 @@ function Compass({ bearingDeg, km }: { bearingDeg: number; km: number }) {
         </g>
         <circle cx="50" cy="50" r="5" fill="var(--color-stone)" stroke="var(--color-map)" strokeWidth="2" />
       </svg>
-      <span className="text-xs font-semibold tabular-nums text-ink">{formatKm(km)}</span>
+      <span className="text-[0.7rem] font-semibold tabular-nums text-ink sm:text-xs">
+        {formatKm(km)}
+      </span>
     </div>
   )
 }

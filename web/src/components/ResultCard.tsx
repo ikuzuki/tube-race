@@ -1,24 +1,61 @@
 // End-of-game result dialog. Calm and celebratory rather than loud: the outcome
 // headline, the weighted SCORE against par as the hero number (score =
-// stops + 4*changes, the single comparable metric — see lib/score), an
-// "Optimal!" badge when the run matched or beat par, stops/changes as the
-// breakdown, the current streak, and the share + show-best-route + play-again
-// actions. The share button copies the spoiler-free grid to the clipboard.
-// Optionally shows the day's start/destination trivia cards. Presentational —
-// state arrives as props.
+// stops + 4*changes, the single comparable metric — see lib/score) with a
+// self-explanatory "% optimal", stops/changes as supporting stats, the current
+// streak, and the share + show-best-route + play-again actions. On a solved
+// run the score counts up and a confetti burst fires (stronger when optimal),
+// both suppressed under prefers-reduced-motion. The card condenses to fit a
+// desktop viewport without an inner scrollbar. Presentational beyond the
+// count-up tween; state arrives as props.
 
 import { useEffect, useState } from 'react'
 import Modal from './Modal'
 import StationInfoCard from './StationInfoCard'
+import Confetti from './Confetti'
 import { ChangeIcon, StopIcon } from './icons'
 import type { Station } from '../engine'
 import type { StationInfo } from '../lib/stationInfo'
-import { SQUARES_RULE } from '../lib/share'
+import { percentOptimal } from '../lib/share'
 import { AMBER_LIMIT, deltaTone, type Tone } from '../lib/score'
 
 /** Green / amber / red text for a good / warn / bad tone. */
 function toneText(tone: Tone): string {
   return tone === 'good' ? 'text-progress' : tone === 'warn' ? 'text-warn' : 'text-danger'
+}
+
+/** True when the user has asked for reduced motion (or matchMedia is absent). */
+function prefersReducedMotion(): boolean {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') return true
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+/**
+ * Tween an integer from 0 to `target` over `durationMs` with a cubic ease-out,
+ * once, when `enabled`. When disabled (reduced motion, or an unsolved run) it
+ * returns the final value immediately. Deps are stable across re-renders, so it
+ * fires once per mount (i.e. once per result-card open).
+ */
+function useCountUp(target: number, enabled: boolean, durationMs = 520): number {
+  const [value, setValue] = useState(enabled ? 0 : target)
+  useEffect(() => {
+    if (!enabled) {
+      setValue(target)
+      return
+    }
+    let raf = 0
+    let start: number | null = null
+    const step = (t: number): void => {
+      if (start === null) start = t
+      const p = Math.min(1, (t - start) / durationMs)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setValue(Math.round(target * eased))
+      if (p < 1) raf = requestAnimationFrame(step)
+      else setValue(target)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [target, enabled, durationMs])
+  return value
 }
 
 interface Endpoint {
@@ -98,11 +135,15 @@ export default function ResultCard({
   }
 
   const headline = solved ? (optimal ? 'Spot on!' : 'You made it!') : 'Mind the gap'
+  const animate = open && solved && !prefersReducedMotion()
+  const displayScore = useCountUp(score, animate)
 
   return (
-    <Modal open={open} onClose={onClose} title={headline}>
+    <Modal open={open} onClose={onClose} title={headline} size="wide">
+      {animate && <Confetti count={optimal ? 90 : 40} />}
+
       {solved && optimal && (
-        <span className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-progress/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-progress">
+        <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-progress/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-progress">
           <DotIcon /> Optimal route
         </span>
       )}
@@ -115,14 +156,16 @@ export default function ResultCard({
 
       <ScoreBlock
         score={score}
+        displayScore={displayScore}
         parScore={parScore}
         stops={stops}
         parStops={parStops}
         changes={changes}
         parChanges={parChanges}
+        solved={solved}
       />
 
-      <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-stone px-4 py-2 text-sm">
+      <div className="mt-2.5 flex items-center justify-center gap-2 rounded-xl bg-stone px-4 py-2 text-sm">
         <FlameIcon />
         <span className="font-semibold text-ink">
           {streak === 0 ? 'No streak yet' : `${streak} day streak`}
@@ -130,19 +173,25 @@ export default function ResultCard({
       </div>
 
       {(start || destination) && (
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          {start && <StationInfoCard roleLabel="Start" station={start.station} info={start.info} />}
-          {destination && (
-            <StationInfoCard
-              roleLabel="Destination"
-              station={destination.station}
-              info={destination.info}
-            />
-          )}
+        // Two-up once the container (not the viewport) is wide enough, so the
+        // cards sit side by side inside the wide modal yet stack on a phone.
+        <div className="mt-2.5 @container">
+          <div className="grid gap-2.5 @md:grid-cols-2">
+            {start && (
+              <StationInfoCard roleLabel="Start" station={start.station} info={start.info} />
+            )}
+            {destination && (
+              <StationInfoCard
+                roleLabel="Destination"
+                station={destination.station}
+                info={destination.info}
+              />
+            )}
+          </div>
         </div>
       )}
 
-      <div className="mt-5 flex gap-2">
+      <div className="mt-4 flex gap-2">
         <button
           type="button"
           onClick={handleShare}
@@ -176,44 +225,59 @@ export default function ResultCard({
           Show best route
         </button>
       )}
-
-      <p className="mt-3 text-center text-[0.7rem] leading-snug text-ink-soft">
-        Share squares: {SQUARES_RULE}
-      </p>
     </Modal>
   )
 }
 
 interface ScoreBlockProps {
+  /** Final weighted score (used for tone, aria, and the % optimal). */
   score: number
+  /** Score to display now: the count-up value, or the final score at rest. */
+  displayScore: number
   parScore: number
   stops: number
   parStops: number
   changes: number
   parChanges: number
+  solved: boolean
 }
 
 /**
  * The hero metric: the weighted score, large and green/amber/red against par,
- * with stops and changes as small supporting stats beneath. Score is the thing
- * that matters; the breakdown is secondary.
+ * with a self-explanatory "% optimal" beside it and stops/changes as small
+ * supporting stats beneath. Score is the thing that matters; the breakdown is
+ * secondary. `displayScore` is the (possibly mid-tween) number to render.
  */
-function ScoreBlock({ score, parScore, stops, parStops, changes, parChanges }: ScoreBlockProps) {
+function ScoreBlock({
+  score,
+  displayScore,
+  parScore,
+  stops,
+  parStops,
+  changes,
+  parChanges,
+  solved,
+}: ScoreBlockProps) {
   const scoreTone = deltaTone(score, parScore, AMBER_LIMIT.score(parScore))
+  const pct = percentOptimal(score, parScore)
   return (
     <div
-      className="mt-4 rounded-xl border border-stone-200 bg-paper px-4 py-4 text-center"
+      className="mt-3 rounded-xl border border-stone-200 bg-paper px-4 py-3 text-center"
       aria-label={`Score ${score}, best possible ${parScore}`}
     >
       <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-ink-soft">
         Score
       </span>
       <p className="mt-1 leading-none tabular-nums">
-        <span className={`text-6xl font-extrabold ${toneText(scoreTone)}`}>{score}</span>
+        <span className={`text-6xl font-extrabold ${toneText(scoreTone)}`}>{displayScore}</span>
         <span className="ml-2 text-lg font-semibold text-ink-soft">/ {parScore} best</span>
       </p>
 
-      <div className="mt-3 flex items-center justify-center gap-5 border-t border-stone-200 pt-3 text-sm">
+      {solved && (
+        <p className={`mt-1.5 text-sm font-bold ${toneText(scoreTone)}`}>{pct}% optimal</p>
+      )}
+
+      <div className="mt-2.5 flex items-center justify-center gap-5 border-t border-stone-200 pt-2.5 text-sm">
         <MiniStat icon={<StopIcon />} label="stops" value={stops} best={parStops} amber={AMBER_LIMIT.stops} />
         <MiniStat
           icon={<ChangeIcon />}

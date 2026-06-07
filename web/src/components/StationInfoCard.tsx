@@ -58,7 +58,7 @@ export default function StationInfoCard({ roleLabel, station, info }: StationInf
 
   const isStart = roleLabel === 'Start'
   return (
-    <article className="rounded-xl border border-stone-200 bg-paper p-3.5 text-ink">
+    <article className="rounded-xl border border-stone-200 bg-paper p-3 text-ink">
       <span
         className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[0.65rem] font-bold uppercase tracking-wider ${
           isStart ? 'bg-progress/10 text-progress' : 'bg-warn/10 text-warn'
@@ -70,14 +70,17 @@ export default function StationInfoCard({ roleLabel, station, info }: StationInf
         {roleLabel}
       </span>
 
-      <h3 className="mt-2 text-lg font-bold leading-tight tracking-tight">
+      <h3 className="mt-1.5 text-lg font-bold leading-tight tracking-tight">
         {displayName(station.name)}
       </h3>
 
-      <dl className="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-2">{facts}</dl>
+      <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1.5">{facts}</dl>
 
+      {/* Clamp the fun fact to a few whole lines (ends at a line boundary, never
+          mid-word) so a long fact never grows the card; the Wikipedia link
+          below carries the reader on to the full article. */}
       {info?.funFact && (
-        <p className="mt-2.5 line-clamp-4 text-sm italic leading-snug text-ink-soft">
+        <p className="mt-2 line-clamp-3 text-sm italic leading-snug text-ink-soft">
           {info.funFact}
         </p>
       )}

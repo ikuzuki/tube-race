@@ -1,7 +1,25 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import ResultCard from './ResultCard'
 import type { Station } from '../engine'
+
+/** Stub matchMedia so prefers-reduced-motion can be forced on/off in a test. */
+function stubReducedMotion(reduce: boolean): void {
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    writable: true,
+    value: (query: string) => ({
+      matches: reduce,
+      media: query,
+      onchange: null,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      addListener: () => {},
+      removeListener: () => {},
+      dispatchEvent: () => false,
+    }),
+  })
+}
 
 const SHARE =
   'Tube Race 2026-06-06\nScore 17 (par 11)\n9/7 stops · 2/1 changes\n🟩🟩🟨🟨⬛\nStreak: 3'
@@ -81,6 +99,22 @@ describe('ResultCard', () => {
     expect(screen.getByText('5 day streak')).toBeInTheDocument()
   })
 
+  it('surfaces the % optimal on a solved run', () => {
+    // score 17 vs best 11 -> round(11/17*100) = 65.
+    setup()
+    expect(screen.getByText('65% optimal')).toBeInTheDocument()
+  })
+
+  it('reads 100% optimal on an optimal run', () => {
+    setup({ optimal: true, score: 11 })
+    expect(screen.getByText('100% optimal')).toBeInTheDocument()
+  })
+
+  it('hides the % optimal for an unsolved run', () => {
+    setup({ solved: false })
+    expect(screen.queryByText(/% optimal/)).not.toBeInTheDocument()
+  })
+
   it('shows the Optimal badge only when optimal', () => {
     setup({ optimal: true, score: 11 })
     expect(screen.getByText(/optimal route/i)).toBeInTheDocument()
@@ -152,5 +186,79 @@ describe('ResultCard', () => {
     expect(screen.getByText('Destination')).toBeInTheDocument()
     expect(screen.getByText('Brixton')).toBeInTheDocument()
     expect(screen.getByText('Victoria')).toBeInTheDocument()
+  })
+
+  describe('count-up + celebration', () => {
+    afterEach(() => {
+      // Drop the matchMedia stub so the default (reduced) env returns.
+      delete (window as { matchMedia?: unknown }).matchMedia
+    })
+
+    it('shows the final score immediately and no confetti under reduced motion', () => {
+      stubReducedMotion(true)
+      const { container } = render(
+        <ResultCard
+          open
+          solved
+          score={17}
+          parScore={11}
+          stops={9}
+          parStops={7}
+          changes={2}
+          parChanges={1}
+          optimal={false}
+          shareText="x"
+          streak={1}
+          onClose={vi.fn()}
+        />,
+      )
+      // No count-up: the hero shows 17 right away, never 0.
+      expect(screen.getByText('17')).toBeInTheDocument()
+      expect(screen.queryByText('0')).not.toBeInTheDocument()
+      // No celebration canvas.
+      expect(container.querySelector('canvas')).toBeNull()
+    })
+
+    it('mounts a celebration canvas on a solved run when motion is allowed', () => {
+      stubReducedMotion(false)
+      const { container } = render(
+        <ResultCard
+          open
+          solved
+          score={11}
+          parScore={11}
+          stops={7}
+          parStops={7}
+          changes={1}
+          parChanges={1}
+          optimal
+          shareText="x"
+          streak={1}
+          onClose={vi.fn()}
+        />,
+      )
+      expect(container.querySelector('canvas')).not.toBeNull()
+    })
+
+    it('never celebrates an unsolved run, even when motion is allowed', () => {
+      stubReducedMotion(false)
+      const { container } = render(
+        <ResultCard
+          open
+          solved={false}
+          score={17}
+          parScore={11}
+          stops={9}
+          parStops={7}
+          changes={2}
+          parChanges={1}
+          optimal={false}
+          shareText="x"
+          streak={0}
+          onClose={vi.fn()}
+        />,
+      )
+      expect(container.querySelector('canvas')).toBeNull()
+    })
   })
 })
