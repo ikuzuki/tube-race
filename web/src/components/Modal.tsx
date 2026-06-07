@@ -4,16 +4,26 @@
 
 import { useEffect, type ReactNode } from 'react'
 
+/** Max card width on larger screens. Below it, the modal is full-width-minus-padding. */
+type ModalSize = 'md' | 'wide'
+
+const SIZE_CLASS: Record<ModalSize, string> = {
+  md: 'max-w-md', // ~448px, the default for onboarding / stats / intro
+  wide: 'max-w-xl', // ~576px, room for the result card's two-up station cards
+}
+
 interface ModalProps {
   open: boolean
   onClose: () => void
   title?: ReactNode
   /** Hide the default close (X) button — e.g. for a forced first-run card. */
   hideClose?: boolean
+  /** Max width on desktop; defaults to 'md'. The result card opts into 'wide'. */
+  size?: ModalSize
   children: ReactNode
 }
 
-export default function Modal({ open, onClose, title, hideClose, children }: ModalProps) {
+export default function Modal({ open, onClose, title, hideClose, size = 'md', children }: ModalProps) {
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -34,7 +44,7 @@ export default function Modal({ open, onClose, title, hideClose, children }: Mod
       <div
         role="dialog"
         aria-modal="true"
-        className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-paper p-6 text-ink shadow-2xl"
+        className={`relative max-h-[90vh] w-full ${SIZE_CLASS[size]} overflow-y-auto rounded-2xl bg-paper p-6 text-ink shadow-2xl`}
         onClick={(e) => e.stopPropagation()}
       >
         {(title || !hideClose) && (
