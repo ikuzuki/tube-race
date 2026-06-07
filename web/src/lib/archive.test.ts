@@ -13,7 +13,11 @@ describe('archiveDates', () => {
 
   it('is empty on launch day (no past dailies yet) and grows by one a day', () => {
     expect(archiveDates(LAUNCH_DATE)).toEqual([])
-    expect(archiveDates('2026-05-29')).toEqual([LAUNCH_DATE])
+    // The day after launch yields exactly the launch date (derived so this
+    // stays correct whatever LAUNCH_DATE is set to).
+    const dayAfter = new Date(`${LAUNCH_DATE}T00:00:00Z`)
+    dayAfter.setUTCDate(dayAfter.getUTCDate() + 1)
+    expect(archiveDates(dayAfter.toISOString().slice(0, 10))).toEqual([LAUNCH_DATE])
   })
 
   it('respects the max cap', () => {
