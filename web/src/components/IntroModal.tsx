@@ -69,7 +69,7 @@ function Leg({ label, name, tone }: { label: string; name: string; tone: string 
   return (
     <div className="min-w-0 flex-1 text-center">
       <p className={`text-[0.65rem] font-semibold uppercase tracking-wider ${tone}`}>{label}</p>
-      <p className="truncate text-base font-bold text-ink" title={name}>
+      <p className="text-balance break-words text-base font-bold leading-tight text-ink" title={name}>
         {name}
       </p>
     </div>

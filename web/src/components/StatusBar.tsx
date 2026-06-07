@@ -238,7 +238,7 @@ function Endpoint({
   return (
     <div className={`w-[7rem] min-w-0 shrink-0 sm:w-32 ${align === 'right' ? 'text-right' : ''}`}>
       <Label>{label}</Label>
-      <p className="truncate text-sm font-bold leading-tight text-ink" title={name}>
+      <p className="break-words text-sm font-bold leading-tight text-ink" title={name}>
         {name}
       </p>
     </div>
