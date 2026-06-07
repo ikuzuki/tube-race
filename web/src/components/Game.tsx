@@ -245,6 +245,7 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
           onClose={() => setIntroOpen(false)}
           start={startCard}
           destination={destCard}
+          title={isDaily ? "Today's journey" : 'Journey from the archive'}
         />
       )}
       <StatsModal open={statsOpen} onClose={() => setStatsOpen(false)} stats={stats} />

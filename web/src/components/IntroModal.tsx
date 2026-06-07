@@ -18,14 +18,21 @@ interface IntroModalProps {
   onClose: () => void
   start: Endpoint
   destination: Endpoint
+  /** Card title; defaults to the daily framing. */
+  title?: string
 }
 
-export default function IntroModal({ open, onClose, start, destination }: IntroModalProps) {
+export default function IntroModal({
+  open,
+  onClose,
+  start,
+  destination,
+  title = "Today's journey",
+}: IntroModalProps) {
   return (
-    <Modal open={open} onClose={onClose} title="Today's journey">
+    <Modal open={open} onClose={onClose} title={title}>
       <p className="text-sm text-ink-soft">
-        Find your way from your start to today&apos;s destination in as few stops and changes as
-        you can.
+        Find your way from your start to the destination in as few stops and changes as you can.
       </p>
 
       <div className="mt-4 flex items-center justify-between gap-3 rounded-xl border border-stone-200 bg-stone/60 px-4 py-4">
