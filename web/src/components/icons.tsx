@@ -44,3 +44,64 @@ export function ChangeIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+/** Location pin: the journey start. */
+export function StartPinIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="1em"
+      height="1em"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      role="img"
+      aria-hidden="true"
+    >
+      <path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10Z" />
+      <circle cx="12" cy="11" r="2.3" />
+    </svg>
+  )
+}
+
+/** Chequered flag: the destination. */
+export function DestFlagIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="1em"
+      height="1em"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      role="img"
+      aria-hidden="true"
+    >
+      <path d="M5 21V4" />
+      <path d="M5 4h12l-2 3.5L17 11H5" />
+    </svg>
+  )
+}
+
+/** Mountain summit: the Expert challenge (a hard climb). */
+export function SummitIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="1em"
+      height="1em"
+      className={className}
+      fill="currentColor"
+      role="img"
+      aria-hidden="true"
+    >
+      <path d="M12 3l5.5 9-3.2-1.4L12 14l-2.3-3.4L6.5 12 12 3zM2.5 20l4-6.5 2.2 3.2L12 12l3.3 4.7 2.2-3.2 4 6.5z" />
+    </svg>
+  )
+}

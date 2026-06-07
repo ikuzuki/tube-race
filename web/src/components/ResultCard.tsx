@@ -14,6 +14,12 @@ import { ChangeIcon, StopIcon } from './icons'
 import type { Station } from '../engine'
 import type { StationInfo } from '../lib/stationInfo'
 import { SQUARES_RULE } from '../lib/share'
+import { AMBER_LIMIT, deltaTone, type Tone } from '../lib/score'
+
+/** Green / amber / red text for a good / warn / bad tone. */
+function toneText(tone: Tone): string {
+  return tone === 'good' ? 'text-progress' : tone === 'warn' ? 'text-warn' : 'text-danger'
+}
 
 interface Endpoint {
   station: Station
@@ -107,26 +113,16 @@ export default function ResultCard({
           : 'No worries, the line was tricky today. Here is the best route you were chasing.'}
       </p>
 
-      <ScoreHero score={score} parScore={parScore} overPar={!optimal && solved} />
+      <ScoreBlock
+        score={score}
+        parScore={parScore}
+        stops={stops}
+        parStops={parStops}
+        changes={changes}
+        parChanges={parChanges}
+      />
 
-      <div className="mt-3 grid grid-cols-2 gap-3">
-        <ResultStat
-          label="Stops"
-          value={stops}
-          par={parStops}
-          overPar={stops > parStops}
-          icon={<StopIcon />}
-        />
-        <ResultStat
-          label="Changes"
-          value={changes}
-          par={parChanges}
-          overPar={changes > parChanges}
-          icon={<ChangeIcon />}
-        />
-      </div>
-
-      <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-stone px-4 py-2.5 text-sm">
+      <div className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-stone px-4 py-2 text-sm">
         <FlameIcon />
         <span className="font-semibold text-ink">
           {streak === 0 ? 'No streak yet' : `${streak} day streak`}
@@ -134,7 +130,7 @@ export default function ResultCard({
       </div>
 
       {(start || destination) && (
-        <div className="mt-3 flex flex-col gap-3">
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
           {start && <StationInfoCard roleLabel="Start" station={start.station} info={start.info} />}
           {destination && (
             <StationInfoCard
@@ -188,54 +184,70 @@ export default function ResultCard({
   )
 }
 
-interface ScoreHeroProps {
+interface ScoreBlockProps {
   score: number
   parScore: number
-  overPar: boolean
+  stops: number
+  parStops: number
+  changes: number
+  parChanges: number
 }
 
-/** The hero metric on the result card: weighted score against par. */
-function ScoreHero({ score, parScore, overPar }: ScoreHeroProps) {
+/**
+ * The hero metric: the weighted score, large and green/amber/red against par,
+ * with stops and changes as small supporting stats beneath. Score is the thing
+ * that matters; the breakdown is secondary.
+ */
+function ScoreBlock({ score, parScore, stops, parStops, changes, parChanges }: ScoreBlockProps) {
+  const scoreTone = deltaTone(score, parScore, AMBER_LIMIT.score(parScore))
   return (
     <div
-      className="mt-4 rounded-xl border border-stone-200 bg-paper px-4 py-3 text-center"
+      className="mt-4 rounded-xl border border-stone-200 bg-paper px-4 py-4 text-center"
       aria-label={`Score ${score}, best possible ${parScore}`}
     >
       <span className="text-[0.65rem] font-semibold uppercase tracking-wider text-ink-soft">
         Score
       </span>
       <p className="mt-1 leading-none tabular-nums">
-        <span className={`text-4xl font-extrabold ${overPar ? 'text-warn' : 'text-ink'}`}>
-          {score}
-        </span>
-        <span className="ml-1.5 text-lg font-semibold text-ink-soft">/ {parScore} best</span>
+        <span className={`text-6xl font-extrabold ${toneText(scoreTone)}`}>{score}</span>
+        <span className="ml-2 text-lg font-semibold text-ink-soft">/ {parScore} best</span>
       </p>
+
+      <div className="mt-3 flex items-center justify-center gap-5 border-t border-stone-200 pt-3 text-sm">
+        <MiniStat icon={<StopIcon />} label="stops" value={stops} best={parStops} amber={AMBER_LIMIT.stops} />
+        <MiniStat
+          icon={<ChangeIcon />}
+          label="changes"
+          value={changes}
+          best={parChanges}
+          amber={AMBER_LIMIT.changes}
+        />
+      </div>
     </div>
   )
 }
 
-interface ResultStatProps {
+interface MiniStatProps {
+  icon: React.ReactNode
   label: string
   value: number
-  par: number
-  overPar: boolean
-  icon: React.ReactNode
+  best: number
+  amber: number
 }
 
-function ResultStat({ label, value, par, overPar, icon }: ResultStatProps) {
+/** A small supporting stat: icon, green/amber/red value, and its best. */
+function MiniStat({ icon, label, value, best, amber }: MiniStatProps) {
   return (
-    <div className="rounded-xl border border-stone-200 bg-paper px-3 py-2.5">
-      <span className="flex items-center gap-1 text-[0.65rem] font-semibold uppercase tracking-wider text-ink-soft">
-        <span className="text-sm leading-none" aria-hidden="true">
-          {icon}
-        </span>
-        {label}
+    <span className="inline-flex items-baseline gap-1.5">
+      <span className="self-center text-base leading-none text-ink-soft" aria-hidden="true">
+        {icon}
       </span>
-      <p className="mt-0.5 text-lg font-bold leading-none tabular-nums">
-        <span className={overPar ? 'text-warn' : 'text-ink'}>{value}</span>
-        <span className="text-sm font-semibold text-ink-soft"> / {par} best</span>
-      </p>
-    </div>
+      <span className={`font-bold tabular-nums ${toneText(deltaTone(value, best, amber))}`}>
+        {value}
+      </span>
+      <span className="text-ink-soft">/ {best}</span>
+      <span className="text-ink-soft">{label}</span>
+    </span>
   )
 }
 

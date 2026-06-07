@@ -10,12 +10,18 @@ import type { Station } from '../engine'
 import { displayName } from '../lib/format'
 import type { RouteLeg } from '../lib/route'
 import { stopsLabel } from '../lib/route'
-import { points } from '../lib/score'
+import { AMBER_LIMIT, deltaTone, points, type Tone } from '../lib/score'
 import { isOverground, lineColour, lineTextColour } from '../theme'
 import { ChangeIcon, StopIcon } from './icons'
 
 /** Ribbon pixels per stop ridden. */
 const STOP_PX = 18
+
+// Live HUD colouring: neutral ink while at or under best (nothing earned yet),
+// amber a little over, red well over. Green is reserved for the final verdict.
+function liveTone(tone: Tone): string {
+  return tone === 'bad' ? 'text-danger' : tone === 'warn' ? 'text-warn' : 'text-ink'
+}
 
 interface StatusBarProps {
   startName: string
@@ -52,11 +58,18 @@ export default function StatusBar(props: StatusBarProps) {
       <div className="flex shrink-0 flex-col gap-1.5">
         <ScoreReadout score={score} parScore={parScore} />
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
-          <SubStat label="Stops" value={hops} overPar={hops > parHops} icon={<StopIcon />} />
+          <SubStat
+            label="Stops"
+            value={hops}
+            best={parHops}
+            amber={AMBER_LIMIT.stops}
+            icon={<StopIcon />}
+          />
           <SubStat
             label="Changes"
             value={changes}
-            overPar={changes > parChanges}
+            best={parChanges}
+            amber={AMBER_LIMIT.changes}
             icon={<ChangeIcon />}
           />
           <LineBadge lineId={currentLineId} lineName={currentLineName} />
@@ -84,14 +97,12 @@ export default function StatusBar(props: StatusBarProps) {
 // --------------------------------------------------------------------------- //
 
 function ScoreReadout({ score, parScore }: { score: number; parScore: number }) {
-  const overPar = score > parScore
+  const tone = liveTone(deltaTone(score, parScore, AMBER_LIMIT.score(parScore)))
   return (
     <div className="min-w-0" aria-label={`Score ${score}, best possible ${parScore}`}>
       <Label>Score</Label>
       <p className="leading-none tabular-nums">
-        <span className={`text-3xl font-extrabold ${overPar ? 'text-warn' : 'text-ink'}`}>
-          {score}
-        </span>
+        <span className={`text-3xl font-extrabold ${tone}`}>{score}</span>
         <span className="ml-1 text-base font-semibold text-ink-soft">/ {parScore} best</span>
       </p>
     </div>
@@ -109,14 +120,17 @@ function Label({ children }: { children: React.ReactNode }) {
 function SubStat({
   label,
   value,
-  overPar,
+  best,
+  amber,
   icon,
 }: {
   label: string
   value: number
-  overPar: boolean
+  best: number
+  amber: number
   icon: React.ReactNode
 }) {
+  const tone = liveTone(deltaTone(value, best, amber))
   return (
     <div className="flex flex-col">
       <span className="flex items-center gap-1 text-ink-soft">
@@ -126,7 +140,7 @@ function SubStat({
         <Label>{label}</Label>
       </span>
       <p className="text-sm font-semibold leading-tight tabular-nums">
-        <span className={overPar ? 'text-warn' : 'text-ink'}>{value}</span>
+        <span className={tone}>{value}</span>
       </p>
     </div>
   )

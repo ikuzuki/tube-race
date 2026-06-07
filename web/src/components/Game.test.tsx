@@ -31,10 +31,10 @@ describe('Game shell', () => {
 
   it('shows the how-to-play card on first run and the destination', () => {
     render(<Game graph={graph} adj={adj} puzzle={puzzle} today="2026-06-06" />)
-    expect(screen.getByText(/how to play/i)).toBeInTheDocument()
+    expect(screen.getByText(/mind the gap/i)).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: /got it/i }))
-    expect(screen.queryByText(/how to play/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/mind the gap/i)).not.toBeInTheDocument()
 
     const targetName = displayName(
       graph.stations.find((s) => s.id === puzzle.targetId)!.name,

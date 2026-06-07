@@ -65,15 +65,15 @@ describe('ResultCard', () => {
     expect(screen.getByText('/ 11 best')).toBeInTheDocument()
   })
 
-  it('shows the stops and changes against par as the breakdown', () => {
+  it('shows the stops and changes against par as supporting mini-stats', () => {
     setup()
-    expect(screen.getByText('Stops')).toBeInTheDocument()
-    expect(screen.getByText('Changes')).toBeInTheDocument()
-    // value 9, par 7 for stops.
+    expect(screen.getByText('stops')).toBeInTheDocument()
+    expect(screen.getByText('changes')).toBeInTheDocument()
+    // value 9, par 7 for stops; value 2, par 1 for changes.
     expect(screen.getByText('9')).toBeInTheDocument()
-    expect(screen.getByText('/ 7 best')).toBeInTheDocument()
+    expect(screen.getByText('/ 7')).toBeInTheDocument()
     expect(screen.getByText('2')).toBeInTheDocument()
-    expect(screen.getByText('/ 1 best')).toBeInTheDocument()
+    expect(screen.getByText('/ 1')).toBeInTheDocument()
   })
 
   it('shows the current streak', () => {

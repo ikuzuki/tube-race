@@ -14,7 +14,7 @@ interface OnboardingModalProps {
 
 export default function OnboardingModal({ open, onClose }: OnboardingModalProps) {
   return (
-    <Modal open={open} onClose={onClose} title="How to play">
+    <Modal open={open} onClose={onClose} title="Mind the gap">
       <p className="text-sm text-ink-soft">
         You&apos;re given a start and a destination and have to find your way across town, in as few
         stops and line changes as you can.
