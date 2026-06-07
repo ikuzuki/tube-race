@@ -5,7 +5,7 @@
 // per-puzzle completion. localStorage wiring lives in hooks/useArchive.ts.
 
 /** The first daily puzzle's date. Everything from here to yesterday is playable. */
-export const LAUNCH_DATE = '2026-05-28'
+export const LAUNCH_DATE = '2026-05-08'
 
 /** Cap on how many recent dates the menu derives at once (bounds compute). */
 export const MAX_ARCHIVE = 60
