@@ -19,15 +19,15 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
 
       <ol className="mt-4 flex flex-col gap-3.5">
         <Rule icon={<FogIcon />}>
-          You start at a station with the fog down — only the stops one hop away are lit. Anywhere
+          You start at a station with the fog down: only the stops one hop away are lit. Anywhere
           you visit stays on your map.
         </Rule>
         <Rule icon={<CompassIcon />}>
           The compass points to your destination and shows how far it is. It tells you{' '}
-          <em>where</em>, never <em>which line</em> — that&apos;s the puzzle.
+          <em>where</em>, never <em>which line</em>. That&apos;s the puzzle.
         </Rule>
         <Rule icon={<ChangeIcon />}>
-          You ride your current line by default. Tap a lit station on another line to change — but
+          You ride your current line by default. Tap a lit station on another line to change, but
           each change counts against you.
         </Rule>
         <Rule icon={<FlagIcon />}>

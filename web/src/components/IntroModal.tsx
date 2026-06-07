@@ -47,10 +47,6 @@ export default function IntroModal({ open, onClose, start, destination }: IntroM
         <Leg label="Destination" name={displayName(destination.station.name)} tone="text-warn" />
       </div>
 
-      <p className="mt-3 text-center text-xs text-ink-soft">
-        You&apos;ll discover what each station is known for once you arrive.
-      </p>
-
       <button
         type="button"
         onClick={onClose}

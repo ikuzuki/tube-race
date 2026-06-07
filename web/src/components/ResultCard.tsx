@@ -98,7 +98,7 @@ export default function ResultCard({
       <p className="text-sm text-ink-soft">
         {solved
           ? 'Here is how your run stacked up against the best possible route.'
-          : 'No worries — the line was tricky today. Here is the best route you were chasing.'}
+          : 'No worries, the line was tricky today. Here is the best route you were chasing.'}
       </p>
 
       <ScoreHero score={score} parScore={parScore} overPar={!optimal && solved} />
