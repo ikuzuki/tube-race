@@ -87,7 +87,7 @@ export default function ArchiveModal({
     <Modal open={open} onClose={onClose} title="Past puzzles">
       <p className="text-sm text-ink-soft">
         {expert
-          ? 'The Expert variant of each past day: 3 or more changes, where the compass misleads hardest.'
+          ? 'The Expert variant of each past day: the toughest routes the network can throw at you.'
           : 'Every past daily, newest first. A fresh one joins each day; your best run for each is kept.'}
       </p>
 
