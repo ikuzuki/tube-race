@@ -12,6 +12,7 @@ import Modal from './Modal'
 import StationInfoCard from './StationInfoCard'
 import type { Station } from '../engine'
 import type { StationInfo } from '../lib/stationInfo'
+import { SQUARES_RULE } from '../lib/share'
 
 interface Endpoint {
   station: Station
@@ -160,6 +161,10 @@ export default function ResultCard({
           Show best route
         </button>
       )}
+
+      <p className="mt-3 text-center text-[0.7rem] leading-snug text-ink-soft">
+        Share squares: {SQUARES_RULE}
+      </p>
     </Modal>
   )
 }
