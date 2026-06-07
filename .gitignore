@@ -54,3 +54,8 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Stray screenshots / Playwright MCP output
+/*.png
+/*.jpg
+.playwright-mcp/
