@@ -50,6 +50,12 @@ export interface PathResult {
   changes: number
   /** Weighted cost = hops + changes * changePenalty. */
   cost: number
+  /**
+   * Line id used for each hop, length === hops. `lines[i]` is the line ridden
+   * from `stations[i]` to `stations[i + 1]`. Present on engine-computed paths;
+   * optional so hand-built path literals stay valid.
+   */
+  lines?: string[]
 }
 
 export interface ShortestPathOptions {

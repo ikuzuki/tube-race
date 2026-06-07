@@ -18,6 +18,7 @@ import { displayName } from '../lib/format'
 import Header from './Header'
 import Hud from './Hud'
 import PlayfieldMap from './PlayfieldMap'
+import RouteNarration from './RouteNarration'
 import OnboardingModal from './OnboardingModal'
 import IntroModal from './IntroModal'
 import ResultCard from './ResultCard'
@@ -48,6 +49,10 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
 
   const dateISO = today ?? puzzle.date
   const stationsById = useMemo(() => stationIndex(graph), [graph])
+  const lineNames = useMemo(
+    () => new Map(graph.lines.map((l) => [l.id, l.name])),
+    [graph],
+  )
 
   const currentLine = state.path.length ? state.path[state.path.length - 1].line : null
   const currentLineName = currentLine
@@ -165,6 +170,19 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
             showOptimal={showOptimal}
             className="absolute inset-0 h-full w-full"
           />
+
+          {showOptimal && (
+            <div className="absolute left-3 top-3 z-20 max-h-[calc(100%-1.5rem)] w-[min(20rem,calc(100%-1.5rem))] overflow-y-auto rounded-xl border border-stone-200 bg-paper/95 p-3 shadow-lg backdrop-blur">
+              <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-wider text-ink-soft">
+                Best route
+              </p>
+              <RouteNarration
+                path={puzzle.par}
+                stationsById={stationsById}
+                lineNames={lineNames}
+              />
+            </div>
+          )}
         </div>
       </main>
 

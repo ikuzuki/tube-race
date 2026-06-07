@@ -128,7 +128,19 @@ describe('shortestPath', () => {
     const g = graphFromEdges([{ from: 'a', to: 'b', line: 'L1' }])
     const adj = buildAdjacency(g)
     const path = shortestPath(adj, 'a', 'a')
-    expect(path).toEqual({ stations: ['a'], hops: 0, changes: 0, cost: 0 })
+    expect(path).toEqual({ stations: ['a'], hops: 0, changes: 0, cost: 0, lines: [] })
+  })
+
+  it('records the line ridden for each hop (length === hops)', () => {
+    const g = graphFromEdges([
+      { from: 'a', to: 'b', line: 'L1' },
+      { from: 'b', to: 'c', line: 'L1' },
+      { from: 'c', to: 'd', line: 'L2' },
+    ])
+    const adj = buildAdjacency(g)
+    const path = shortestPath(adj, 'a', 'd')
+    expect(path?.lines).toEqual(['L1', 'L1', 'L2'])
+    expect(path?.lines?.length).toBe(path?.hops)
   })
 
   it('returns null for an unreachable target', () => {
