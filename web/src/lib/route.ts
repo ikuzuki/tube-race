@@ -2,7 +2,7 @@
 // same line are grouped, so a route reads as "ride N stops on line X, change,
 // ride M stops on line Y". Pure; no React or engine mutation.
 
-import type { PathResult } from '../engine'
+import type { Move, PathResult } from '../engine'
 
 export interface RouteLeg {
   /** Line id ridden for this leg. */
@@ -40,6 +40,20 @@ export function routeLegs(path: PathResult): RouteLeg[] {
     i = j
   }
   return legs
+}
+
+/**
+ * Legs of the journey ridden so far: the start node plus every move taken,
+ * grouped per line exactly like {@link routeLegs}. Empty before the first move.
+ */
+export function journeyLegs(startId: string, path: Move[]): RouteLeg[] {
+  return routeLegs({
+    stations: [startId, ...path.map((m) => m.stationId)],
+    hops: path.length,
+    changes: 0,
+    cost: 0,
+    lines: path.map((m) => m.line),
+  })
 }
 
 /** "1 stop" / "N stops". */

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { PathResult } from '../engine'
-import { routeLegs, stopsLabel } from './route'
+import { journeyLegs, routeLegs, stopsLabel } from './route'
 
 function path(stations: string[], lines: string[]): PathResult {
   return { stations, hops: stations.length - 1, changes: 0, cost: 0, lines }
@@ -25,6 +25,24 @@ describe('routeLegs', () => {
       { lineId: 'central', fromId: 'a', toId: 'c', stops: 2 },
       { lineId: 'northern', fromId: 'c', toId: 'd', stops: 1 },
       { lineId: 'victoria', fromId: 'd', toId: 'e', stops: 1 },
+    ])
+  })
+})
+
+describe('journeyLegs', () => {
+  it('is empty before the first move', () => {
+    expect(journeyLegs('a', [])).toEqual([])
+  })
+
+  it('groups the moves taken into per-line legs from the start station', () => {
+    const legs = journeyLegs('a', [
+      { stationId: 'b', line: 'central' },
+      { stationId: 'c', line: 'central' },
+      { stationId: 'd', line: 'northern' },
+    ])
+    expect(legs).toEqual([
+      { lineId: 'central', fromId: 'a', toId: 'c', stops: 2 },
+      { lineId: 'northern', fromId: 'c', toId: 'd', stops: 1 },
     ])
   })
 })

@@ -6,7 +6,6 @@ import { points } from '../lib/score'
 function setup(props: Partial<React.ComponentProps<typeof Hud>> = {}) {
   render(
     <Hud
-      targetName="King's Cross St. Pancras"
       currentLineId="victoria"
       currentLineName="Victoria"
       hops={5}
@@ -40,9 +39,8 @@ describe('Hud', () => {
     expect(screen.queryByText('/ 4')).not.toBeInTheDocument()
   })
 
-  it('renders the destination name and the current line badge', () => {
+  it('renders the current line badge', () => {
     setup()
-    expect(screen.getByText("King's Cross St. Pancras")).toBeInTheDocument()
     expect(screen.getByText('Victoria')).toBeInTheDocument()
   })
 

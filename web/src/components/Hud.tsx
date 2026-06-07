@@ -1,16 +1,15 @@
-// Read-only heads-up display for the active game: where you're headed, your
-// weighted SCORE against par (the hero number — score = stops + 4*changes, the
-// single comparable metric the Dijkstra par minimises; see lib/score), with
-// stops and changes as the breakdown, the line you're currently riding, and a
-// compass pointing at the destination. Sits above or beside the map. Purely
-// presentational — every value arrives as a prop.
+// Read-only heads-up display for the active game: your weighted SCORE against
+// par (the hero number — score = stops + 4*changes, the single comparable
+// metric the Dijkstra par minimises; see lib/score), with stops and changes as
+// the breakdown, the line you're currently riding, and a compass pointing at
+// the destination. The start/destination hero lives in JourneyBanner. Sits
+// above or beside the map. Purely presentational — every value arrives as a
+// prop.
 
 import { lineColour, lineTextColour } from '../theme'
 import { points } from '../lib/score'
 
 interface HudProps {
-  /** Destination station display name. */
-  targetName: string
   /** Line id the player is currently on, or null before the first move. */
   currentLineId: string | null
   /** Line display name, or null before the first move. */
@@ -26,7 +25,6 @@ interface HudProps {
 }
 
 export default function Hud({
-  targetName,
   currentLineId,
   currentLineName,
   hops,
@@ -45,13 +43,6 @@ export default function Hud({
       aria-label="Game status"
     >
       <div className="flex min-w-0 flex-col gap-2">
-        <div className="min-w-0">
-          <Label>Destination</Label>
-          <p className="truncate text-sm font-bold leading-tight text-ink" title={targetName}>
-            {targetName}
-          </p>
-        </div>
-
         <ScoreReadout score={score} parScore={parScore} />
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5">

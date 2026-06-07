@@ -15,8 +15,10 @@ import type { StationInfo } from '../lib/stationInfo'
 import { buildShareText } from '../lib/share'
 import { points } from '../lib/score'
 import { displayName } from '../lib/format'
+import { journeyLegs } from '../lib/route'
 import Header from './Header'
 import Hud from './Hud'
+import JourneyBanner from './JourneyBanner'
 import PlayfieldMap from './PlayfieldMap'
 import RouteNarration from './RouteNarration'
 import OnboardingModal from './OnboardingModal'
@@ -59,6 +61,8 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
     ? (graph.lines.find((l) => l.id === currentLine)?.name ?? null)
     : null
   const targetName = displayName(stationsById.get(puzzle.targetId)?.name ?? puzzle.targetId)
+  const startName = displayName(stationsById.get(puzzle.startId)?.name ?? puzzle.startId)
+  const legs = useMemo(() => journeyLegs(state.startId, state.path), [state.startId, state.path])
 
   const { bearingDeg, km } = useMemo(
     () => compass(graph, state.currentId, puzzle.targetId),
@@ -146,8 +150,16 @@ export default function Game({ graph, adj, puzzle, today, initialState }: GamePr
       />
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-3 p-3 sm:p-4 lg:px-6">
-        <Hud
+        <JourneyBanner
+          startName={startName}
           targetName={targetName}
+          legs={legs}
+          lineNames={lineNames}
+          stationsById={stationsById}
+          solved={state.solved}
+        />
+
+        <Hud
           currentLineId={currentLine}
           currentLineName={currentLineName}
           hops={state.path.length}
