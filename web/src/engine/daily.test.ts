@@ -46,6 +46,18 @@ describe('dailyPuzzle', () => {
     }
   })
 
+  it('labels tier-selected puzzles with a tier and a greedy gap', () => {
+    const p = dailyPuzzle(graph, adj, '2026-06-06')
+    expect(['easy', 'medium', 'hard']).toContain(p.tier)
+    expect(p.gap).toBeGreaterThanOrEqual(1)
+  })
+
+  it('leaves tier/gap unset on band-override puzzles', () => {
+    const p = dailyPuzzle(graph, adj, '2026-06-06', { minHops: 2, maxHops: 12, minChanges: 0 })
+    expect(p.tier).toBeUndefined()
+    expect(p.gap).toBeUndefined()
+  })
+
   it('respects the difficulty band when a qualifying pair exists', () => {
     // The fixture is large enough to contain 6–12 hop, >=1 change pairs.
     const band = { minHops: 6, maxHops: 12, minChanges: 1 }

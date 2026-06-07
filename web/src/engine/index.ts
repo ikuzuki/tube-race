@@ -12,4 +12,15 @@ export { shortestPath, graphDistanceStops } from './dijkstra'
 
 export { dailyPuzzle } from './daily'
 
+export { greedyPath, greedyGap } from './greedy'
+
+export {
+  TIER_SPECS,
+  matchesTier,
+  classifyDifficulty,
+  tierForDate,
+} from './difficulty'
+
+export { LANDMARK_NAMES } from './landmarks'
+
 export { initGame, legalMoves, move, compass, isSolved, score, shareGrid } from './game'

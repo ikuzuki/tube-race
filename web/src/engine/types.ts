@@ -72,6 +72,9 @@ export interface DifficultyBand {
   minChanges?: number
 }
 
+/** Difficulty tier a puzzle is selected for. See engine/difficulty.ts. */
+export type Tier = 'easy' | 'medium' | 'hard'
+
 export interface DailyPuzzle {
   /** ISO date string used as the seed, e.g. "2026-06-06". */
   date: string
@@ -79,6 +82,10 @@ export interface DailyPuzzle {
   targetId: string
   /** Optimal route, the par the player is scored against. */
   par: PathResult
+  /** Difficulty tier targeted at selection time (absent on band-override puzzles). */
+  tier?: Tier
+  /** Greedy gap measured at selection time (see engine/greedy.ts). */
+  gap?: number
 }
 
 /** A single hop the player has taken. */
