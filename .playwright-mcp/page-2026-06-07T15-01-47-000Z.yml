@@ -1,0 +1,60 @@
+- generic [ref=e4]:
+  - banner [ref=e5]:
+    - generic [ref=e6]:
+      - img "Underground roundel" [ref=e7]
+      - generic [ref=e10]:
+        - generic [ref=e11]: Tube Race
+        - generic [ref=e12]: Sun 7 Jun
+    - navigation [ref=e13]:
+      - button "How to play" [ref=e14]:
+        - img [ref=e15]
+      - button "Past puzzles" [ref=e18]:
+        - img [ref=e19]
+      - button "Stats" [ref=e22]:
+        - img [ref=e23]
+  - main [ref=e24]:
+    - region "Game status" [ref=e25]:
+      - generic [ref=e26]:
+        - generic "Score 0, best possible 16" [ref=e27]:
+          - text: Score
+          - paragraph [ref=e28]:
+            - text: "0"
+            - generic [ref=e29]: / 16 best
+        - generic [ref=e30]:
+          - generic [ref=e31]:
+            - generic [ref=e32]: Stops
+            - paragraph [ref=e33]: "0"
+          - generic [ref=e34]:
+            - generic [ref=e35]: Changes
+            - paragraph [ref=e36]: "0"
+          - generic [ref=e37]:
+            - generic [ref=e38]: Line
+            - generic [ref=e39]: Boarding…
+      - generic [ref=e40]:
+        - generic [ref=e41]:
+          - text: Start
+          - paragraph [ref=e42]: Stratford International
+        - 'img "Journey so far: No moves yet" [ref=e43]':
+          - generic [ref=e44]:
+            - generic "Stratford International" [ref=e45]
+            - generic "You are here" [ref=e46]
+            - generic "Notting Hill Gate" [ref=e48]
+        - generic [ref=e50]:
+          - text: Destination
+          - paragraph [ref=e51]: Notting Hill Gate
+      - generic "Destination is 13.5 km away, bearing 253 degrees" [ref=e53]:
+        - img [ref=e54]:
+          - generic [ref=e56]: "N"
+        - generic [ref=e61]: 13.5 km
+    - generic [ref=e63]:
+      - generic [ref=e64]:
+        - region "Map" [ref=e69]
+        - generic:
+          - generic [ref=e70]:
+            - button "Zoom in" [ref=e71] [cursor=pointer]
+            - button "Zoom out" [ref=e73] [cursor=pointer]
+          - group [ref=e75]:
+            - generic "Toggle attribution" [ref=e76] [cursor=pointer]
+            - generic [ref=e77]: © OpenStreetMap contributors © CARTO
+      - button "Recentre on me" [ref=e65]:
+        - img [ref=e66]

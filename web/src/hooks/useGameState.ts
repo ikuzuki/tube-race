@@ -55,8 +55,10 @@ export function useGameState(
     setState(initGame(puzzle, graph, adj))
   }, [puzzle, graph, adj])
 
+  // Once solved the run is terminal: surface no legal moves so the map stops
+  // rendering lit, tappable neighbours that play() would silently swallow.
   const legalMoves = useMemo(
-    () => engineLegalMoves(state, adj),
+    () => (state.solved ? [] : engineLegalMoves(state, adj)),
     [state, adj],
   )
 

@@ -96,15 +96,17 @@ export default function Game({ graph, adj, puzzle, today, onSelectDate, initialS
   const [resultOpen, setResultOpen] = useState(false)
   const [showOptimal, setShowOptimal] = useState(false)
 
-  // First-run onboarding, then the daily intro card.
+  // First run shows only the onboarding, then drops straight into play; the
+  // status bar already names the start and destination, so the separate intro
+  // card (kept for returning players via its initial state) would just repeat
+  // it and add a second dismissal.
   useEffect(() => {
     if (!seen) setOnboardingOpen(true)
   }, [seen])
   const closeOnboarding = useCallback(() => {
     setOnboardingOpen(false)
     markSeen()
-    if (!state.solved) setIntroOpen(true)
-  }, [markSeen, state.solved])
+  }, [markSeen])
 
   // Record the result once per date when solved, then surface the result card.
   // Archive completions are kept for every run; lifetime stats and the streak
