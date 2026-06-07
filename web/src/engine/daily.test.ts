@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { buildAdjacency } from './graph'
 import { shortestPath } from './dijkstra'
-import { dailyPuzzle } from './daily'
+import { dailyExpert, dailyPuzzle } from './daily'
 import type { TubeGraph } from './types'
 import fixture from './__fixtures__/graph.fixture.json'
 
@@ -97,6 +97,19 @@ describe('dailyPuzzle', () => {
     expect(a.startId).toBe(b.startId)
     expect(a.targetId).toBe(b.targetId)
     // Still a real, reachable route.
+    expect(shortestPath(adj, a.startId, a.targetId)).toEqual(a.par)
+  })
+})
+
+describe('dailyExpert', () => {
+  it('is deterministic and dated by the day, not the seed', () => {
+    const a = dailyExpert(graph, adj, '2026-06-06')
+    const b = dailyExpert(graph, adj, '2026-06-06')
+    // The puzzle is dated by the day; the ":expert" seed is internal only.
+    expect(a.date).toBe('2026-06-06')
+    expect(a.startId).toBe(b.startId)
+    expect(a.targetId).toBe(b.targetId)
+    // A real, reachable route.
     expect(shortestPath(adj, a.startId, a.targetId)).toEqual(a.par)
   })
 })

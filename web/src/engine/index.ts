@@ -10,7 +10,7 @@ export { loadGraph, buildAdjacency, stationIndex } from './graph'
 
 export { shortestPath, graphDistanceStops } from './dijkstra'
 
-export { dailyPuzzle } from './daily'
+export { dailyPuzzle, dailyExpert } from './daily'
 
 export { greedyPath, greedyGap } from './greedy'
 

@@ -46,6 +46,19 @@ export function dailyPuzzle(
 }
 
 /**
+ * The day's optional Expert puzzle: always the {@link Tier} `expert` band
+ * (3+ changes, greedy gap >= 2), seeded apart from the ordinary daily so it is
+ * a genuinely different route. Same date, so it shares the day's identity but
+ * feeds its own track, not the ordinary daily's streak. Deterministic per date.
+ */
+export function dailyExpert(graph: TubeGraph, adj: Adjacency, dateISO: string): DailyPuzzle {
+  if (graph.stations.length < 2) {
+    throw new Error('dailyExpert: graph needs at least two stations')
+  }
+  return tierPuzzle(graph, adj, dateISO, 'expert', `${dateISO}:expert`)
+}
+
+/**
  * Stations eligible as puzzle endpoints: those with at least two distinct
  * neighbouring stations. Starting (or finishing) at a degree-1 terminus makes
  * the first move a forced non-decision, so such stations are rejected at the
@@ -67,10 +80,16 @@ function eligibleEndpoints(graph: TubeGraph, adj: Adjacency): boolean[] {
  * within {@link MAX_ATTEMPTS}, the closest candidate (deterministic penalty
  * ranking, see difficulty.ts tierPenalty) is used instead.
  */
-function tierPuzzle(graph: TubeGraph, adj: Adjacency, dateISO: string, tier: Tier): DailyPuzzle {
+function tierPuzzle(
+  graph: TubeGraph,
+  adj: Adjacency,
+  dateISO: string,
+  tier: Tier,
+  seed: string = dateISO,
+): DailyPuzzle {
   const stations = graph.stations
   const n = stations.length
-  const rng = seededRng(dateISO)
+  const rng = seededRng(seed)
   const eligible = eligibleEndpoints(graph, adj)
 
   const pool: number[] = []

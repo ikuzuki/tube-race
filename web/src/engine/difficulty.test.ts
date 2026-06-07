@@ -48,6 +48,8 @@ describe('classifyDifficulty', () => {
     expect(classifyDifficulty(par(8, 2), 1.15)).toBe('easy')
     expect(classifyDifficulty(par(10, 2), 1.3)).toBe('medium')
     expect(classifyDifficulty(par(12, 2), 2.0)).toBe('hard')
+    // Expert needs 3+ changes and a long route the hard band's hop cap excludes.
+    expect(classifyDifficulty(par(18, 3), 2.5)).toBe('expert')
   })
 
   it('returns null when nothing fits', () => {
@@ -83,7 +85,7 @@ describe('tierForDate', () => {
   })
 
   it('serves a sensible accessible-leaning mix over a year', () => {
-    const counts: Record<Tier, number> = { easy: 0, medium: 0, hard: 0 }
+    const counts: Record<Tier, number> = { easy: 0, medium: 0, hard: 0, expert: 0 }
     const start = new Date('2026-01-01T00:00:00Z')
     for (let i = 0; i < 365; i++) {
       const d = new Date(start.getTime() + i * 86_400_000).toISOString().slice(0, 10)
@@ -96,13 +98,18 @@ describe('tierForDate', () => {
     expect(counts.medium / 365).toBeLessThan(0.55)
     expect(counts.hard / 365).toBeGreaterThan(0.07)
     expect(counts.hard / 365).toBeLessThan(0.25)
+    // Expert is never served by the ordinary daily; it is its own track.
+    expect(counts.expert).toBe(0)
   })
 })
 
 describe('TIER_SPECS', () => {
-  it('keeps the hop ceiling modest so puzzles never get tedious-long', () => {
-    for (const tier of Object.keys(TIER_SPECS) as Tier[]) {
+  it('keeps the daily-rotation hop ceiling modest so puzzles never get tedious-long', () => {
+    // The rotation tiers stay short; only the opt-in Expert track runs longer.
+    for (const tier of ['easy', 'medium', 'hard'] as const) {
       expect(TIER_SPECS[tier].maxHops).toBeLessThanOrEqual(16)
     }
+    expect(TIER_SPECS.expert.maxHops).toBeLessThanOrEqual(20)
+    expect(TIER_SPECS.expert.minChanges).toBeGreaterThanOrEqual(3)
   })
 })
