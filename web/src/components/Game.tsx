@@ -22,7 +22,8 @@ import { expertKey } from '../lib/archive'
 import { useOnboarding } from '../hooks/useOnboarding'
 import { useStationInfo } from '../hooks/useStationInfo'
 import type { StationInfo } from '../lib/stationInfo'
-import { buildShareText } from '../lib/share'
+import { buildShareText, starRating } from '../lib/share'
+import { track } from '../lib/analytics'
 import { points } from '../lib/score'
 import { displayName } from '../lib/format'
 import { journeyLegs } from '../lib/route'
@@ -94,6 +95,8 @@ export default function Game({
   // challenge shares today's date but runs on its own track; archive replays
   // are past dates.
   const isStreakDaily = isToday && !isExpert
+  // Analytics mode label for this run (daily / expert / archive replay).
+  const mode = isExpert ? 'expert' : isToday ? 'daily' : 'archive'
   // Completions are kept per puzzle: the Expert track is keyed apart so it does
   // not collide with the day's ordinary daily.
   const completionKey = isExpert ? expertKey(dateISO) : dateISO
@@ -146,6 +149,13 @@ export default function Game({
     setHintStationId(null)
   }, [state.currentId])
 
+  // Analytics: one "start" per puzzle load. Game is keyed per puzzle in App, so
+  // this effect runs once when a puzzle (or the Expert/archive variant) mounts.
+  useEffect(() => {
+    track('start', { mode })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const hintCost = hintsUsed * HINT_COST
   // The run is over once solved or conceded; moves and controls lock then.
   const runOver = state.solved || gaveUp
@@ -184,9 +194,15 @@ export default function Game({
       recordResult({ date: dateISO, solved: true, scoreOverPar, optimal: scoreOverPar === 0 })
     }
     recordCompletion(completionKey, { solved: true, score: solvedScore, parScore })
+    track('complete', {
+      mode,
+      stars: starRating(solvedScore, parScore, true),
+      scoreOverPar,
+      hints: hintsUsed,
+    })
     setIntroOpen(false)
     setResultOpen(true)
-  }, [state, dateISO, completionKey, isStreakDaily, hintCost, parScore, recordResult, recordCompletion])
+  }, [state, dateISO, completionKey, isStreakDaily, hintCost, parScore, mode, hintsUsed, recordResult, recordCompletion])
 
   const shareText = runOver
     ? buildShareText({
@@ -237,12 +253,14 @@ export default function Game({
       recordResult({ date: dateISO, solved: false, scoreOverPar: 0, optimal: false })
     }
     recordCompletion(completionKey, { solved: false, score: finalScore, parScore })
+    track('give_up', { mode })
     setShowOptimal(false)
     setIntroOpen(false)
     setResultOpen(true)
   }, [
     runOver,
     isStreakDaily,
+    mode,
     dateISO,
     completionKey,
     finalScore,
@@ -273,7 +291,10 @@ export default function Game({
               : 'Past puzzle'
         }
         onHowToPlay={() => setOnboardingOpen(true)}
-        onArchive={() => setArchiveOpen(true)}
+        onArchive={() => {
+          track('archive_open', { mode })
+          setArchiveOpen(true)
+        }}
         onStats={() => setStatsOpen(true)}
       />
 
@@ -444,6 +465,7 @@ export default function Game({
         optimal={isOptimalRun}
         hintsUsed={hintsUsed}
         shareText={shareText}
+        onShare={(ok) => track('share', { mode, ok })}
         streak={stats.curStreak}
         start={startCard ?? undefined}
         destination={destCard ?? undefined}
