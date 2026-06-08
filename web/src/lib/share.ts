@@ -35,23 +35,20 @@ export function percentOptimal(score: number, parScore: number): number {
   return Math.max(0, Math.min(100, Math.round((parScore / score) * 100)))
 }
 
-/** Percentage of optimal at or above which a solved run earns its third star. */
-export const THREE_STAR_PERCENT = 90
 /** Percentage of optimal at or above which a solved run earns its second star. */
-export const TWO_STAR_PERCENT = 60
+export const TWO_STAR_PERCENT = 70
 
 /**
- * A 0-3 star rating for a run, kept deliberately lenient: gave up is 0, any
- * solve is at least 1, a decent run ({@link TWO_STAR_PERCENT}%+ of optimal) is
- * 2, and a near-perfect run ({@link THREE_STAR_PERCENT}%+, which an optimal
- * route always clears) is 3. The exact percentage is internal (see
- * percentOptimal); only the stars are surfaced.
+ * A 0-3 star rating for a run: gave up is 0, any solve is at least 1, a good
+ * run ({@link TWO_STAR_PERCENT}%+ of optimal) is 2, and only an exactly optimal
+ * run (matching par, which an optimal route always does and which a hint can
+ * never reach, since each hint adds to the score) earns all 3. The exact
+ * percentage is internal (see percentOptimal); only the stars are surfaced.
  */
 export function starRating(score: number, parScore: number, solved: boolean): 0 | 1 | 2 | 3 {
   if (!solved) return 0
-  const pct = percentOptimal(score, parScore)
-  if (pct >= THREE_STAR_PERCENT) return 3
-  if (pct >= TWO_STAR_PERCENT) return 2
+  if (score <= parScore) return 3
+  if (percentOptimal(score, parScore) >= TWO_STAR_PERCENT) return 2
   return 1
 }
 

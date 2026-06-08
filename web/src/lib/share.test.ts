@@ -53,19 +53,22 @@ describe('starRating', () => {
     expect(starRating(11, 11, false)).toBe(0)
   })
 
-  it('gives 3 stars only for an optimal (par-matching) run', () => {
+  it('gives 3 stars only for an exactly optimal (par-matching) run', () => {
     expect(starRating(11, 11, true)).toBe(3)
-    // A hint adds to the score, pushing it over par -> never 3 stars.
+    // One over par is no longer 3 stars; a hint can never reach 3 either.
+    expect(starRating(12, 11, true)).not.toBe(3)
     expect(starRating(14, 11, true)).not.toBe(3)
   })
 
-  it('gives 2 stars for a strong run (>= 80% optimal)', () => {
-    // 13 vs 11 -> 85% -> 2 stars.
+  it('gives 2 stars for a good run (>= 70% optimal)', () => {
+    // 13 vs 11 -> 85% -> 2 stars; 15 vs 11 -> 73% -> 2 stars.
     expect(starRating(13, 11, true)).toBe(2)
+    expect(starRating(15, 11, true)).toBe(2)
   })
 
-  it('gives 1 star for a solved but weak run', () => {
-    // 22 vs 11 -> 50% -> 1 star.
+  it('gives 1 star for a solved but weak run (below 70%)', () => {
+    // 16 vs 11 -> 69% -> 1 star; 22 vs 11 -> 50% -> 1 star.
+    expect(starRating(16, 11, true)).toBe(1)
     expect(starRating(22, 11, true)).toBe(1)
   })
 })
