@@ -84,17 +84,19 @@ request.
 
 Where the site lives is defined once, in `web/src/config.ts`. `BASE_PATH` is the
 path it is served from (currently `/`, since it owns its domain at the root) and
-`DEFAULT_SITE_URL` is its public origin, which feeds the canonical link, the
-Open Graph and Twitter tags, the sitemap and the share text. Vite reads
-`BASE_PATH` for its build `base`, so changing that one constant moves every
-generated URL with it. To host under a subpath instead of a subdomain, set
-`BASE_PATH` to that path and `DEFAULT_SITE_URL` to the new origin; nothing else
-in the app hardcodes the location. A build-time `VITE_SITE_URL` environment
-variable can override the origin without editing the file, which is handy for
-preview deploys.
+`DEFAULT_SITE_URL` is its public origin, which feeds the runtime share text and,
+via the build, the canonical link and the Open Graph and Twitter tags. Vite
+reads `BASE_PATH` for its build `base`, and `index.html` carries
+`%VITE_SITE_URL%` placeholders that the build fills from the `VITE_SITE_URL`
+environment variable, falling back to `DEFAULT_SITE_URL` when it is unset. So
+changing that one constant (or exporting `VITE_SITE_URL`, as the Deploy workflow
+does) moves every generated URL with it, with no second copy to keep in sync. To
+host under a subpath instead of a subdomain, set `BASE_PATH` to that path and
+`DEFAULT_SITE_URL` to the new origin.
 
-If the domain itself changes, the canonical origin is referenced in three
-generated-but-static files as well (`web/index.html`, `web/public/robots.txt`
-and `web/public/sitemap.xml`); update those to match, and change the `subdomain`
-or `domain_name` variables in `infrastructure/environments/dev` so the
-certificate and DNS records follow.
+Two files are the exception. `web/public/robots.txt` and
+`web/public/sitemap.xml` are copied to the bucket verbatim and are not run
+through the build's templating, so the origin in them is hardcoded and stays a
+manual edit on a domain move. Update those two by hand, and change the
+`subdomain` or `domain_name` variables in `infrastructure/environments/dev` so
+the certificate and DNS records follow.
