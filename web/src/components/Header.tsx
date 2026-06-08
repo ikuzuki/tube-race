@@ -1,9 +1,9 @@
-// App chrome header: the Portland-stone bar carrying the roundel brand, the
+// App chrome header: the Portland-stone bar carrying the brand mark, the
 // "Tube Race" wordmark and today's date, with icon buttons for the how-to-play
-// card and the stats panel. Presentational — all actions come in as props.
+// card, the archive and the stats panel. Presentational — all actions come in
+// as props.
 
-import Roundel from './Roundel'
-import { ExpertIcon } from './icons'
+import TrainMark from './TrainMark'
 
 interface HeaderProps {
   /** Display date, e.g. "2026-06-06" or a prettier formatted string. */
@@ -13,10 +13,6 @@ interface HeaderProps {
   onHowToPlay: () => void
   onArchive: () => void
   onStats: () => void
-  /** Toggle the day's Expert challenge on/off. */
-  onExpert: () => void
-  /** Whether the Expert challenge is currently active (highlights the button). */
-  expertActive: boolean
 }
 
 export default function Header({
@@ -25,13 +21,11 @@ export default function Header({
   onHowToPlay,
   onArchive,
   onStats,
-  onExpert,
-  expertActive,
 }: HeaderProps) {
   return (
     <header className="flex items-center justify-between gap-3 border-b border-stone-200 bg-paper px-4 py-3">
       <div className="flex min-w-0 items-center gap-2.5">
-        <Roundel size={30} />
+        <TrainMark size={30} />
         <div className="flex min-w-0 flex-col leading-tight">
           <span className="font-display text-lg font-extrabold tracking-tight text-ink">
             Tube Race
@@ -60,14 +54,6 @@ export default function Header({
             <path d="M9.5 9a2.5 2.5 0 0 1 4.5 1.5c0 1.5-2 2-2 3.5" />
             <path d="M12 17.5h.01" />
           </svg>
-        </IconButton>
-
-        <IconButton
-          label={expertActive ? 'Back to the daily' : 'Expert challenge'}
-          onClick={onExpert}
-          active={expertActive}
-        >
-          <ExpertIcon className="text-[18px]" />
         </IconButton>
 
         <IconButton label="Past puzzles" onClick={onArchive}>
