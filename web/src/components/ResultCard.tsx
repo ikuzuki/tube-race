@@ -92,6 +92,14 @@ interface ResultCardProps {
    * attempt per day (the streak's integrity), so only archive replays get it.
    */
   onPlayAgain?: () => void
+  /** True when the finished run was the day's Expert challenge. */
+  isExpert?: boolean
+  /**
+   * Switch tracks from the result screen: from the daily this enters today's
+   * Expert challenge ("Try Expert mode"); from Expert it returns to the daily.
+   * Omit to hide the button (e.g. archive replays).
+   */
+  onTryExpert?: () => void
   onClose: () => void
 }
 
@@ -112,6 +120,8 @@ export default function ResultCard({
   destination,
   onShowOptimal,
   onPlayAgain,
+  isExpert = false,
+  onTryExpert,
   onClose,
 }: ResultCardProps) {
   const [copied, setCopied] = useState(false)
@@ -156,7 +166,7 @@ export default function ResultCard({
     }
   }
 
-  const headline = solved ? (optimal ? 'Spot on!' : 'You made it!') : 'Mind the gap'
+  const headline = solved ? (optimal ? 'Spot on!' : 'You made it!') : 'So close'
   const stars = starRating(score, parScore, solved)
   const animate = open && solved && !prefersReducedMotion()
   const displayScore = useCountUp(score, animate)
@@ -248,6 +258,16 @@ export default function ResultCard({
           className="mt-2 w-full rounded-xl border border-stone-200 bg-paper px-4 py-2.5 text-sm font-semibold text-ink transition hover:bg-stone focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress"
         >
           Show best route
+        </button>
+      )}
+
+      {onTryExpert && (
+        <button
+          type="button"
+          onClick={onTryExpert}
+          className="mt-2 w-full rounded-xl border border-progress/40 bg-progress/5 px-4 py-2.5 text-sm font-semibold text-progress transition hover:bg-progress/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-progress"
+        >
+          {isExpert ? 'Back to the daily' : 'Try Expert mode'}
         </button>
       )}
 

@@ -89,23 +89,6 @@ export function DestFlagIcon({ className }: IconProps) {
   )
 }
 
-/** Black diamond: the recognised "expert / hardest" mark, for the Expert track. */
-export function ExpertIcon({ className }: IconProps) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="1em"
-      height="1em"
-      className={className}
-      fill="currentColor"
-      role="img"
-      aria-hidden="true"
-    >
-      <path d="M12 2 L22 12 L12 22 L2 12 Z" />
-    </svg>
-  )
-}
-
 /** Lightbulb: a hint. */
 export function HintIcon({ className }: IconProps) {
   return (
