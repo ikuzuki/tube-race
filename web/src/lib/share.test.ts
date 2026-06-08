@@ -94,10 +94,11 @@ describe('buildShareText — structure', () => {
     expect(lines[lines.length - 1]).toBe(SITE_URL)
   })
 
-  it('leads the result line with the weighted score and % optimal', () => {
+  it('leads the result line with the weighted score against par (no % text)', () => {
     const text = buildShareText(input({ stops: 9, parStops: 7, changes: 2, parChanges: 1 }))
-    // score = 9 + 4*2 = 17, par = 7 + 4*1 = 11, 11/17 -> 65%.
-    expect(text).toContain('Score 17 (best 11), 65% optimal')
+    // score = 9 + 4*2 = 17, par = 7 + 4*1 = 11.
+    expect(text).toContain('Score 17 (best 11)')
+    expect(text).not.toContain('% optimal')
   })
 
   it('keeps a stops·changes breakdown line and the streak', () => {

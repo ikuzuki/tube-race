@@ -15,7 +15,7 @@ import Confetti from './Confetti'
 import { ChangeIcon, StopIcon } from './icons'
 import type { Station } from '../engine'
 import type { StationInfo } from '../lib/stationInfo'
-import { percentOptimal, starRating } from '../lib/share'
+import { starRating } from '../lib/share'
 import { formatCountdown, msToNextUtcMidnight } from '../lib/countdown'
 import { AMBER_LIMIT, deltaTone, type Tone } from '../lib/score'
 
@@ -326,7 +326,6 @@ function ScoreBlock({
   // A given-up run is a loss: the numbers read red regardless of how few stops
   // or changes were made, since the destination was never reached.
   const scoreTone: Tone = solved ? deltaTone(score, parScore, AMBER_LIMIT.score(parScore)) : 'bad'
-  const pct = percentOptimal(score, parScore)
   return (
     <div
       className="mt-3 rounded-xl border border-stone-200 bg-paper px-4 py-3 text-center"
@@ -339,11 +338,6 @@ function ScoreBlock({
         <span className={`text-6xl font-extrabold ${toneText(scoreTone)}`}>{displayScore}</span>
         <span className="ml-2 text-lg font-semibold text-ink-soft">/ {parScore} best</span>
       </p>
-
-      {solved && (
-        // Stars are the headline now; the precise % stays as quiet supporting detail.
-        <p className="mt-1 text-xs font-medium text-ink-soft">{pct}% optimal</p>
-      )}
 
       <div className="mt-2.5 flex items-center justify-center gap-5 border-t border-stone-200 pt-2.5 text-sm">
         <MiniStat

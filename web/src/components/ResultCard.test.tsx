@@ -99,19 +99,8 @@ describe('ResultCard', () => {
     expect(screen.getByText('5 day streak')).toBeInTheDocument()
   })
 
-  it('surfaces the % optimal on a solved run', () => {
-    // score 17 vs best 11 -> round(11/17*100) = 65.
+  it('never shows the raw % optimal text (stars carry the rating)', () => {
     setup()
-    expect(screen.getByText('65% optimal')).toBeInTheDocument()
-  })
-
-  it('reads 100% optimal on an optimal run', () => {
-    setup({ optimal: true, score: 11 })
-    expect(screen.getByText('100% optimal')).toBeInTheDocument()
-  })
-
-  it('hides the % optimal for an unsolved run', () => {
-    setup({ solved: false })
     expect(screen.queryByText(/% optimal/)).not.toBeInTheDocument()
   })
 
@@ -120,9 +109,9 @@ describe('ResultCard', () => {
     expect(screen.getByLabelText('3 of 3 stars')).toBeInTheDocument()
   })
 
-  it('shows fewer stars for a non-optimal run', () => {
-    // 17 vs 11 -> 65% -> 1 star.
-    setup({ optimal: false, score: 17, parScore: 11 })
+  it('shows fewer stars for a weak run', () => {
+    // 30 vs 11 -> 37% -> 1 star (below the 60% second-star threshold).
+    setup({ optimal: false, score: 30, parScore: 11 })
     expect(screen.getByLabelText('1 of 3 stars')).toBeInTheDocument()
   })
 

@@ -35,18 +35,23 @@ export function percentOptimal(score: number, parScore: number): number {
   return Math.max(0, Math.min(100, Math.round((parScore / score) * 100)))
 }
 
-/** Percentage at or above which a solved run earns its second star. */
-export const TWO_STAR_PERCENT = 80
+/** Percentage of optimal at or above which a solved run earns its third star. */
+export const THREE_STAR_PERCENT = 90
+/** Percentage of optimal at or above which a solved run earns its second star. */
+export const TWO_STAR_PERCENT = 60
 
 /**
- * A 0-3 star rating for a run. Gave up: 0. Solved: at least 1. Within
- * {@link TWO_STAR_PERCENT}% of optimal: 2. Optimal (matched par, which requires
- * using no hints, since each hint adds to the score and pushes it over par): 3.
+ * A 0-3 star rating for a run, kept deliberately lenient: gave up is 0, any
+ * solve is at least 1, a decent run ({@link TWO_STAR_PERCENT}%+ of optimal) is
+ * 2, and a near-perfect run ({@link THREE_STAR_PERCENT}%+, which an optimal
+ * route always clears) is 3. The exact percentage is internal (see
+ * percentOptimal); only the stars are surfaced.
  */
 export function starRating(score: number, parScore: number, solved: boolean): 0 | 1 | 2 | 3 {
   if (!solved) return 0
-  if (score <= parScore) return 3
-  if (percentOptimal(score, parScore) >= TWO_STAR_PERCENT) return 2
+  const pct = percentOptimal(score, parScore)
+  if (pct >= THREE_STAR_PERCENT) return 3
+  if (pct >= TWO_STAR_PERCENT) return 2
   return 1
 }
 
@@ -66,9 +71,7 @@ export function buildShareText(o: ShareInput): string {
   const stars = starRating(o.score, o.parScore, o.solved)
   const title = `Tube Race ${o.dateISO} ${starString(stars)}`
 
-  const result = o.solved
-    ? `Score ${o.score} (best ${o.parScore}), ${percentOptimal(o.score, o.parScore)}% optimal`
-    : 'Gave up'
+  const result = o.solved ? `Score ${o.score} (best ${o.parScore})` : 'Gave up'
 
   const breakdown = `${o.stops}/${o.parStops} stops · ${o.changes}/${o.parChanges} changes`
 
