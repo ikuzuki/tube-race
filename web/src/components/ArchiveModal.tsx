@@ -8,8 +8,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import Modal from './Modal'
 import { ExpertIcon } from './icons'
-import type { Adjacency, DailyPuzzle, Tier, TubeGraph } from '../engine'
-import { dailyExpert, dailyPuzzle, stationIndex } from '../engine'
+import type { Adjacency, DailyPuzzle, PuzzleIndex, Tier, TubeGraph } from '../engine'
+import { resolveDaily, resolveExpert, stationIndex } from '../engine'
 import { archiveDates, expertKey, type ArchiveCompletions } from '../lib/archive'
 import { displayName } from '../lib/format'
 
@@ -26,6 +26,8 @@ interface ArchiveModalProps {
   activeExpert: boolean
   /** Today's ISO date (the daily puzzle's date). */
   todayISO: string
+  /** Precomputed endpoints, so the list reads instantly (null falls back to generation). */
+  puzzleIndex?: PuzzleIndex | null
   /** Select a puzzle date and whether to play its Expert variant; null date returns to today. */
   onSelect: (dateISO: string | null, expert: boolean) => void
 }
@@ -55,6 +57,7 @@ export default function ArchiveModal({
   activeDate,
   activeExpert,
   todayISO,
+  puzzleIndex = null,
   onSelect,
 }: ArchiveModalProps) {
   // Past dates (newest first) recomputed only when the day rolls over.
@@ -74,9 +77,9 @@ export default function ArchiveModal({
   })
   useEffect(() => {
     if (!open || cache[mode]) return
-    const build = mode === 'expert' ? dailyExpert : dailyPuzzle
-    setCache((c) => ({ ...c, [mode]: dates.map((d) => build(graph, adj, d)) }))
-  }, [open, mode, cache, dates, graph, adj])
+    const build = mode === 'expert' ? resolveExpert : resolveDaily
+    setCache((c) => ({ ...c, [mode]: dates.map((d) => build(graph, adj, d, puzzleIndex)) }))
+  }, [open, mode, cache, dates, graph, adj, puzzleIndex])
   const puzzles = cache[mode]
 
   const stationsById = stationIndex(graph)

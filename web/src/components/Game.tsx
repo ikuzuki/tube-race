@@ -5,7 +5,15 @@
 // determinism + the share grid.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { Adjacency, DailyPuzzle, GameState, Neighbour, Station, TubeGraph } from '../engine'
+import type {
+  Adjacency,
+  DailyPuzzle,
+  GameState,
+  Neighbour,
+  PuzzleIndex,
+  Station,
+  TubeGraph,
+} from '../engine'
 import { compass, score, shortestPath, stationIndex } from '../engine'
 import { useGameState } from '../hooks/useGameState'
 import { useStats } from '../hooks/useStats'
@@ -44,6 +52,8 @@ interface GameProps {
   isExpert?: boolean
   /** Toggle the Expert challenge on/off (returns to the ordinary daily). */
   onToggleExpert?: () => void
+  /** Precomputed endpoints for the archive lookup (null falls back to generation). */
+  puzzleIndex?: PuzzleIndex | null
   /** Optional seed state, primarily for tests. */
   initialState?: GameState
 }
@@ -66,6 +76,7 @@ export default function Game({
   onSelectDate,
   isExpert = false,
   onToggleExpert,
+  puzzleIndex = null,
   initialState,
 }: GameProps) {
   const { state, legalMoves, play, restart } = useGameState(puzzle, graph, adj, initialState)
@@ -406,6 +417,7 @@ export default function Game({
         activeDate={dateISO}
         activeExpert={isExpert}
         todayISO={todayISO}
+        puzzleIndex={puzzleIndex}
         onSelect={(d, asExpert) => onSelectDate?.(d, asExpert)}
       />
       <ResultCard
