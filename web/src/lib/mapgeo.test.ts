@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import type { GameState, Neighbour, Station, TubeGraph } from '../engine'
 import {
   classifyLegalMoves,
+  currentOptionEdgesGeoJSON,
   lineColourOf,
   moveTargets,
   optimalRouteGeoJSON,
@@ -228,6 +229,39 @@ describe('stationsGeoJSON — minimal map', () => {
     const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], null, 'oxford-circus')
     const oxford = fc.features.find((f) => f.properties.id === 'oxford-circus')
     expect(oxford?.geometry.coordinates).toEqual([-0.1418, 51.5152])
+  })
+})
+
+describe('currentOptionEdgesGeoJSON', () => {
+  it('draws a line-coloured segment from the current station to each legal move', () => {
+    const state = makeState({ currentId: 'warren-street' })
+    const legal: Neighbour[] = [
+      { stationId: 'euston', line: 'victoria' },
+      { stationId: 'oxford-circus', line: 'victoria' },
+    ]
+    const fc = currentOptionEdgesGeoJSON(GRAPH, state, STATIONS_BY_ID, legal)
+    expect(fc.features).toHaveLength(2)
+    // Each segment starts at the current station.
+    for (const f of fc.features) {
+      expect(f.geometry.coordinates[0]).toEqual([-0.1384, 51.5247]) // warren-street
+      expect(f.properties.colour).toBe('#0098D4') // victoria
+    }
+  })
+
+  it('fans parallel lines to the same neighbour onto distinct offsets', () => {
+    const state = makeState({ currentId: 'warren-street' })
+    const legal: Neighbour[] = [
+      { stationId: 'euston', line: 'victoria' },
+      { stationId: 'euston', line: 'northern' },
+    ]
+    const fc = currentOptionEdgesGeoJSON(GRAPH, state, STATIONS_BY_ID, legal)
+    const offsets = fc.features.map((f) => f.properties.offsetIdx).sort()
+    expect(offsets).toEqual([-0.5, 0.5])
+  })
+
+  it('is empty when there are no legal moves', () => {
+    const fc = currentOptionEdgesGeoJSON(GRAPH, makeState(), STATIONS_BY_ID, [])
+    expect(fc.features).toHaveLength(0)
   })
 })
 

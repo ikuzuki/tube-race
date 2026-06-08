@@ -17,6 +17,7 @@ import maplibregl, {
 import type { GameState, Neighbour, Station, TubeGraph } from '../engine'
 import { displayName } from '../lib/format'
 import {
+  currentOptionEdgesGeoJSON,
   lineColourOf,
   moveTargets,
   optimalRouteGeoJSON,
@@ -80,9 +81,12 @@ const POSITRON_STYLE: StyleSpecification = {
 // diamond), the target and any hint marker. No revealed-but-untaken edges or
 // past station dots.
 const SRC_PATH = 'tr-path'
+const SRC_OPTIONS = 'tr-options'
 const SRC_OPTIMAL = 'tr-optimal'
 const SRC_STATIONS = 'tr-stations'
 
+const LYR_OPTIONS = 'tr-options-line' // clean line segments to the legal moves
+const LYR_OPTIONS_DASH = 'tr-options-line-dash' // Overground options
 const LYR_PATH = 'tr-path-line'
 const LYR_PATH_DASH = 'tr-path-line-dash' // Overground hops of the ridden path
 const LYR_OPTIMAL = 'tr-optimal-line'
@@ -237,7 +241,7 @@ export default function PlayfieldMap({
 
     map.on('load', () => {
       // Overlay sources (populated by the data effect below).
-      for (const id of [SRC_PATH, SRC_OPTIMAL, SRC_STATIONS]) {
+      for (const id of [SRC_OPTIONS, SRC_PATH, SRC_OPTIMAL, SRC_STATIONS]) {
         map.addSource(id, { type: 'geojson', data: EMPTY_FC })
       }
 
@@ -261,7 +265,34 @@ export default function PlayfieldMap({
         },
       })
 
-      // The travelled path — thicker + brighter than the revealed edges, with
+      // Clean line segments from the current station to each legal move, so
+      // the lines on offer are visible (not just the dots/diamonds). Recomputed
+      // from the current station each turn, so unchosen branches disappear on a
+      // move. Thinner than the travelled path; a dashed twin for Overground.
+      const optionPaint: LineLayerSpecification['paint'] = {
+        'line-color': ['get', 'colour'],
+        'line-width': 3.5,
+        'line-opacity': 0.7,
+        'line-offset': ['*', ['get', 'offsetIdx'], 6],
+      }
+      map.addLayer({
+        id: LYR_OPTIONS,
+        type: 'line',
+        source: SRC_OPTIONS,
+        filter: ['!=', ['get', 'dashed'], true],
+        layout: { 'line-cap': 'round', 'line-join': 'round' },
+        paint: { ...optionPaint },
+      })
+      map.addLayer({
+        id: LYR_OPTIONS_DASH,
+        type: 'line',
+        source: SRC_OPTIONS,
+        filter: ['==', ['get', 'dashed'], true],
+        layout: { 'line-cap': 'butt', 'line-join': 'round' },
+        paint: { ...optionPaint, 'line-dasharray': [2.2, 1.6] },
+      })
+
+      // The travelled path — thicker + brighter than the option segments, with
       // the same dashed twin for Overground hops.
       const pathPaint: LineLayerSpecification['paint'] = {
         'line-color': ['get', 'colour'],
@@ -479,6 +510,8 @@ export default function PlayfieldMap({
   // --- Data: push fresh GeoJSON whenever game state changes. ---
   const overlay = useMemo(
     () => ({
+      // Option lines hidden once the run is over, leaving just the route.
+      options: showOptimal ? EMPTY_FC : currentOptionEdgesGeoJSON(graph, state, stationsById, legalMoves),
       path: travelledPathGeoJSON(graph, state, stationsById),
       stations: stationsGeoJSON(
         graph,
@@ -497,6 +530,7 @@ export default function PlayfieldMap({
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
+    ;(map.getSource(SRC_OPTIONS) as GeoJSONSource | undefined)?.setData(overlay.options)
     ;(map.getSource(SRC_PATH) as GeoJSONSource | undefined)?.setData(overlay.path)
     ;(map.getSource(SRC_STATIONS) as GeoJSONSource | undefined)?.setData(overlay.stations)
     ;(map.getSource(SRC_OPTIMAL) as GeoJSONSource | undefined)?.setData(overlay.optimal)

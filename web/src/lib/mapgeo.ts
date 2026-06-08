@@ -298,6 +298,64 @@ export function revealedEdgesGeoJSON(
 }
 
 /**
+ * The line segments from the CURRENT station to each legal next move, coloured
+ * per line so the player sees which lines they could take (not just dots). Only
+ * these immediate options are drawn, so when the player moves the unselected
+ * branches vanish (the set is recomputed from the new current station). Lines
+ * that share a current->neighbour pair fan out via `offsetIdx`, matching the
+ * travelled route; Overground options carry the dashed flag.
+ */
+export function currentOptionEdgesGeoJSON(
+  graph: TubeGraph,
+  state: GameState,
+  stationsById: Map<string, Station>,
+  legalMoves: Neighbour[],
+): FeatureCollection<LineFeature<EdgeProps>> {
+  const cur = stationsById.get(state.currentId)
+  if (!cur) return { type: 'FeatureCollection', features: [] }
+
+  // Group the legal moves by destination so parallel lines to the same
+  // neighbour can be offset onto distinct sides.
+  const byStation = new Map<string, string[]>()
+  const order: string[] = []
+  for (const mv of legalMoves) {
+    let lines = byStation.get(mv.stationId)
+    if (!lines) {
+      lines = []
+      byStation.set(mv.stationId, lines)
+      order.push(mv.stationId)
+    }
+    if (!lines.includes(mv.line)) lines.push(mv.line)
+  }
+
+  const features: LineFeature<EdgeProps>[] = []
+  for (const stationId of order) {
+    const dest = stationsById.get(stationId)
+    if (!dest) continue
+    const sorted = [...byStation.get(stationId)!].sort()
+    sorted.forEach((line, i) => {
+      features.push({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [cur.lon, cur.lat],
+            [dest.lon, dest.lat],
+          ],
+        },
+        properties: {
+          line,
+          colour: lineColourOf(graph, line),
+          offsetIdx: i - (sorted.length - 1) / 2,
+          dashed: isOverground(line),
+        },
+      })
+    })
+  }
+  return { type: 'FeatureCollection', features }
+}
+
+/**
  * The route the player has actually travelled (start -> ...path), as one
  * LineString segment per hop coloured by the line used for that hop. Drawn on
  * top of the revealed-edge layer, thicker/brighter, so progress reads clearly.
