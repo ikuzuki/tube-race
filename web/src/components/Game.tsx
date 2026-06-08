@@ -275,8 +275,6 @@ export default function Game({
         onHowToPlay={() => setOnboardingOpen(true)}
         onArchive={() => setArchiveOpen(true)}
         onStats={() => setStatsOpen(true)}
-        onExpert={() => onToggleExpert?.()}
-        expertActive={isExpert}
       />
 
       <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-3 p-3 sm:p-4 lg:px-6">
@@ -451,6 +449,12 @@ export default function Game({
         destination={destCard ?? undefined}
         onShowOptimal={handleShowOptimal}
         onPlayAgain={isStreakDaily ? undefined : handlePlayAgain}
+        // Expert is discovered from the result screen, not a header toggle:
+        // after today's daily it invites "Try Expert mode"; from today's
+        // Expert it offers the way back. Archive replays (not today) use the
+        // archive's own track toggle instead.
+        isExpert={isExpert}
+        onTryExpert={onToggleExpert && isToday ? onToggleExpert : undefined}
         onClose={() => setResultOpen(false)}
       />
     </div>
