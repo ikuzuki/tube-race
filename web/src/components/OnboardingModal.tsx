@@ -16,25 +16,10 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
   return (
     <Modal open={open} onClose={onClose} title="Mind the gap">
       <p className="text-sm text-ink-soft">
-        You&apos;re given a start and a destination and have to find your way across town, in as few
-        stops and line changes as you can.
+        Find your way from your start to the destination in as few stops and changes as you can.
       </p>
 
       <Demo />
-
-      <ol className="mt-4 flex flex-col gap-3">
-        <Rule icon={<FogIcon />}>
-          You start with the fog down: only the stops one hop away are lit. Anywhere you visit
-          stays on your map.
-        </Rule>
-        <Rule icon={<CompassIcon />}>
-          The compass points to your destination and shows how far it is. It tells you{' '}
-          <em>where</em>, never <em>which line</em>. That&apos;s the puzzle.
-        </Rule>
-        <Rule icon={<ChangeIcon />}>
-          You ride your current line by default. Tap a lit station on another line to change.
-        </Rule>
-      </ol>
 
       <div className="mt-4 rounded-xl border border-stone-200 bg-stone/60 px-4 py-3">
         <div className="flex items-center justify-center gap-6">
@@ -42,10 +27,20 @@ export default function OnboardingModal({ open, onClose }: OnboardingModalProps)
           <ScorePill colour="text-warn" amount="+4" label="each change" />
         </div>
         <p className="mt-2 text-center text-xs leading-snug text-ink-soft">
-          Your score adds up as you travel and lower is better: you&apos;re racing the best possible
-          route, so changes are expensive. Come back each day to keep your streak alive.
+          Lower is better: you&apos;re racing the best possible route, so changes are expensive.
         </p>
       </div>
+
+      {/* The one rule the animation cannot fully convey. */}
+      <p className="mt-4 flex items-start gap-2.5 text-sm leading-snug text-ink">
+        <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-stone text-ink-soft">
+          <CompassIcon />
+        </span>
+        <span>
+          The compass tells you <em>where</em> to head, never <em>which line</em>. That&apos;s the
+          puzzle.
+        </span>
+      </p>
 
       <button
         type="button"
@@ -219,27 +214,11 @@ function ScorePill({ colour, amount, label }: { colour: string; amount: string; 
   )
 }
 
-// --- Rules -------------------------------------------------------------------
-
-interface RuleProps {
-  icon: React.ReactNode
-  children: React.ReactNode
-}
-
-function Rule({ icon, children }: RuleProps) {
-  return (
-    <li className="flex items-start gap-3">
-      <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-stone text-ink-soft">
-        {icon}
-      </span>
-      <span className="text-sm leading-snug text-ink">{children}</span>
-    </li>
-  )
-}
+// --- The single compass cue --------------------------------------------------
 
 const svgProps = {
-  width: 18,
-  height: 18,
+  width: 16,
+  height: 16,
   viewBox: '0 0 24 24',
   fill: 'none',
   stroke: 'currentColor',
@@ -249,30 +228,11 @@ const svgProps = {
   'aria-hidden': true,
 }
 
-function FogIcon() {
-  return (
-    <svg {...svgProps}>
-      <line x1="3" y1="9" x2="21" y2="9" />
-      <line x1="5" y1="13" x2="19" y2="13" />
-      <line x1="7" y1="17" x2="17" y2="17" />
-    </svg>
-  )
-}
-
 function CompassIcon() {
   return (
     <svg {...svgProps}>
       <circle cx="12" cy="12" r="9" />
       <polygon points="15.5 8.5 10.5 10.5 8.5 15.5 13.5 13.5" />
-    </svg>
-  )
-}
-
-function ChangeIcon() {
-  return (
-    <svg {...svgProps}>
-      <path d="M4 8h13l-3-3" />
-      <path d="M20 16H7l3 3" />
     </svg>
   )
 }

@@ -8,16 +8,17 @@ describe('OnboardingModal', () => {
     expect(screen.queryByText(/mind the gap/i)).not.toBeInTheDocument()
   })
 
-  it('renders the title and a set of rules when open', () => {
+  it('renders the title and keeps the one explicit compass rule', () => {
     render(<OnboardingModal open onClose={vi.fn()} />)
     expect(screen.getByRole('heading', { name: /mind the gap/i })).toBeInTheDocument()
-    // Three rules, rendered as list items.
-    expect(screen.getAllByRole('listitem')).toHaveLength(3)
-    // Touches the core mechanics in the copy.
-    expect(screen.getByText(/fog/i)).toBeInTheDocument()
-    expect(screen.getByText(/compass/i)).toBeInTheDocument()
-    expect(screen.getByText(/tap a lit station/i)).toBeInTheDocument()
-    expect(screen.getByText(/streak/i)).toBeInTheDocument()
+    expect(screen.getByText(/never/i)).toBeInTheDocument()
+    expect(screen.getByText(/which line/i)).toBeInTheDocument()
+  })
+
+  it('is trimmed: no rule list, no "stays on your map" promise', () => {
+    render(<OnboardingModal open onClose={vi.fn()} />)
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0)
+    expect(screen.queryByText(/stays on your map/i)).not.toBeInTheDocument()
   })
 
   it('shows the animated gameplay demo', () => {
@@ -27,7 +28,7 @@ describe('OnboardingModal', () => {
 
   it('states the goal of getting from start to destination', () => {
     render(<OnboardingModal open onClose={vi.fn()} />)
-    expect(screen.getByText(/given a start and a destination/i)).toBeInTheDocument()
+    expect(screen.getByText(/find your way from your start to the destination/i)).toBeInTheDocument()
   })
 
   it('explains the scoring system as stop = 1, change = 4', () => {
