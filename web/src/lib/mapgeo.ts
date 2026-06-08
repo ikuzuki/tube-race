@@ -31,8 +31,12 @@ export interface FeatureCollection<F> {
   features: F[]
 }
 
-/** Role a revealed station plays this turn — drives its marker style. */
-export type StationKind = 'start' | 'current' | 'target' | 'legal' | 'visited'
+/**
+ * Role a station plays this turn. The map is deliberately minimal (see
+ * stationsGeoJSON): only the current station, the legal next moves and the
+ * target are ever drawn.
+ */
+export type StationKind = 'current' | 'target' | 'legal'
 
 export interface StationProps {
   id: string
@@ -52,6 +56,8 @@ export interface StationProps {
    * rather than an inviting next move.
    */
   prev?: boolean
+  /** True for the station a hint is pointing at (the optimal next hop). */
+  hint?: boolean
 }
 
 export interface EdgeProps {
@@ -167,30 +173,13 @@ export function moveTargets(
 // --- Station GeoJSON --------------------------------------------------------
 
 /**
- * Decide the rendering role for a revealed station. Precedence (highest first):
- * current > target > start > legal-next-move > visited. Current beats target so
- * the "you are here" emphasis always wins, even standing on the destination
- * tile mid-run; the solved state is conveyed elsewhere.
- */
-function stationKind(
-  id: string,
-  state: GameState,
-  targetId: string,
-  legalIds: Set<string>,
-  visitedIds: Set<string>,
-): StationKind {
-  if (id === state.currentId) return 'current'
-  if (id === targetId) return 'target'
-  if (id === state.startId) return 'start'
-  if (legalIds.has(id)) return 'legal'
-  void visitedIds
-  return 'visited'
-}
-
-/**
- * One Point feature per revealed station. Fog rule: a station that has never
- * been revealed is omitted entirely — except the `target`, which is always
- * included so the destination is visible as a goal from the start.
+ * Minimal station overlay: ONLY the current station, the legal next moves and
+ * the target are drawn. Past revealed stations and untaken branches are
+ * deliberately not emitted, so the map never accumulates clutter (you can only
+ * ever move to an adjacent station, so nothing playable is lost). The current
+ * station takes precedence over the target (the "you are here" emphasis wins
+ * even when standing on the destination tile), and a legal move that happens to
+ * be the target is still tappable.
  */
 export function stationsGeoJSON(
   graph: TubeGraph,
@@ -199,17 +188,14 @@ export function stationsGeoJSON(
   legalMoves: Neighbour[],
   currentLine: string | null,
   targetId: string,
+  hintStationId?: string | null,
 ): FeatureCollection<PointFeature<StationProps>> {
   const legalIds = new Set(legalMoves.map((m) => m.stationId))
-  const visited = new Set<string>([state.startId, ...state.path.map((m) => m.stationId)])
   const targets = moveTargets(graph, legalMoves, currentLine)
   const moveClassById = new Map<string, 'continue' | 'switch'>()
   for (const t of targets) {
     moveClassById.set(t.stationId, t.hasContinuation ? 'continue' : 'switch')
   }
-
-  const ids = new Set<string>(state.revealed)
-  ids.add(targetId)
 
   // The station the player just left: the second-to-last path entry, or the
   // start right after the first move. Null before any move.
@@ -220,12 +206,16 @@ export function stationsGeoJSON(
         ? state.startId
         : null
 
+  // Draw only the current station, the legal moves and the target.
+  const ids = new Set<string>([state.currentId, targetId, ...legalIds])
+
   const features: PointFeature<StationProps>[] = []
   for (const id of ids) {
     const station = stationsById.get(id)
     if (!station) continue
-    const kind = stationKind(id, state, targetId, legalIds, visited)
     const legal = legalIds.has(id)
+    const kind: StationKind =
+      id === state.currentId ? 'current' : id === targetId ? 'target' : 'legal'
     features.push({
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [station.lon, station.lat] },
@@ -236,6 +226,7 @@ export function stationsGeoJSON(
         legal,
         ...(legal ? { moveClass: moveClassById.get(id) } : {}),
         ...(id === prevId ? { prev: true } : {}),
+        ...(id === hintStationId ? { hint: true } : {}),
       },
     })
   }
@@ -292,6 +283,64 @@ export function revealedEdgesGeoJSON(
           coordinates: [
             [a.lon, a.lat],
             [b.lon, b.lat],
+          ],
+        },
+        properties: {
+          line,
+          colour: lineColourOf(graph, line),
+          offsetIdx: i - (sorted.length - 1) / 2,
+          dashed: isOverground(line),
+        },
+      })
+    })
+  }
+  return { type: 'FeatureCollection', features }
+}
+
+/**
+ * The line segments from the CURRENT station to each legal next move, coloured
+ * per line so the player sees which lines they could take (not just dots). Only
+ * these immediate options are drawn, so when the player moves the unselected
+ * branches vanish (the set is recomputed from the new current station). Lines
+ * that share a current->neighbour pair fan out via `offsetIdx`, matching the
+ * travelled route; Overground options carry the dashed flag.
+ */
+export function currentOptionEdgesGeoJSON(
+  graph: TubeGraph,
+  state: GameState,
+  stationsById: Map<string, Station>,
+  legalMoves: Neighbour[],
+): FeatureCollection<LineFeature<EdgeProps>> {
+  const cur = stationsById.get(state.currentId)
+  if (!cur) return { type: 'FeatureCollection', features: [] }
+
+  // Group the legal moves by destination so parallel lines to the same
+  // neighbour can be offset onto distinct sides.
+  const byStation = new Map<string, string[]>()
+  const order: string[] = []
+  for (const mv of legalMoves) {
+    let lines = byStation.get(mv.stationId)
+    if (!lines) {
+      lines = []
+      byStation.set(mv.stationId, lines)
+      order.push(mv.stationId)
+    }
+    if (!lines.includes(mv.line)) lines.push(mv.line)
+  }
+
+  const features: LineFeature<EdgeProps>[] = []
+  for (const stationId of order) {
+    const dest = stationsById.get(stationId)
+    if (!dest) continue
+    const sorted = [...byStation.get(stationId)!].sort()
+    sorted.forEach((line, i) => {
+      features.push({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [cur.lon, cur.lat],
+            [dest.lon, dest.lat],
           ],
         },
         properties: {
@@ -372,6 +421,54 @@ export function optimalRouteGeoJSON(
       },
     ],
   }
+}
+
+/**
+ * A small dot at every station along the travelled route (the start plus each
+ * stop ridden), so the player can trace the stops they made rather than seeing
+ * a bare line. The current and target keep their own larger markers (drawn on
+ * top), so the trail dots are just the breadcrumbs in between.
+ */
+export function routeStopsGeoJSON(
+  state: GameState,
+  stationsById: Map<string, Station>,
+): FeatureCollection<PointFeature<{ id: string }>> {
+  const ids = [state.startId, ...state.path.map((m) => m.stationId)]
+  const features: PointFeature<{ id: string }>[] = []
+  for (const id of ids) {
+    const s = stationsById.get(id)
+    if (s) {
+      features.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [s.lon, s.lat] },
+        properties: { id },
+      })
+    }
+  }
+  return { type: 'FeatureCollection', features }
+}
+
+/**
+ * A small dot at every station on the optimal (par) route, for the post-game
+ * "show best route" reveal, so the best route reads as a sequence of stops, not
+ * just a dashed line. Unknown ids are skipped.
+ */
+export function optimalStopsGeoJSON(
+  state: GameState,
+  stationsById: Map<string, Station>,
+): FeatureCollection<PointFeature<{ kind: 'optimal' }>> {
+  const features: PointFeature<{ kind: 'optimal' }>[] = []
+  for (const id of state.puzzle.par.stations) {
+    const s = stationsById.get(id)
+    if (s) {
+      features.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [s.lon, s.lat] },
+        properties: { kind: 'optimal' },
+      })
+    }
+  }
+  return { type: 'FeatureCollection', features }
 }
 
 // --- Camera framing ---------------------------------------------------------

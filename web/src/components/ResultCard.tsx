@@ -15,7 +15,8 @@ import Confetti from './Confetti'
 import { ChangeIcon, StopIcon } from './icons'
 import type { Station } from '../engine'
 import type { StationInfo } from '../lib/stationInfo'
-import { percentOptimal } from '../lib/share'
+import { starRating } from '../lib/share'
+import { formatCountdown, msToNextUtcMidnight } from '../lib/countdown'
 import { AMBER_LIMIT, deltaTone, type Tone } from '../lib/score'
 
 /** Green / amber / red text for a good / warn / bad tone. */
@@ -75,6 +76,8 @@ interface ResultCardProps {
   changes: number
   parChanges: number
   optimal: boolean
+  /** Hints taken this run (each added to the score); shown as a small note. */
+  hintsUsed?: number
   /** Pre-built spoiler-free share text (see lib/share). */
   shareText: string
   streak: number
@@ -102,6 +105,7 @@ export default function ResultCard({
   changes,
   parChanges,
   optimal,
+  hintsUsed = 0,
   shareText,
   streak,
   start,
@@ -124,7 +128,25 @@ export default function ResultCard({
     if (!open) setCopied(false)
   }, [open])
 
+  // Tick a "next puzzle in" countdown to the next UTC midnight while open.
+  const [nowMs, setNowMs] = useState(() => Date.now())
+  useEffect(() => {
+    if (!open) return
+    setNowMs(Date.now())
+    const id = setInterval(() => setNowMs(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [open])
+
   const handleShare = async () => {
+    // Prefer the native share sheet (mobile especially); fall back to copying.
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ text: shareText })
+        return
+      } catch {
+        // User dismissed the sheet, or share failed: fall through to clipboard.
+      }
+    }
     try {
       await navigator.clipboard.writeText(shareText)
       setCopied(true)
@@ -135,6 +157,7 @@ export default function ResultCard({
   }
 
   const headline = solved ? (optimal ? 'Spot on!' : 'You made it!') : 'Mind the gap'
+  const stars = starRating(score, parScore, solved)
   const animate = open && solved && !prefersReducedMotion()
   const displayScore = useCountUp(score, animate)
 
@@ -142,17 +165,19 @@ export default function ResultCard({
     <Modal open={open} onClose={onClose} title={headline} size="wide">
       {animate && <Confetti count={optimal ? 90 : 40} />}
 
-      {solved && optimal && (
-        <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-progress/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-progress">
-          <DotIcon /> Optimal route
-        </span>
-      )}
-
       <p className="text-sm text-ink-soft">
         {solved
           ? 'Here is how your run stacked up against the best possible route.'
           : 'No worries, the line was tricky today. Here is the best route you were chasing.'}
       </p>
+
+      <StarRow stars={stars} animate={animate} />
+
+      {hintsUsed > 0 && (
+        <p className="mt-1 text-center text-xs text-ink-soft">
+          Includes +{hintsUsed * 3} for {hintsUsed} {hintsUsed === 1 ? 'hint' : 'hints'}
+        </p>
+      )}
 
       <ScoreBlock
         score={score}
@@ -225,7 +250,47 @@ export default function ResultCard({
           Show best route
         </button>
       )}
+
+      {/* Time to the next daily, which rolls over at UTC midnight (see lib/countdown). */}
+      <p className="mt-3 text-center text-xs text-ink-soft">
+        Next puzzle in{' '}
+        <span className="font-semibold tabular-nums text-ink">
+          {formatCountdown(msToNextUtcMidnight(new Date(nowMs)))}
+        </span>
+      </p>
     </Modal>
+  )
+}
+
+/**
+ * The friendly headline: a 0-3 star rating, filled gold and empty grey. When
+ * `animate` is set, the earned stars slam in one-by-one (Clash-of-Clans style);
+ * the empty ones just sit there. Reduced motion is handled in CSS.
+ */
+function StarRow({ stars, animate }: { stars: number; animate: boolean }) {
+  return (
+    <div
+      className="mt-3 flex justify-center gap-2 text-4xl leading-none"
+      role="img"
+      aria-label={`${stars} of 3 stars`}
+    >
+      {[0, 1, 2].map((i) => {
+        const earned = i < stars
+        return (
+          <span
+            key={i}
+            className={`${earned ? 'text-flag' : 'text-stone-200'} ${
+              earned && animate ? 'star-pop' : ''
+            }`}
+            // Stagger each earned star's slam-in.
+            style={earned && animate ? { animationDelay: `${0.15 + i * 0.22}s` } : undefined}
+            aria-hidden="true"
+          >
+            {earned ? '★' : '☆'}
+          </span>
+        )
+      })}
+    </div>
   )
 }
 
@@ -258,8 +323,9 @@ function ScoreBlock({
   parChanges,
   solved,
 }: ScoreBlockProps) {
-  const scoreTone = deltaTone(score, parScore, AMBER_LIMIT.score(parScore))
-  const pct = percentOptimal(score, parScore)
+  // A given-up run is a loss: the numbers read red regardless of how few stops
+  // or changes were made, since the destination was never reached.
+  const scoreTone: Tone = solved ? deltaTone(score, parScore, AMBER_LIMIT.score(parScore)) : 'bad'
   return (
     <div
       className="mt-3 rounded-xl border border-stone-200 bg-paper px-4 py-3 text-center"
@@ -273,18 +339,22 @@ function ScoreBlock({
         <span className="ml-2 text-lg font-semibold text-ink-soft">/ {parScore} best</span>
       </p>
 
-      {solved && (
-        <p className={`mt-1.5 text-sm font-bold ${toneText(scoreTone)}`}>{pct}% optimal</p>
-      )}
-
       <div className="mt-2.5 flex items-center justify-center gap-5 border-t border-stone-200 pt-2.5 text-sm">
-        <MiniStat icon={<StopIcon />} label="stops" value={stops} best={parStops} amber={AMBER_LIMIT.stops} />
+        <MiniStat
+          icon={<StopIcon />}
+          label="stops"
+          value={stops}
+          best={parStops}
+          amber={AMBER_LIMIT.stops}
+          solved={solved}
+        />
         <MiniStat
           icon={<ChangeIcon />}
           label="changes"
           value={changes}
           best={parChanges}
           amber={AMBER_LIMIT.changes}
+          solved={solved}
         />
       </div>
     </div>
@@ -297,29 +367,22 @@ interface MiniStatProps {
   value: number
   best: number
   amber: number
+  /** When false (gave up), the value reads red regardless of how low it is. */
+  solved: boolean
 }
 
 /** A small supporting stat: icon, green/amber/red value, and its best. */
-function MiniStat({ icon, label, value, best, amber }: MiniStatProps) {
+function MiniStat({ icon, label, value, best, amber, solved }: MiniStatProps) {
+  const tone: Tone = solved ? deltaTone(value, best, amber) : 'bad'
   return (
     <span className="inline-flex items-baseline gap-1.5">
       <span className="self-center text-base leading-none text-ink-soft" aria-hidden="true">
         {icon}
       </span>
-      <span className={`font-bold tabular-nums ${toneText(deltaTone(value, best, amber))}`}>
-        {value}
-      </span>
+      <span className={`font-bold tabular-nums ${toneText(tone)}`}>{value}</span>
       <span className="text-ink-soft">/ {best}</span>
       <span className="text-ink-soft">{label}</span>
     </span>
-  )
-}
-
-function DotIcon() {
-  return (
-    <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
-      <circle cx="4" cy="4" r="4" fill="currentColor" />
-    </svg>
   )
 }
 

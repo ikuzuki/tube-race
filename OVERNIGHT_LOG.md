@@ -1,3 +1,99 @@
+# Overnight log, round 5: give-up + hint, stars, share + countdown, minimal map, precompute
+
+Branch `feat/round-5` off the latest `main` (draft PR opened). Web only. Final
+status: `tsc --noEmit` clean, `vitest run` 263 passing, `vite build` clean.
+Playwright verified at 1440px and 390px with no console errors.
+
+Also shipped the separately-approved fix first: the two real Edgware Road
+stations (Bakerloo vs Circle) and the two Bethnal Greens (tube vs Overground)
+now keep a disambiguating qualifier in the display name, via a small override in
+`lib/format.ts` (web only; the pipeline's name cleaner is untouched so curated
+facts still match, and facts are looked up per station id anyway).
+
+## What shipped, per task
+
+1. Give up / show answer (`Game.tsx`). A "Give up" map control records the day
+   played-but-unsolved (resets the streak on the daily, writes an archive
+   completion) and opens the existing unsolved result card with "Show best
+   route". Moves lock once the run is over.
+
+2. Cost-based hint (`Game.tsx`, `PlayfieldMap.tsx`, `mapgeo.ts`). A "Hint (+3)"
+   control lights the optimal next hop (shortestPath stations[1]) with a gold
+   halo until the next move; one hint per position. `hintsUsed * 3` is threaded
+   through the live score, the result score, the stars, the recorded completion
+   and the share. No undo (deliberately excluded).
+
+3. Star rating (`lib/share.ts`, `ResultCard.tsx`). `starRating` (pure, tested):
+   3 = optimal (par, which needs no hints), 2 = >=80% optimal, 1 = solved, 0 =
+   gave up. Stars are the result-card headline and the share title line
+   (`Tube Race 2026-06-08 ⭐⭐⭐`); the % is kept as quiet supporting detail.
+   The old square-grid/`SQUARES_RULE` was already gone.
+
+4. Native share + URL + countdown (`ResultCard.tsx`, `lib/share.ts`,
+   `lib/countdown.ts`). `handleShare` uses `navigator.share()` when available,
+   else clipboard; the share text ends with `SITE_URL` (placeholder, TODO at
+   hosting). A "Next puzzle in HH:MM:SS" countdown ticks to the next UTC
+   midnight (a deliberate choice, matching how "today" is derived; noted in
+   code). Pure `formatCountdown` / `msToNextUtcMidnight`, tested.
+
+5. Continue vs change by shape (`PlayfieldMap.tsx`). Continue moves are filled
+   dots; line changes are hollow diamonds (a generated canvas icon + symbol
+   layer, hit-tested), so move type reads by shape not colour. The change picker
+   lists "Stay on {line}" first and bold, changes beneath.
+
+6. Compass direction word (`lib/compass.ts`, `StatusBar.tsx`). An 8-point word
+   beside the distance, e.g. "NE · 1.8 km"; the dial's aria-label still
+   announces precise degrees. Pure `compassWord`, tested.
+
+7. Black-diamond Expert icon (`icons.tsx` -> `ExpertIcon`, `Header.tsx`,
+   `ArchiveModal.tsx`). The summit glyph is replaced by a single filled diamond.
+
+8. Minimal map (`mapgeo.ts`, `PlayfieldMap.tsx`). `stationsGeoJSON` now emits
+   ONLY the current station, the legal moves and the target; the
+   revealed-but-untaken edge layers and the faint past-station dots are gone.
+   The travelled route, optimal-route reveal and hint marker remain. Verified:
+   after several moves the map shows only the bold route, current, the next
+   options and the target.
+
+9. Trimmed onboarding (`OnboardingModal.tsx`). Now just the title, a one-line
+   goal, the animated demo, the +1/+4 strip and the single compass rule. The
+   "anywhere you visit stays on your map" promise is removed (no longer true
+   after task 8).
+
+10. Precomputed puzzles (`engine/puzzles.ts`, `scripts/precompute-puzzles.ts`,
+    `public/data/puzzles.json`, wired through `App`/`Game`/`ArchiveModal`). A
+    `tsx` build script (`npm run precompute`) writes endpoints-only puzzles for
+    every date from launch to a 2-year horizon (731 dates, 95 KB, ~3 min to
+    generate). The app recomputes the cheap `par` from the endpoints via
+    `resolveDaily`/`resolveExpert`, falling back to on-the-fly generation for
+    any date outside the file. The archive now opens in ~80ms (daily) / ~150ms
+    (Expert) instead of generating in-browser. Lookup + fallback are tested.
+
+## Decisions / notes for the owner
+
+- The result card can show an inner scrollbar on the desktop when a station's
+  fun fact is long. That is the consequence of your merged #12/#13 (show facts
+  in full, one per row), which reverted round 4's three-line clamp. I respected
+  that decision and did not re-clamp; if you want both (no scroll AND full
+  facts) the card would need a different layout (e.g. facts in a disclosure).
+- `revealedEdgesGeoJSON` in `mapgeo.ts` is now unused by the map (kept, with its
+  tests, as it is pure and may be reused); say the word and I will delete it.
+- Regenerate `puzzles.json` (like graph/stations-info) whenever the generator
+  or the graph changes: `npm run precompute`. It is committed.
+
+## Honest gaps
+
+- The on-map hollow-diamond change marker is wired and unit-tested at the data
+  layer (`moveClass: 'switch'`), and the same diamond glyph is visible on the
+  Expert toggle, but I did not capture a Playwright screenshot of a diamond
+  on the map (it needs a turn where a legal move is a line change; the
+  follow-cam timing makes that fiddly to drive headlessly). The continue-dot vs
+  change-diamond distinction is in place; worth an eyeball at a real interchange.
+- The precompute horizon is 2 years; past that the app silently falls back to
+  in-browser generation (correct, just slower for those far-future dates).
+
+---
+
 # Overnight log, round 4: mobile bar, result-card fit, % optimal, celebration
 
 Branch `feat/mobile-and-result` off the latest `main` (draft PR opened). Web

@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { buildShareText, percentOptimal, type ShareInput } from './share'
+import {
+  buildShareText,
+  percentOptimal,
+  starRating,
+  starString,
+  SITE_URL,
+  type ShareInput,
+} from './share'
 import { points } from './score'
 
 // Default to an optimal run (score == parScore). `score`/`parScore` default to
@@ -30,54 +37,88 @@ describe('percentOptimal', () => {
   })
 
   it('falls below 100 as the score runs over best', () => {
-    // 22 vs best 11 -> half as good -> 50%.
     expect(percentOptimal(22, 11)).toBe(50)
-    // 14 vs best 11 -> round(11/14*100) = 79.
     expect(percentOptimal(14, 11)).toBe(79)
   })
 
   it('clamps to [0, 100] and guards bad input', () => {
-    expect(percentOptimal(0, 11)).toBe(100) // non-positive score
-    expect(percentOptimal(9, 11)).toBe(100) // sub-par cannot happen, reads 100
+    expect(percentOptimal(0, 11)).toBe(100)
+    expect(percentOptimal(9, 11)).toBe(100)
     expect(percentOptimal(100000, 1)).toBe(0)
   })
 })
 
+describe('starRating', () => {
+  it('gives 0 stars for an unsolved run', () => {
+    expect(starRating(11, 11, false)).toBe(0)
+  })
+
+  it('gives 3 stars only for an exactly optimal (par-matching) run', () => {
+    expect(starRating(11, 11, true)).toBe(3)
+    // One over par is no longer 3 stars; a hint can never reach 3 either.
+    expect(starRating(12, 11, true)).not.toBe(3)
+    expect(starRating(14, 11, true)).not.toBe(3)
+  })
+
+  it('gives 2 stars for a good run (>= 70% optimal)', () => {
+    // 13 vs 11 -> 85% -> 2 stars; 15 vs 11 -> 73% -> 2 stars.
+    expect(starRating(13, 11, true)).toBe(2)
+    expect(starRating(15, 11, true)).toBe(2)
+  })
+
+  it('gives 1 star for a solved but weak run (below 70%)', () => {
+    // 16 vs 11 -> 69% -> 1 star; 22 vs 11 -> 50% -> 1 star.
+    expect(starRating(16, 11, true)).toBe(1)
+    expect(starRating(22, 11, true)).toBe(1)
+  })
+})
+
+describe('starString', () => {
+  it('renders filled then empty stars out of three', () => {
+    expect(starString(3)).toBe('⭐⭐⭐')
+    expect(starString(2)).toBe('⭐⭐☆')
+    expect(starString(0)).toBe('☆☆☆')
+  })
+
+  it('clamps out-of-range input', () => {
+    expect(starString(5)).toBe('⭐⭐⭐')
+    expect(starString(-1)).toBe('☆☆☆')
+  })
+})
+
 describe('buildShareText — structure', () => {
-  it('produces a four-line block: title, result, breakdown, streak', () => {
+  it('puts the date and star rating on the title line', () => {
+    const text = buildShareText(input()) // optimal -> 3 stars
+    expect(text.split('\n')[0]).toBe('Tube Race 2026-06-06 ⭐⭐⭐')
+  })
+
+  it('ends with the site URL', () => {
     const lines = buildShareText(input()).split('\n')
-    expect(lines).toHaveLength(4)
-    expect(lines[0]).toBe('Tube Race 2026-06-06')
-    expect(lines[3]).toBe('Streak: 3')
+    expect(lines[lines.length - 1]).toBe(SITE_URL)
   })
 
-  it('leads the result line with the weighted score and % optimal', () => {
+  it('leads the result line with the weighted score against par (no % text)', () => {
     const text = buildShareText(input({ stops: 9, parStops: 7, changes: 2, parChanges: 1 }))
-    expect(text).toContain('2026-06-06')
-    // score = 9 + 4*2 = 17, par = 7 + 4*1 = 11, 11/17 -> 65%.
-    expect(text).toContain('Score 17 (best 11), 65% optimal')
+    // score = 9 + 4*2 = 17, par = 7 + 4*1 = 11.
+    expect(text).toContain('Score 17 (best 11)')
+    expect(text).not.toContain('% optimal')
   })
 
-  it('reads 100% optimal on an optimal run', () => {
-    const text = buildShareText(input({ stops: 7, parStops: 7, changes: 1, parChanges: 1 }))
-    expect(text).toContain('100% optimal')
-  })
-
-  it('keeps a stops·changes breakdown line', () => {
+  it('keeps a stops·changes breakdown line and the streak', () => {
     const text = buildShareText(input({ stops: 9, parStops: 7, changes: 3, parChanges: 1 }))
     expect(text).toContain('9/7 stops')
     expect(text).toContain('3/1 changes')
+    expect(text).toContain('Streak: 3')
+  })
+
+  it('renders a "Gave up" result with zero stars', () => {
+    const text = buildShareText(input({ solved: false }))
+    expect(text.split('\n')[0]).toBe('Tube Race 2026-06-06 ☆☆☆')
+    expect(text).toContain('Gave up')
   })
 
   it('is deterministic for a given input', () => {
     expect(buildShareText(input())).toBe(buildShareText(input()))
-  })
-
-  it('renders a "Gave up" result for an unsolved game with no percentage', () => {
-    const text = buildShareText(input({ solved: false }))
-    const lines = text.split('\n')
-    expect(lines[1]).toBe('Gave up')
-    expect(text).not.toContain('% optimal')
   })
 })
 
@@ -89,14 +130,7 @@ describe('buildShareText — spoiler-free', () => {
     )
   })
 
-  it('contains only the title, numbers and fixed template words — no route', () => {
-    const text = buildShareText(input({ stops: 8, parStops: 6 }))
-    const allowedWords = /Tube|Race|Score|best|optimal|stops|changes|Streak|Gave|up/g
-    const stripped = text.replace(allowedWords, '').replace(/[0-9/:·(),%\s.-]/g, '')
-    expect(stripped).toBe('')
-  })
-
-  it('emits no square/emoji grid', () => {
+  it('emits no square/emoji grid (stars only)', () => {
     const text = buildShareText(input({ stops: 12, parStops: 7 }))
     expect(text).not.toMatch(/🟩|🟨|⬛|🟥|🟧/)
   })

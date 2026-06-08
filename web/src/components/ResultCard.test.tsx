@@ -99,33 +99,72 @@ describe('ResultCard', () => {
     expect(screen.getByText('5 day streak')).toBeInTheDocument()
   })
 
-  it('surfaces the % optimal on a solved run', () => {
-    // score 17 vs best 11 -> round(11/17*100) = 65.
+  it('never shows the raw % optimal text (stars carry the rating)', () => {
     setup()
-    expect(screen.getByText('65% optimal')).toBeInTheDocument()
-  })
-
-  it('reads 100% optimal on an optimal run', () => {
-    setup({ optimal: true, score: 11 })
-    expect(screen.getByText('100% optimal')).toBeInTheDocument()
-  })
-
-  it('hides the % optimal for an unsolved run', () => {
-    setup({ solved: false })
     expect(screen.queryByText(/% optimal/)).not.toBeInTheDocument()
   })
 
-  it('shows the Optimal badge only when optimal', () => {
+  it('shows three stars as the headline for an optimal run', () => {
     setup({ optimal: true, score: 11 })
-    expect(screen.getByText(/optimal route/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('3 of 3 stars')).toBeInTheDocument()
   })
 
-  it('hides the Optimal badge when not optimal', () => {
-    setup({ optimal: false })
-    expect(screen.queryByText(/optimal route/i)).not.toBeInTheDocument()
+  it('shows fewer stars for a weak run', () => {
+    // 30 vs 11 -> 37% -> 1 star (below the 60% second-star threshold).
+    setup({ optimal: false, score: 30, parScore: 11 })
+    expect(screen.getByLabelText('1 of 3 stars')).toBeInTheDocument()
+  })
+
+  it('shows zero stars for an unsolved run', () => {
+    setup({ solved: false })
+    expect(screen.getByLabelText('0 of 3 stars')).toBeInTheDocument()
+  })
+
+  it('renders the gave-up numbers in red, even at zero', () => {
+    // Gave up having made no moves: score/stops/changes all 0 but still red.
+    const { container } = render(
+      <ResultCard
+        open
+        solved={false}
+        score={0}
+        parScore={11}
+        stops={0}
+        parStops={7}
+        changes={0}
+        parChanges={1}
+        optimal={false}
+        shareText="x"
+        streak={0}
+        onClose={vi.fn()}
+      />,
+    )
+    const score = screen.getByText('0', { selector: 'span.text-6xl' })
+    expect(score).toHaveClass('text-danger')
+    expect(score).not.toHaveClass('text-progress')
+    // Both mini-stat values (stops, changes) are red too, not green.
+    const reds = container.querySelectorAll('span.text-danger')
+    expect(reds.length).toBeGreaterThanOrEqual(3)
+    expect(container.querySelector('span.text-progress')).toBeNull()
+  })
+
+  it('shows a next-puzzle countdown', () => {
+    setup()
+    expect(screen.getByText(/next puzzle in/i)).toBeInTheDocument()
+    expect(screen.getByText(/^\d{2}:\d{2}:\d{2}$/)).toBeInTheDocument()
+  })
+
+  it('uses the native share sheet when available', async () => {
+    const share = vi.fn().mockResolvedValue(undefined)
+    Object.assign(navigator, { share })
+    setup({ shareText: SHARE })
+    fireEvent.click(screen.getByRole('button', { name: /share/i }))
+    await waitFor(() => expect(share).toHaveBeenCalledWith({ text: SHARE }))
+    // Clean up so the clipboard-fallback test below sees no native share.
+    delete (navigator as { share?: unknown }).share
   })
 
   it('copies the share text and shows feedback when Share is clicked', async () => {
+    delete (navigator as { share?: unknown }).share
     const writeText = vi.fn().mockResolvedValue(undefined)
     Object.assign(navigator, { clipboard: { writeText } })
 
@@ -138,6 +177,7 @@ describe('ResultCard', () => {
   })
 
   it('does not crash or claim a copy when the clipboard rejects', async () => {
+    delete (navigator as { share?: unknown }).share
     const writeText = vi.fn().mockRejectedValue(new Error('denied'))
     Object.assign(navigator, { clipboard: { writeText } })
 

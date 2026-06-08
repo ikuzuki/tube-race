@@ -29,4 +29,13 @@ describe('displayName', () => {
   it('leaves an already-clean name untouched', () => {
     expect(displayName('Oval')).toBe('Oval')
   })
+
+  it('keeps a disambiguating qualifier for genuinely colliding stations', () => {
+    // Two real, non-interchanging Edgware Road stations; two Bethnal Greens.
+    expect(displayName('Edgware Road (Bakerloo) Underground Station')).toBe('Edgware Road (Bakerloo)')
+    expect(displayName('Edgware Road (Circle Line) Underground Station')).toBe('Edgware Road (Circle)')
+    expect(displayName('Bethnal Green Rail Station')).toBe('Bethnal Green (Overground)')
+    // The Central-line Bethnal Green stays plain (it is the one without a peer suffix).
+    expect(displayName('Bethnal Green Underground Station')).toBe('Bethnal Green')
+  })
 })

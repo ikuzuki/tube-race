@@ -11,6 +11,7 @@ import { displayName } from '../lib/format'
 import type { RouteLeg } from '../lib/route'
 import { stopsLabel } from '../lib/route'
 import { AMBER_LIMIT, deltaTone, points, type Tone } from '../lib/score'
+import { compassWord } from '../lib/compass'
 import { isOverground, lineColour, lineTextColour } from '../theme'
 import { ChangeIcon, StopIcon } from './icons'
 
@@ -38,6 +39,8 @@ interface StatusBarProps {
   parHops: number
   changes: number
   parChanges: number
+  /** Score surcharge from hints taken (each hint adds to the live score). */
+  hintCost?: number
   /** Bearing to target in degrees (0 = north, clockwise). */
   bearingDeg: number
   /** Straight-line distance to target in km. */
@@ -47,7 +50,7 @@ interface StatusBarProps {
 export default function StatusBar(props: StatusBarProps) {
   const { currentLineId, currentLineName, hops, parHops, changes, parChanges, bearingDeg, km } =
     props
-  const score = points(hops, changes)
+  const score = points(hops, changes) + (props.hintCost ?? 0)
   const parScore = points(parHops, parChanges)
 
   return (
@@ -377,8 +380,10 @@ function Compass({ bearingDeg, km }: { bearingDeg: number; km: number }) {
         </g>
         <circle cx="50" cy="50" r="5" fill="var(--color-stone)" stroke="var(--color-map)" strokeWidth="2" />
       </svg>
-      <span className="text-[0.7rem] font-semibold tabular-nums text-ink sm:text-xs">
-        {formatKm(km)}
+      <span className="text-[0.7rem] font-semibold text-ink sm:text-xs">
+        <span>{compassWord(bearingDeg)}</span>
+        <span className="text-ink-soft"> · </span>
+        <span className="tabular-nums">{formatKm(km)}</span>
       </span>
     </div>
   )

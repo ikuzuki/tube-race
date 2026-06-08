@@ -12,6 +12,15 @@ export { shortestPath, graphDistanceStops } from './dijkstra'
 
 export { dailyPuzzle, dailyExpert } from './daily'
 
+export {
+  loadPuzzles,
+  resolveDaily,
+  resolveExpert,
+  puzzleFromEndpoints,
+  type Endpoints,
+  type PuzzleIndex,
+} from './puzzles'
+
 export { greedyPath, greedyGap } from './greedy'
 
 export {

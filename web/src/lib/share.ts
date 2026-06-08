@@ -1,17 +1,19 @@
 // Share text for Tube Race. Deliberately SPOILER-FREE: it never includes
-// station names, only the date, the weighted score against par, a "% optimal"
-// figure that explains itself, a stops·changes breakdown and the streak.
+// station names, only the date, a 0-3 star rating, the weighted score against
+// par, a stops·changes breakdown, the streak and the site URL.
 //
-// The headline metric is the single weighted SCORE = stops + 4*changes (see
-// lib/score); par's score is the cost the Dijkstra par minimises. Lower wins.
-// "% optimal" = best / score * 100, so an optimal run is 100% and worse runs
-// fall below, needing no legend.
+// The weighted SCORE = stops + 4*changes (see lib/score); par's score is the
+// cost the Dijkstra par minimises. Lower wins. Stars are the friendly headline;
+// "% optimal" = round(best / score * 100) is kept as supporting detail.
+
+/** Where the game lives. TODO: set to the real domain when hosting is decided. */
+export const SITE_URL = 'https://tube-race.app'
 
 export interface ShareInput {
   /** ISO date string, e.g. "2026-06-06". */
   dateISO: string
   solved: boolean
-  /** Weighted score for the run = stops + 4*changes. */
+  /** Weighted score for the run = stops + 4*changes (includes any hint cost). */
   score: number
   /** Weighted score of the optimal route (par). */
   parScore: number
@@ -33,21 +35,44 @@ export function percentOptimal(score: number, parScore: number): number {
   return Math.max(0, Math.min(100, Math.round((parScore / score) * 100)))
 }
 
+/** Percentage of optimal at or above which a solved run earns its second star. */
+export const TWO_STAR_PERCENT = 70
+
 /**
- * Compose the copy-pasteable share string: a title line, a score-vs-par result
- * line carrying the % optimal, a stops·changes breakdown line, and a streak
- * line. Pure and deterministic for a given input.
+ * A 0-3 star rating for a run: gave up is 0, any solve is at least 1, a good
+ * run ({@link TWO_STAR_PERCENT}%+ of optimal) is 2, and only an exactly optimal
+ * run (matching par, which an optimal route always does and which a hint can
+ * never reach, since each hint adds to the score) earns all 3. The exact
+ * percentage is internal (see percentOptimal); only the stars are surfaced.
+ */
+export function starRating(score: number, parScore: number, solved: boolean): 0 | 1 | 2 | 3 {
+  if (!solved) return 0
+  if (score <= parScore) return 3
+  if (percentOptimal(score, parScore) >= TWO_STAR_PERCENT) return 2
+  return 1
+}
+
+/** Render a rating as filled/empty stars out of three, e.g. 2 -> "⭐⭐☆". */
+export function starString(stars: number): string {
+  const n = Math.max(0, Math.min(3, stars))
+  return '⭐'.repeat(n) + '☆'.repeat(3 - n)
+}
+
+/**
+ * Compose the copy-pasteable / native-share string: a title line carrying the
+ * date and star rating, a score-vs-par line with the % optimal, a stops·changes
+ * breakdown, the streak, and the site URL. Pure and deterministic for a given
+ * input; spoiler-free.
  */
 export function buildShareText(o: ShareInput): string {
-  const title = `Tube Race ${o.dateISO}`
+  const stars = starRating(o.score, o.parScore, o.solved)
+  const title = `Tube Race ${o.dateISO} ${starString(stars)}`
 
-  const result = o.solved
-    ? `Score ${o.score} (best ${o.parScore}), ${percentOptimal(o.score, o.parScore)}% optimal`
-    : 'Gave up'
+  const result = o.solved ? `Score ${o.score} (best ${o.parScore})` : 'Gave up'
 
   const breakdown = `${o.stops}/${o.parStops} stops · ${o.changes}/${o.parChanges} changes`
 
   const streakLine = `Streak: ${o.streak}`
 
-  return [title, result, breakdown, streakLine].join('\n')
+  return [title, result, breakdown, streakLine, SITE_URL].join('\n')
 }

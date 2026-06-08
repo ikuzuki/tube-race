@@ -5,18 +5,20 @@
 import { useEffect, useState } from 'react'
 import {
   buildAdjacency,
-  dailyExpert,
-  dailyPuzzle,
   loadGraph,
+  loadPuzzles,
+  resolveDaily,
+  resolveExpert,
 } from './engine'
-import type { Adjacency, DailyPuzzle, TubeGraph } from './engine'
+import type { Adjacency, PuzzleIndex, TubeGraph } from './engine'
 import Game from './components/Game'
 
 interface Loaded {
   graph: TubeGraph
   adj: Adjacency
-  puzzle: DailyPuzzle
   today: string
+  /** Precomputed endpoints, or null when the file is unavailable. */
+  puzzleIndex: PuzzleIndex | null
 }
 
 type Status =
@@ -64,9 +66,11 @@ export default function App() {
         const graph = await loadGraph()
         const adj = buildAdjacency(graph)
         const today = todayISO()
-        const puzzle = dailyPuzzle(graph, adj, today)
+        // The endpoints index is optional: if it fails to load, every lookup
+        // falls back to on-the-fly generation.
+        const puzzleIndex = await loadPuzzles()
         if (!cancelled) {
-          setStatus({ phase: 'ready', data: { graph, adj, puzzle, today } })
+          setStatus({ phase: 'ready', data: { graph, adj, today, puzzleIndex } })
         }
       } catch (err) {
         if (!cancelled) {
@@ -106,14 +110,12 @@ export default function App() {
     )
   }
 
-  const { graph, adj, puzzle, today } = status.data
+  const { graph, adj, today, puzzleIndex } = status.data
   // The date in play: a chosen past date, else today.
   const activeDate = archiveDate && archiveDate !== today ? archiveDate : today
   const activePuzzle = expert
-    ? dailyExpert(graph, adj, activeDate)
-    : activeDate !== today
-      ? dailyPuzzle(graph, adj, activeDate)
-      : puzzle
+    ? resolveExpert(graph, adj, activeDate, puzzleIndex)
+    : resolveDaily(graph, adj, activeDate, puzzleIndex)
   // Expert shares the day's date, so key it apart to force a fresh game on toggle.
   const gameKey = expert ? `${activePuzzle.date}:expert` : activePuzzle.date
   return (
@@ -125,6 +127,7 @@ export default function App() {
         adj={adj}
         puzzle={activePuzzle}
         today={today}
+        puzzleIndex={puzzleIndex}
         onSelectDate={selectDate}
         isExpert={expert}
         onToggleExpert={toggleExpert}

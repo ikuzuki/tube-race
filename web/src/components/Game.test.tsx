@@ -89,4 +89,39 @@ describe('Game shell', () => {
     render(<Game graph={graph} adj={adj} puzzle={puzzle} today="2026-06-06" initialState={s} />)
     expect(screen.queryByRole('button', { name: /start again/i })).not.toBeInTheDocument()
   })
+
+  it('shows hint and give-up controls during a run', () => {
+    localStorage.setItem('tube-race:onboarded:v1', '1')
+    render(<Game graph={graph} adj={adj} puzzle={puzzle} today="2026-06-06" />)
+    expect(screen.getByRole('button', { name: /hint/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /give up/i })).toBeInTheDocument()
+  })
+
+  it('a hint adds 3 to the score and disables the hint button until a move', () => {
+    localStorage.setItem('tube-race:onboarded:v1', '1')
+    render(<Game graph={graph} adj={adj} puzzle={puzzle} today="2026-06-06" />)
+    // Turn zero: score 0.
+    expect(screen.getByLabelText(/Score 0, best possible/)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /hint/i }))
+    // +3 for one hint.
+    expect(screen.getByLabelText(/Score 3, best possible/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /hint/i })).toBeDisabled()
+  })
+
+  it('give up records a played-but-unsolved result and offers the best route', () => {
+    localStorage.setItem('tube-race:onboarded:v1', '1')
+    render(<Game graph={graph} adj={adj} puzzle={puzzle} today="2026-06-06" />)
+    fireEvent.click(screen.getByRole('button', { name: /give up/i }))
+
+    // The unsolved result card appears with the best-route action.
+    expect(screen.getByRole('button', { name: /show best route/i })).toBeInTheDocument()
+    // Stats recorded the day as played, unsolved, streak reset to 0.
+    const stats = JSON.parse(localStorage.getItem('tube-race:stats:v1') as string)
+    expect(stats.played).toBe(1)
+    expect(stats.solved).toBe(0)
+    expect(stats.curStreak).toBe(0)
+    // The archive completion is recorded as not solved.
+    const archive = JSON.parse(localStorage.getItem('tube-race:archive:v1') as string)
+    expect(archive['2026-06-06'].solved).toBe(false)
+  })
 })
