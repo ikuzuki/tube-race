@@ -3,11 +3,71 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <title>Tube Race</title>
+    <meta name="theme-color" content="#0b0e13" />
+
+    <title>Tube Race: daily London transit puzzle</title>
+    <meta
+      name="description"
+      content="A free daily London Underground navigation puzzle. Race across the tube map from a hidden start to a target in as few stops and changes as possible. One new puzzle every day."
+    />
+    <link rel="canonical" href="%VITE_SITE_URL%/" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icon-192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Tube Race: daily London transit puzzle" />
+    <meta
+      property="og:description"
+      content="A free daily London Underground navigation puzzle. Find the shortest route from a hidden start to the target."
+    />
+    <meta property="og:url" content="%VITE_SITE_URL%/" />
+    <meta property="og:site_name" content="Tube Race" />
+    <meta property="og:image" content="%VITE_SITE_URL%/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tube Race: daily London transit puzzle" />
+    <meta
+      name="twitter:description"
+      content="A free daily London Underground navigation puzzle. Find the shortest route from a hidden start to the target."
+    />
+    <meta name="twitter:image" content="%VITE_SITE_URL%/og.png" />
+
+    <!-- Structured data: a free browser game. -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "applicationCategory": "GameApplication",
+        "name": "Tube Race",
+        "url": "%VITE_SITE_URL%/",
+        "description": "A free daily London Underground navigation puzzle: race from a hidden start to a target in the fewest stops and changes. Unofficial; not affiliated with or endorsed by Transport for London.",
+        "isAccessibleForFree": true,
+        "browserRequirements": "Requires a modern browser with JavaScript enabled.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "GBP"
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <p>
+        Tube Race is a free daily London Underground and tube navigation puzzle.
+        Each day you race across the real London transit map from a hidden start
+        station to a target, trying to reach it in the fewest stops and line
+        changes. It runs entirely in your browser and needs JavaScript enabled
+        to play. Unofficial; not affiliated with Transport for London.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

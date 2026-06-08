@@ -1,0 +1,108 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# OIDC: the job mints a short-lived token GitHub trades for the deploy role.
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      infra: ${{ steps.filter.outputs.infra }}
+      site: ${{ steps.filter.outputs.site }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            infra:
+              - 'infrastructure/**'
+            site:
+              - 'web/**'
+
+  terraform-apply:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.infra == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: eu-west-2
+      - uses: hashicorp/setup-terraform@v3
+      - name: Terraform Apply
+        working-directory: infrastructure/environments/dev
+        run: |
+          terraform init
+          terraform apply -auto-approve
+
+  site-deploy:
+    needs: [detect-changes, terraform-apply]
+    # Run whenever site files change. Re-run after infra to catch the first
+    # deploy, where the bucket and distribution only just came into existence.
+    if: |
+      always() &&
+      (needs.terraform-apply.result == 'success' || needs.terraform-apply.result == 'skipped') &&
+      (needs.detect-changes.outputs.site == 'true' || needs.detect-changes.outputs.infra == 'true' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    env:
+      SITE_BUCKET: tube-race-dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Build
+        working-directory: web
+        env:
+          VITE_SITE_URL: https://tube-race.isseikuzuki.co.uk
+        run: npm run build
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: eu-west-2
+
+      - name: Upload to S3
+        run: |
+          # 1. Content-hashed assets: safe to cache forever (names change on
+          #    every content change), so mark them immutable.
+          aws s3 sync web/dist "s3://$SITE_BUCKET" \
+            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "*" --include "assets/*"
+
+          # 2. index.html and the daily data must always revalidate, so a fresh
+          #    build and regenerated puzzles are picked up immediately.
+          aws s3 sync web/dist "s3://$SITE_BUCKET" \
+            --cache-control "no-cache" \
+            --exclude "*" --include "index.html" --include "data/*"
+
+          # 3. Remaining static files (icons, og image, manifest, robots,
+          #    sitemap, favicon): a short cache, and prune anything dropped from
+          #    the build. Old hashed assets are intentionally retained so
+          #    in-flight sessions keep working (their names never collide).
+          aws s3 sync web/dist "s3://$SITE_BUCKET" --delete \
+            --cache-control "public, max-age=3600" \
+            --exclude "assets/*" --exclude "index.html" --exclude "data/*"
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "/index.html" "/data/*"

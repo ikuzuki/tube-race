@@ -46,6 +46,8 @@ tube-race/
 │   └── src/
 │       ├── engine/            # Dijkstra, daily seed, scoring, fog (pure TS)
 │       └── components/        # SVG map, HUD, share grid
+├── infrastructure/           # Terraform: S3 + CloudFront + OIDC (see docs/deploy.md)
+├── docs/deploy.md            # hosting model and deploy runbook
 ├── SPEC.md                    # build contract: schema + engine API
 ├── pyproject.toml
 └── Makefile
@@ -71,6 +73,14 @@ npm run dev                 # http://localhost:5173
 
 Python 3.11, httpx, pydantic v2. React 19, TypeScript, Vite, Tailwind v4,
 Vitest. Dijkstra shortest path. TfL Unified API.
+
+## Hosting
+
+The site is a static SPA served stand-alone at
+`https://tube-race.isseikuzuki.co.uk` from its own S3 bucket and CloudFront
+distribution, deployed from `main` by GitHub Actions over OIDC. The hosting
+model, the one-time manual bootstrap, the repo variables to set, and how to move
+the site live in [docs/deploy.md](docs/deploy.md).
 
 ## Status
 
