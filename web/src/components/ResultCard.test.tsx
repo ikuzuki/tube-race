@@ -131,6 +131,33 @@ describe('ResultCard', () => {
     expect(screen.getByLabelText('0 of 3 stars')).toBeInTheDocument()
   })
 
+  it('renders the gave-up numbers in red, even at zero', () => {
+    // Gave up having made no moves: score/stops/changes all 0 but still red.
+    const { container } = render(
+      <ResultCard
+        open
+        solved={false}
+        score={0}
+        parScore={11}
+        stops={0}
+        parStops={7}
+        changes={0}
+        parChanges={1}
+        optimal={false}
+        shareText="x"
+        streak={0}
+        onClose={vi.fn()}
+      />,
+    )
+    const score = screen.getByText('0', { selector: 'span.text-6xl' })
+    expect(score).toHaveClass('text-danger')
+    expect(score).not.toHaveClass('text-progress')
+    // Both mini-stat values (stops, changes) are red too, not green.
+    const reds = container.querySelectorAll('span.text-danger')
+    expect(reds.length).toBeGreaterThanOrEqual(3)
+    expect(container.querySelector('span.text-progress')).toBeNull()
+  })
+
   it('shows a next-puzzle countdown', () => {
     setup()
     expect(screen.getByText(/next puzzle in/i)).toBeInTheDocument()

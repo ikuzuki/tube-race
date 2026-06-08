@@ -323,7 +323,9 @@ function ScoreBlock({
   parChanges,
   solved,
 }: ScoreBlockProps) {
-  const scoreTone = deltaTone(score, parScore, AMBER_LIMIT.score(parScore))
+  // A given-up run is a loss: the numbers read red regardless of how few stops
+  // or changes were made, since the destination was never reached.
+  const scoreTone: Tone = solved ? deltaTone(score, parScore, AMBER_LIMIT.score(parScore)) : 'bad'
   const pct = percentOptimal(score, parScore)
   return (
     <div
@@ -344,13 +346,21 @@ function ScoreBlock({
       )}
 
       <div className="mt-2.5 flex items-center justify-center gap-5 border-t border-stone-200 pt-2.5 text-sm">
-        <MiniStat icon={<StopIcon />} label="stops" value={stops} best={parStops} amber={AMBER_LIMIT.stops} />
+        <MiniStat
+          icon={<StopIcon />}
+          label="stops"
+          value={stops}
+          best={parStops}
+          amber={AMBER_LIMIT.stops}
+          solved={solved}
+        />
         <MiniStat
           icon={<ChangeIcon />}
           label="changes"
           value={changes}
           best={parChanges}
           amber={AMBER_LIMIT.changes}
+          solved={solved}
         />
       </div>
     </div>
@@ -363,18 +373,19 @@ interface MiniStatProps {
   value: number
   best: number
   amber: number
+  /** When false (gave up), the value reads red regardless of how low it is. */
+  solved: boolean
 }
 
 /** A small supporting stat: icon, green/amber/red value, and its best. */
-function MiniStat({ icon, label, value, best, amber }: MiniStatProps) {
+function MiniStat({ icon, label, value, best, amber, solved }: MiniStatProps) {
+  const tone: Tone = solved ? deltaTone(value, best, amber) : 'bad'
   return (
     <span className="inline-flex items-baseline gap-1.5">
       <span className="self-center text-base leading-none text-ink-soft" aria-hidden="true">
         {icon}
       </span>
-      <span className={`font-bold tabular-nums ${toneText(deltaTone(value, best, amber))}`}>
-        {value}
-      </span>
+      <span className={`font-bold tabular-nums ${toneText(tone)}`}>{value}</span>
       <span className="text-ink-soft">/ {best}</span>
       <span className="text-ink-soft">{label}</span>
     </span>
