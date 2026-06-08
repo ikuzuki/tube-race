@@ -9,7 +9,7 @@
 // Any date outside the precomputed range falls back to on-the-fly generation,
 // so the game never breaks past the horizon.
 
-import type { Adjacency, DailyPuzzle, TubeGraph } from './types'
+import type { Adjacency, DailyPuzzle, Tier, TubeGraph } from './types'
 import { shortestPath } from './dijkstra'
 import { greedyGap, greedyPath } from './greedy'
 import { classifyDifficulty } from './difficulty'
@@ -29,17 +29,22 @@ export type PuzzleIndex = Record<string, { daily: Endpoints; expert: Endpoints }
  * optimal route (cheap) and re-deriving the difficulty tier for the chip.
  * Returns null if the endpoints do not resolve to a route (so the caller can
  * fall back to fresh generation).
+ *
+ * `tierOverride` pins the tier (the Expert track passes `'expert'`): without it,
+ * `classifyDifficulty` returns the gentlest matching tier, so an Expert puzzle
+ * inside the hard band's hop range would mislabel as "hard".
  */
 export function puzzleFromEndpoints(
   graph: TubeGraph,
   adj: Adjacency,
   dateISO: string,
   ep: Endpoints,
+  tierOverride?: Tier,
 ): DailyPuzzle | null {
   const par = shortestPath(adj, ep.startId, ep.targetId)
   if (!par) return null
   const gap = greedyGap(par, greedyPath(graph, adj, ep.startId, ep.targetId))
-  const tier = classifyDifficulty(par, gap) ?? undefined
+  const tier = tierOverride ?? classifyDifficulty(par, gap) ?? undefined
   return { date: dateISO, startId: ep.startId, targetId: ep.targetId, par, tier, gap }
 }
 
@@ -65,7 +70,9 @@ export function resolveExpert(
   index?: PuzzleIndex | null,
 ): DailyPuzzle {
   const ep = index?.[dateISO]?.expert
-  return (ep && puzzleFromEndpoints(graph, adj, dateISO, ep)) || dailyExpert(graph, adj, dateISO)
+  return (
+    (ep && puzzleFromEndpoints(graph, adj, dateISO, ep, 'expert')) || dailyExpert(graph, adj, dateISO)
+  )
 }
 
 /**

@@ -42,6 +42,8 @@ describe('resolveDaily / resolveExpert', () => {
     expect([daily.startId, daily.targetId]).toEqual(['brixton', 'kings-cross'])
     const expert = resolveExpert(graph, adj, '2099-01-01', index)
     expect([expert.startId, expert.targetId]).toEqual(['oval', 'walthamstow-central'])
+    // The Expert track is always labelled 'expert', not re-derived to a gentler tier.
+    expect(expert.tier).toBe('expert')
   })
 
   it('falls back to fresh generation for a date outside the index', () => {
