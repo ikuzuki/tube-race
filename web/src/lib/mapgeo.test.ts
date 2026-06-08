@@ -6,7 +6,9 @@ import {
   lineColourOf,
   moveTargets,
   optimalRouteGeoJSON,
+  optimalStopsGeoJSON,
   revealedEdgesGeoJSON,
+  routeStopsGeoJSON,
   stationLngLat,
   stationsGeoJSON,
   travelledPathGeoJSON,
@@ -353,6 +355,38 @@ describe('travelledPathGeoJSON', () => {
     // First segment runs start -> first hop.
     expect(fc.features[0].geometry.coordinates[0]).toEqual([-0.1418, 51.5152])
     expect(fc.features[0].properties.colour).toBe('#0098D4')
+  })
+})
+
+describe('routeStopsGeoJSON', () => {
+  it('emits a dot for the start and every stop ridden', () => {
+    const state = makeState({
+      currentId: 'euston',
+      path: [
+        { stationId: 'warren-street', line: 'victoria' },
+        { stationId: 'euston', line: 'victoria' },
+      ],
+    })
+    const fc = routeStopsGeoJSON(state, STATIONS_BY_ID)
+    expect(fc.features.map((f) => f.properties.id)).toEqual([
+      'oxford-circus', // start
+      'warren-street',
+      'euston',
+    ])
+  })
+
+  it('is just the start before any move', () => {
+    const fc = routeStopsGeoJSON(makeState(), STATIONS_BY_ID)
+    expect(fc.features.map((f) => f.properties.id)).toEqual(['oxford-circus'])
+  })
+})
+
+describe('optimalStopsGeoJSON', () => {
+  it('emits a dot for each station on the par route', () => {
+    const fc = optimalStopsGeoJSON(makeState(), STATIONS_BY_ID)
+    // par.stations in the fixture state is the 4-stop Victoria run.
+    expect(fc.features).toHaveLength(4)
+    expect(fc.features.every((f) => f.properties.kind === 'optimal')).toBe(true)
   })
 })
 

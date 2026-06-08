@@ -423,6 +423,54 @@ export function optimalRouteGeoJSON(
   }
 }
 
+/**
+ * A small dot at every station along the travelled route (the start plus each
+ * stop ridden), so the player can trace the stops they made rather than seeing
+ * a bare line. The current and target keep their own larger markers (drawn on
+ * top), so the trail dots are just the breadcrumbs in between.
+ */
+export function routeStopsGeoJSON(
+  state: GameState,
+  stationsById: Map<string, Station>,
+): FeatureCollection<PointFeature<{ id: string }>> {
+  const ids = [state.startId, ...state.path.map((m) => m.stationId)]
+  const features: PointFeature<{ id: string }>[] = []
+  for (const id of ids) {
+    const s = stationsById.get(id)
+    if (s) {
+      features.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [s.lon, s.lat] },
+        properties: { id },
+      })
+    }
+  }
+  return { type: 'FeatureCollection', features }
+}
+
+/**
+ * A small dot at every station on the optimal (par) route, for the post-game
+ * "show best route" reveal, so the best route reads as a sequence of stops, not
+ * just a dashed line. Unknown ids are skipped.
+ */
+export function optimalStopsGeoJSON(
+  state: GameState,
+  stationsById: Map<string, Station>,
+): FeatureCollection<PointFeature<{ kind: 'optimal' }>> {
+  const features: PointFeature<{ kind: 'optimal' }>[] = []
+  for (const id of state.puzzle.par.stations) {
+    const s = stationsById.get(id)
+    if (s) {
+      features.push({
+        type: 'Feature',
+        geometry: { type: 'Point', coordinates: [s.lon, s.lat] },
+        properties: { kind: 'optimal' },
+      })
+    }
+  }
+  return { type: 'FeatureCollection', features }
+}
+
 // --- Camera framing ---------------------------------------------------------
 
 /** Lon/lat of a station id, or null if unknown. GeoJSON [lon, lat] order. */

@@ -21,6 +21,8 @@ import {
   lineColourOf,
   moveTargets,
   optimalRouteGeoJSON,
+  optimalStopsGeoJSON,
+  routeStopsGeoJSON,
   stationLngLat,
   stationsGeoJSON,
   travelledPathGeoJSON,
@@ -83,13 +85,17 @@ const POSITRON_STYLE: StyleSpecification = {
 const SRC_PATH = 'tr-path'
 const SRC_OPTIONS = 'tr-options'
 const SRC_OPTIMAL = 'tr-optimal'
+const SRC_ROUTE_STOPS = 'tr-route-stops'
+const SRC_OPTIMAL_STOPS = 'tr-optimal-stops'
 const SRC_STATIONS = 'tr-stations'
 
 const LYR_OPTIONS = 'tr-options-line' // clean line segments to the legal moves
 const LYR_OPTIONS_DASH = 'tr-options-line-dash' // Overground options
 const LYR_PATH = 'tr-path-line'
 const LYR_PATH_DASH = 'tr-path-line-dash' // Overground hops of the ridden path
+const LYR_ROUTE_STOPS = 'tr-route-stops-dot' // a dot at each stop on the travelled route
 const LYR_OPTIMAL = 'tr-optimal-line'
+const LYR_OPTIMAL_STOPS = 'tr-optimal-stops-dot' // a dot at each stop on the best route
 const LYR_HINT = 'tr-hint-ring' // gold ring on the hinted station
 const LYR_STATION_DOT = 'tr-station-dot'
 const LYR_STATION_RING = 'tr-station-ring'
@@ -241,7 +247,14 @@ export default function PlayfieldMap({
 
     map.on('load', () => {
       // Overlay sources (populated by the data effect below).
-      for (const id of [SRC_OPTIONS, SRC_PATH, SRC_OPTIMAL, SRC_STATIONS]) {
+      for (const id of [
+        SRC_OPTIONS,
+        SRC_PATH,
+        SRC_OPTIMAL,
+        SRC_ROUTE_STOPS,
+        SRC_OPTIMAL_STOPS,
+        SRC_STATIONS,
+      ]) {
         map.addSource(id, { type: 'geojson', data: EMPTY_FC })
       }
 
@@ -262,6 +275,20 @@ export default function PlayfieldMap({
           'line-width': 4,
           'line-dasharray': [1.5, 1.2],
           'line-opacity': 0.95,
+        },
+      })
+
+      // A gold dot at each stop on the best route, so the reveal reads as a
+      // sequence of stops rather than a bare dashed line.
+      map.addLayer({
+        id: LYR_OPTIMAL_STOPS,
+        type: 'circle',
+        source: SRC_OPTIMAL_STOPS,
+        paint: {
+          'circle-radius': 3.5,
+          'circle-color': COLOUR_OPTIMAL,
+          'circle-stroke-width': 1.5,
+          'circle-stroke-color': '#ffffff',
         },
       })
 
@@ -314,6 +341,21 @@ export default function PlayfieldMap({
         filter: ['==', ['get', 'dashed'], true],
         layout: { 'line-cap': 'butt', 'line-join': 'round' },
         paint: { ...pathPaint, 'line-dasharray': [1.6, 0.9] },
+      })
+
+      // A small white dot at each stop on the travelled route, so the trail
+      // reads as the stops you made, not just a line. The current/target/start
+      // markers draw on top.
+      map.addLayer({
+        id: LYR_ROUTE_STOPS,
+        type: 'circle',
+        source: SRC_ROUTE_STOPS,
+        paint: {
+          'circle-radius': 3.5,
+          'circle-color': '#ffffff',
+          'circle-stroke-width': 2,
+          'circle-stroke-color': COLOUR_CURRENT,
+        },
       })
 
       // Hint halo: a gold ring behind whichever station a hint points at.
@@ -513,6 +555,7 @@ export default function PlayfieldMap({
       // Option lines hidden once the run is over, leaving just the route.
       options: showOptimal ? EMPTY_FC : currentOptionEdgesGeoJSON(graph, state, stationsById, legalMoves),
       path: travelledPathGeoJSON(graph, state, stationsById),
+      routeStops: routeStopsGeoJSON(state, stationsById),
       stations: stationsGeoJSON(
         graph,
         state,
@@ -523,6 +566,7 @@ export default function PlayfieldMap({
         hintStationId,
       ),
       optimal: showOptimal ? optimalRouteGeoJSON(state, stationsById) : EMPTY_FC,
+      optimalStops: showOptimal ? optimalStopsGeoJSON(state, stationsById) : EMPTY_FC,
     }),
     [graph, state, stationsById, legalMoves, currentLine, targetId, showOptimal, hintStationId],
   )
@@ -532,8 +576,10 @@ export default function PlayfieldMap({
     if (!map || !ready) return
     ;(map.getSource(SRC_OPTIONS) as GeoJSONSource | undefined)?.setData(overlay.options)
     ;(map.getSource(SRC_PATH) as GeoJSONSource | undefined)?.setData(overlay.path)
+    ;(map.getSource(SRC_ROUTE_STOPS) as GeoJSONSource | undefined)?.setData(overlay.routeStops)
     ;(map.getSource(SRC_STATIONS) as GeoJSONSource | undefined)?.setData(overlay.stations)
     ;(map.getSource(SRC_OPTIMAL) as GeoJSONSource | undefined)?.setData(overlay.optimal)
+    ;(map.getSource(SRC_OPTIMAL_STOPS) as GeoJSONSource | undefined)?.setData(overlay.optimalStops)
   }, [overlay, ready])
 
   // --- Follow-camera: keep the current station AND every legal next move on

@@ -171,7 +171,7 @@ export default function ResultCard({
           : 'No worries, the line was tricky today. Here is the best route you were chasing.'}
       </p>
 
-      <StarRow stars={stars} />
+      <StarRow stars={stars} animate={animate} />
 
       {hintsUsed > 0 && (
         <p className="mt-1 text-center text-xs text-ink-soft">
@@ -262,19 +262,34 @@ export default function ResultCard({
   )
 }
 
-/** The friendly headline: a 0-3 star rating, filled gold and empty grey. */
-function StarRow({ stars }: { stars: number }) {
+/**
+ * The friendly headline: a 0-3 star rating, filled gold and empty grey. When
+ * `animate` is set, the earned stars slam in one-by-one (Clash-of-Clans style);
+ * the empty ones just sit there. Reduced motion is handled in CSS.
+ */
+function StarRow({ stars, animate }: { stars: number; animate: boolean }) {
   return (
     <div
-      className="mt-3 flex justify-center gap-1.5 text-3xl leading-none"
+      className="mt-3 flex justify-center gap-2 text-4xl leading-none"
       role="img"
       aria-label={`${stars} of 3 stars`}
     >
-      {[0, 1, 2].map((i) => (
-        <span key={i} className={i < stars ? 'text-flag' : 'text-stone-200'} aria-hidden="true">
-          {i < stars ? '★' : '☆'}
-        </span>
-      ))}
+      {[0, 1, 2].map((i) => {
+        const earned = i < stars
+        return (
+          <span
+            key={i}
+            className={`${earned ? 'text-flag' : 'text-stone-200'} ${
+              earned && animate ? 'star-pop' : ''
+            }`}
+            // Stagger each earned star's slam-in.
+            style={earned && animate ? { animationDelay: `${0.15 + i * 0.22}s` } : undefined}
+            aria-hidden="true"
+          >
+            {earned ? '★' : '☆'}
+          </span>
+        )
+      })}
     </div>
   )
 }
