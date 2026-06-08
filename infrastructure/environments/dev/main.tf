@@ -46,6 +46,13 @@ module "cdn" {
   site_bucket_regional_domain_name = module.site_bucket.bucket_regional_domain_name
   acm_certificate_arn              = aws_acm_certificate_validation.site.certificate_arn
   aliases                          = [local.site_fqdn]
+
+  # Analytics: deliver access logs to the shared bucket under the tube-race
+  # prefix, and answer in-app beacons (/e*) with a 204 at the edge. The log
+  # bucket lives in the separate ikuzuki/analytics stack.
+  log_bucket_domain = "ikuzuki-analytics-logs.s3.eu-west-2.amazonaws.com"
+  log_prefix        = "cloudfront/tube-race/"
+  enable_beacon     = true
 }
 
 # Bucket policy lives here so it can reference the distribution ARN without

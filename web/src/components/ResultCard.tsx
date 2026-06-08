@@ -80,6 +80,8 @@ interface ResultCardProps {
   hintsUsed?: number
   /** Pre-built spoiler-free share text (see lib/share). */
   shareText: string
+  /** Fired after a share attempt: ok=true if shared or copied, false if both failed. */
+  onShare?: (ok: boolean) => void
   streak: number
   /** Optional day's start station + trivia. */
   start?: Endpoint
@@ -115,6 +117,7 @@ export default function ResultCard({
   optimal,
   hintsUsed = 0,
   shareText,
+  onShare,
   streak,
   start,
   destination,
@@ -152,6 +155,7 @@ export default function ResultCard({
     if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
       try {
         await navigator.share({ text: shareText })
+        onShare?.(true)
         return
       } catch {
         // User dismissed the sheet, or share failed: fall through to clipboard.
@@ -160,9 +164,11 @@ export default function ResultCard({
     try {
       await navigator.clipboard.writeText(shareText)
       setCopied(true)
+      onShare?.(true)
     } catch {
       // Clipboard blocked (insecure context / denied permission): leave the
       // label unchanged rather than claim a copy that didn't happen.
+      onShare?.(false)
     }
   }
 
