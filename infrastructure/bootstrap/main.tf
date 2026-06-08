@@ -86,11 +86,13 @@ data "aws_iam_policy_document" "github_actions_assume" {
       identifiers = [data.aws_iam_openid_connect_provider.github.arn]
     }
 
-    # Trust any ref/PR on the tube-race repo, matching the website convention.
+    # Trust only the main branch of the tube-race repo. The Deploy workflow runs
+    # on push to main and on workflow_dispatch (which also reports the main ref),
+    # so this covers CI without letting any other branch or PR assume the role.
     condition {
-      test     = "StringLike"
+      test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repo}:*"]
+      values   = ["repo:${var.github_repo}:ref:refs/heads/main"]
     }
 
     condition {
@@ -101,15 +103,33 @@ data "aws_iam_policy_document" "github_actions_assume" {
   }
 }
 
-# Least-privilege policy for the deploy pipeline: scoped to the tube-race state
-# backend and site bucket, plus the CloudFront / ACM / Route 53 actions the env
-# root needs to stand up and update the distribution and its custom domain.
+# Deploy policy. Scoped by resource wherever the service supports it: S3 to the
+# tube-race-* buckets, DynamoDB to the lock table, Route 53 to hosted zones.
+# CloudFront and ACM do not support resource-level permissions, so they are
+# action-scoped against "*". This is tighter than "*" but not minimal: the S3
+# reads are wildcarded (Get*/List*) because the aws_s3_bucket refresh calls a
+# broad, provider-version-dependent set of bucket sub-resource reads, while the
+# writes are enumerated to the few the stack and the deploy sync actually make.
 data "aws_iam_policy_document" "cicd" {
   statement {
     sid    = "S3SiteAndState"
     effect = "Allow"
     actions = [
-      "s3:*",
+      # Reads: wildcarded so the bucket refresh never trips on a denied Get.
+      "s3:Get*",
+      "s3:List*",
+      # Object writes: the deploy sync and the Terraform state backend.
+      "s3:PutObject",
+      "s3:DeleteObject",
+      # Bucket lifecycle + the specific config writes the s3-static-site module
+      # and the env-root bucket policy make.
+      "s3:CreateBucket",
+      "s3:PutBucketVersioning",
+      "s3:PutEncryptionConfiguration",
+      "s3:PutBucketPublicAccessBlock",
+      "s3:PutBucketTagging",
+      "s3:PutBucketPolicy",
+      "s3:DeleteBucketPolicy",
     ]
     resources = [
       "arn:aws:s3:::tube-race-*",
@@ -129,22 +149,18 @@ data "aws_iam_policy_document" "cicd" {
     resources = [aws_dynamodb_table.tf_lock.arn]
   }
 
+  # CloudFront does not support resource-level permissions, so this is scoped by
+  # action against "*". Kept broad (cloudfront:*) deliberately: the distribution
+  # plus its Origin Access Control, tagging and cache invalidation span a large,
+  # provider-version-dependent action surface, and this is a one-shot apply that
+  # cannot be test-run here, so narrowing it risks breaking the first deploy.
+  # No IAM grant: OAC authorises CloudFront to read the bucket via the bucket
+  # policy, so neither iam:PassRole nor any iam:* action is needed.
   statement {
     sid    = "CloudFrontFull"
     effect = "Allow"
     actions = [
       "cloudfront:*",
-    ]
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = "IamReadAndPassForOAC"
-    effect = "Allow"
-    actions = [
-      "iam:GetRole",
-      "iam:ListRoles",
-      "iam:PassRole",
     ]
     resources = ["*"]
   }
