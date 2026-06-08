@@ -89,8 +89,8 @@ export function DestFlagIcon({ className }: IconProps) {
   )
 }
 
-/** Mountain summit: the Expert challenge (a hard climb). */
-export function SummitIcon({ className }: IconProps) {
+/** Black diamond: the recognised "expert / hardest" mark, for the Expert track. */
+export function ExpertIcon({ className }: IconProps) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -101,7 +101,7 @@ export function SummitIcon({ className }: IconProps) {
       role="img"
       aria-hidden="true"
     >
-      <path d="M12 3l5.5 9-3.2-1.4L12 14l-2.3-3.4L6.5 12 12 3zM2.5 20l4-6.5 2.2 3.2L12 12l3.3 4.7 2.2-3.2 4 6.5z" />
+      <path d="M12 2 L22 12 L12 22 L2 12 Z" />
     </svg>
   )
 }

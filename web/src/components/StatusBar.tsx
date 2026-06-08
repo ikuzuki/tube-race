@@ -11,6 +11,7 @@ import { displayName } from '../lib/format'
 import type { RouteLeg } from '../lib/route'
 import { stopsLabel } from '../lib/route'
 import { AMBER_LIMIT, deltaTone, points, type Tone } from '../lib/score'
+import { compassWord } from '../lib/compass'
 import { isOverground, lineColour, lineTextColour } from '../theme'
 import { ChangeIcon, StopIcon } from './icons'
 
@@ -377,8 +378,10 @@ function Compass({ bearingDeg, km }: { bearingDeg: number; km: number }) {
         </g>
         <circle cx="50" cy="50" r="5" fill="var(--color-stone)" stroke="var(--color-map)" strokeWidth="2" />
       </svg>
-      <span className="text-[0.7rem] font-semibold tabular-nums text-ink sm:text-xs">
-        {formatKm(km)}
+      <span className="text-[0.7rem] font-semibold text-ink sm:text-xs">
+        <span>{compassWord(bearingDeg)}</span>
+        <span className="text-ink-soft"> · </span>
+        <span className="tabular-nums">{formatKm(km)}</span>
       </span>
     </div>
   )

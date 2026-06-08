@@ -15,7 +15,8 @@ import Confetti from './Confetti'
 import { ChangeIcon, StopIcon } from './icons'
 import type { Station } from '../engine'
 import type { StationInfo } from '../lib/stationInfo'
-import { percentOptimal } from '../lib/share'
+import { percentOptimal, starRating } from '../lib/share'
+import { formatCountdown, msToNextUtcMidnight } from '../lib/countdown'
 import { AMBER_LIMIT, deltaTone, type Tone } from '../lib/score'
 
 /** Green / amber / red text for a good / warn / bad tone. */
@@ -124,7 +125,25 @@ export default function ResultCard({
     if (!open) setCopied(false)
   }, [open])
 
+  // Tick a "next puzzle in" countdown to the next UTC midnight while open.
+  const [nowMs, setNowMs] = useState(() => Date.now())
+  useEffect(() => {
+    if (!open) return
+    setNowMs(Date.now())
+    const id = setInterval(() => setNowMs(Date.now()), 1000)
+    return () => clearInterval(id)
+  }, [open])
+
   const handleShare = async () => {
+    // Prefer the native share sheet (mobile especially); fall back to copying.
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ text: shareText })
+        return
+      } catch {
+        // User dismissed the sheet, or share failed: fall through to clipboard.
+      }
+    }
     try {
       await navigator.clipboard.writeText(shareText)
       setCopied(true)
@@ -135,6 +154,7 @@ export default function ResultCard({
   }
 
   const headline = solved ? (optimal ? 'Spot on!' : 'You made it!') : 'Mind the gap'
+  const stars = starRating(score, parScore, solved)
   const animate = open && solved && !prefersReducedMotion()
   const displayScore = useCountUp(score, animate)
 
@@ -142,17 +162,13 @@ export default function ResultCard({
     <Modal open={open} onClose={onClose} title={headline} size="wide">
       {animate && <Confetti count={optimal ? 90 : 40} />}
 
-      {solved && optimal && (
-        <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-progress/10 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-progress">
-          <DotIcon /> Optimal route
-        </span>
-      )}
-
       <p className="text-sm text-ink-soft">
         {solved
           ? 'Here is how your run stacked up against the best possible route.'
           : 'No worries, the line was tricky today. Here is the best route you were chasing.'}
       </p>
+
+      <StarRow stars={stars} />
 
       <ScoreBlock
         score={score}
@@ -225,7 +241,32 @@ export default function ResultCard({
           Show best route
         </button>
       )}
+
+      {/* Time to the next daily, which rolls over at UTC midnight (see lib/countdown). */}
+      <p className="mt-3 text-center text-xs text-ink-soft">
+        Next puzzle in{' '}
+        <span className="font-semibold tabular-nums text-ink">
+          {formatCountdown(msToNextUtcMidnight(new Date(nowMs)))}
+        </span>
+      </p>
     </Modal>
+  )
+}
+
+/** The friendly headline: a 0-3 star rating, filled gold and empty grey. */
+function StarRow({ stars }: { stars: number }) {
+  return (
+    <div
+      className="mt-3 flex justify-center gap-1.5 text-3xl leading-none"
+      role="img"
+      aria-label={`${stars} of 3 stars`}
+    >
+      {[0, 1, 2].map((i) => (
+        <span key={i} className={i < stars ? 'text-flag' : 'text-stone-200'} aria-hidden="true">
+          {i < stars ? '★' : '☆'}
+        </span>
+      ))}
+    </div>
   )
 }
 
@@ -274,7 +315,8 @@ function ScoreBlock({
       </p>
 
       {solved && (
-        <p className={`mt-1.5 text-sm font-bold ${toneText(scoreTone)}`}>{pct}% optimal</p>
+        // Stars are the headline now; the precise % stays as quiet supporting detail.
+        <p className="mt-1 text-xs font-medium text-ink-soft">{pct}% optimal</p>
       )}
 
       <div className="mt-2.5 flex items-center justify-center gap-5 border-t border-stone-200 pt-2.5 text-sm">
@@ -312,14 +354,6 @@ function MiniStat({ icon, label, value, best, amber }: MiniStatProps) {
       <span className="text-ink-soft">/ {best}</span>
       <span className="text-ink-soft">{label}</span>
     </span>
-  )
-}
-
-function DotIcon() {
-  return (
-    <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
-      <circle cx="4" cy="4" r="4" fill="currentColor" />
-    </svg>
   )
 }
 

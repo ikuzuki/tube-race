@@ -115,17 +115,40 @@ describe('ResultCard', () => {
     expect(screen.queryByText(/% optimal/)).not.toBeInTheDocument()
   })
 
-  it('shows the Optimal badge only when optimal', () => {
+  it('shows three stars as the headline for an optimal run', () => {
     setup({ optimal: true, score: 11 })
-    expect(screen.getByText(/optimal route/i)).toBeInTheDocument()
+    expect(screen.getByLabelText('3 of 3 stars')).toBeInTheDocument()
   })
 
-  it('hides the Optimal badge when not optimal', () => {
-    setup({ optimal: false })
-    expect(screen.queryByText(/optimal route/i)).not.toBeInTheDocument()
+  it('shows fewer stars for a non-optimal run', () => {
+    // 17 vs 11 -> 65% -> 1 star.
+    setup({ optimal: false, score: 17, parScore: 11 })
+    expect(screen.getByLabelText('1 of 3 stars')).toBeInTheDocument()
+  })
+
+  it('shows zero stars for an unsolved run', () => {
+    setup({ solved: false })
+    expect(screen.getByLabelText('0 of 3 stars')).toBeInTheDocument()
+  })
+
+  it('shows a next-puzzle countdown', () => {
+    setup()
+    expect(screen.getByText(/next puzzle in/i)).toBeInTheDocument()
+    expect(screen.getByText(/^\d{2}:\d{2}:\d{2}$/)).toBeInTheDocument()
+  })
+
+  it('uses the native share sheet when available', async () => {
+    const share = vi.fn().mockResolvedValue(undefined)
+    Object.assign(navigator, { share })
+    setup({ shareText: SHARE })
+    fireEvent.click(screen.getByRole('button', { name: /share/i }))
+    await waitFor(() => expect(share).toHaveBeenCalledWith({ text: SHARE }))
+    // Clean up so the clipboard-fallback test below sees no native share.
+    delete (navigator as { share?: unknown }).share
   })
 
   it('copies the share text and shows feedback when Share is clicked', async () => {
+    delete (navigator as { share?: unknown }).share
     const writeText = vi.fn().mockResolvedValue(undefined)
     Object.assign(navigator, { clipboard: { writeText } })
 
@@ -138,6 +161,7 @@ describe('ResultCard', () => {
   })
 
   it('does not crash or claim a copy when the clipboard rejects', async () => {
+    delete (navigator as { share?: unknown }).share
     const writeText = vi.fn().mockRejectedValue(new Error('denied'))
     Object.assign(navigator, { clipboard: { writeText } })
 

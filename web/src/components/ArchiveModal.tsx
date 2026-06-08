@@ -7,7 +7,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import Modal from './Modal'
-import { SummitIcon } from './icons'
+import { ExpertIcon } from './icons'
 import type { Adjacency, DailyPuzzle, Tier, TubeGraph } from '../engine'
 import { dailyExpert, dailyPuzzle, stationIndex } from '../engine'
 import { archiveDates, expertKey, type ArchiveCompletions } from '../lib/archive'
@@ -180,7 +180,7 @@ function ModeToggle({ mode, onChange }: { mode: Mode; onChange: (m: Mode) => voi
         Daily
       </ModeButton>
       <ModeButton active={mode === 'expert'} onClick={() => onChange('expert')}>
-        <SummitIcon className="text-[14px]" /> Expert
+        <ExpertIcon className="text-[12px]" /> Expert
       </ModeButton>
     </div>
   )
