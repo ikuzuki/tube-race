@@ -355,6 +355,20 @@ export default function Game({
         </div>
       </main>
 
+      {/* Persistent compliance footer: data attribution + unofficial disclaimer. */}
+      <footer className="border-t border-stone-200 px-4 py-2 text-center text-[0.7rem] leading-relaxed text-ink-soft">
+        Unofficial. Not affiliated with Transport for London. Powered by{' '}
+        <a
+          href="https://tfl.gov.uk/info-for/open-data-users/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-2 hover:text-ink"
+        >
+          TfL Open Data
+        </a>
+        .
+      </footer>
+
       {/* When the result card is dismissed (e.g. to view the best route), keep a
           way back to it; archive replays also get a fresh-game shortcut. The
           genuine daily is one attempt per day, so it never offers a replay. */}

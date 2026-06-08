@@ -6,8 +6,10 @@
 // cost the Dijkstra par minimises. Lower wins. Stars are the friendly headline;
 // "% optimal" = round(best / score * 100) is kept as supporting detail.
 
-/** Where the game lives. TODO: set to the real domain when hosting is decided. */
-export const SITE_URL = 'https://tube-race.app'
+// Where the game lives. The canonical origin is defined once in src/config and
+// re-exported here so existing importers (and share.test.ts) keep working.
+export { SITE_URL } from '../config'
+import { SITE_URL } from '../config'
 
 export interface ShareInput {
   /** ISO date string, e.g. "2026-06-06". */
