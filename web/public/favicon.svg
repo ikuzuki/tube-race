@@ -1,5 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="18" fill="#0a0a0a"/>
-  <circle cx="50" cy="50" r="30" fill="none" stroke="#E32017" stroke-width="12"/>
-  <rect x="10" y="43" width="80" height="14" fill="#1c3f94"/>
+  <!-- Original mark: the rounded front of a tube train. Geometric, app palette
+       (progress green on the dark app background). No roundel, no red/blue. -->
+  <rect width="100" height="100" rx="20" fill="#0b0e13"/>
+  <!-- carriage front -->
+  <rect x="27" y="18" width="46" height="60" rx="15" fill="#1ea672"/>
+  <!-- two cab windows -->
+  <rect x="33" y="30" width="14" height="14" rx="4" fill="#0b0e13"/>
+  <rect x="53" y="30" width="14" height="14" rx="4" fill="#0b0e13"/>
+  <!-- round headlight -->
+  <circle cx="50" cy="62" r="7" fill="#0b0e13"/>
 </svg>
