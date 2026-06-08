@@ -31,8 +31,12 @@ export interface FeatureCollection<F> {
   features: F[]
 }
 
-/** Role a revealed station plays this turn — drives its marker style. */
-export type StationKind = 'start' | 'current' | 'target' | 'legal' | 'visited'
+/**
+ * Role a station plays this turn. The map is deliberately minimal (see
+ * stationsGeoJSON): only the current station, the legal next moves and the
+ * target are ever drawn.
+ */
+export type StationKind = 'current' | 'target' | 'legal'
 
 export interface StationProps {
   id: string
@@ -52,6 +56,8 @@ export interface StationProps {
    * rather than an inviting next move.
    */
   prev?: boolean
+  /** True for the station a hint is pointing at (the optimal next hop). */
+  hint?: boolean
 }
 
 export interface EdgeProps {
@@ -167,30 +173,13 @@ export function moveTargets(
 // --- Station GeoJSON --------------------------------------------------------
 
 /**
- * Decide the rendering role for a revealed station. Precedence (highest first):
- * current > target > start > legal-next-move > visited. Current beats target so
- * the "you are here" emphasis always wins, even standing on the destination
- * tile mid-run; the solved state is conveyed elsewhere.
- */
-function stationKind(
-  id: string,
-  state: GameState,
-  targetId: string,
-  legalIds: Set<string>,
-  visitedIds: Set<string>,
-): StationKind {
-  if (id === state.currentId) return 'current'
-  if (id === targetId) return 'target'
-  if (id === state.startId) return 'start'
-  if (legalIds.has(id)) return 'legal'
-  void visitedIds
-  return 'visited'
-}
-
-/**
- * One Point feature per revealed station. Fog rule: a station that has never
- * been revealed is omitted entirely — except the `target`, which is always
- * included so the destination is visible as a goal from the start.
+ * Minimal station overlay: ONLY the current station, the legal next moves and
+ * the target are drawn. Past revealed stations and untaken branches are
+ * deliberately not emitted, so the map never accumulates clutter (you can only
+ * ever move to an adjacent station, so nothing playable is lost). The current
+ * station takes precedence over the target (the "you are here" emphasis wins
+ * even when standing on the destination tile), and a legal move that happens to
+ * be the target is still tappable.
  */
 export function stationsGeoJSON(
   graph: TubeGraph,
@@ -199,17 +188,14 @@ export function stationsGeoJSON(
   legalMoves: Neighbour[],
   currentLine: string | null,
   targetId: string,
+  hintStationId?: string | null,
 ): FeatureCollection<PointFeature<StationProps>> {
   const legalIds = new Set(legalMoves.map((m) => m.stationId))
-  const visited = new Set<string>([state.startId, ...state.path.map((m) => m.stationId)])
   const targets = moveTargets(graph, legalMoves, currentLine)
   const moveClassById = new Map<string, 'continue' | 'switch'>()
   for (const t of targets) {
     moveClassById.set(t.stationId, t.hasContinuation ? 'continue' : 'switch')
   }
-
-  const ids = new Set<string>(state.revealed)
-  ids.add(targetId)
 
   // The station the player just left: the second-to-last path entry, or the
   // start right after the first move. Null before any move.
@@ -220,12 +206,16 @@ export function stationsGeoJSON(
         ? state.startId
         : null
 
+  // Draw only the current station, the legal moves and the target.
+  const ids = new Set<string>([state.currentId, targetId, ...legalIds])
+
   const features: PointFeature<StationProps>[] = []
   for (const id of ids) {
     const station = stationsById.get(id)
     if (!station) continue
-    const kind = stationKind(id, state, targetId, legalIds, visited)
     const legal = legalIds.has(id)
+    const kind: StationKind =
+      id === state.currentId ? 'current' : id === targetId ? 'target' : 'legal'
     features.push({
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [station.lon, station.lat] },
@@ -236,6 +226,7 @@ export function stationsGeoJSON(
         legal,
         ...(legal ? { moveClass: moveClassById.get(id) } : {}),
         ...(id === prevId ? { prev: true } : {}),
+        ...(id === hintStationId ? { hint: true } : {}),
       },
     })
   }

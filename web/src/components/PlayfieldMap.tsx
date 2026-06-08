@@ -20,7 +20,6 @@ import {
   lineColourOf,
   moveTargets,
   optimalRouteGeoJSON,
-  revealedEdgesGeoJSON,
   stationLngLat,
   stationsGeoJSON,
   travelledPathGeoJSON,
@@ -38,6 +37,8 @@ export interface PlayfieldMapProps {
   onMove: (to: Neighbour) => void
   /** When true, also draw the optimal route (state.puzzle.par.stations). */
   showOptimal?: boolean
+  /** Station id to highlight as the current hint (the optimal next hop), or null. */
+  hintStationId?: string | null
   className?: string
 }
 
@@ -74,30 +75,63 @@ const POSITRON_STYLE: StyleSpecification = {
   layers: [{ id: 'carto', type: 'raster', source: 'carto' }],
 }
 
-// Source + layer ids.
-const SRC_EDGES = 'tr-edges'
+// Source + layer ids. The map is deliberately minimal: the travelled route, the
+// current station, the legal next moves (continue = filled dot, change = hollow
+// diamond), the target and any hint marker. No revealed-but-untaken edges or
+// past station dots.
 const SRC_PATH = 'tr-path'
 const SRC_OPTIMAL = 'tr-optimal'
 const SRC_STATIONS = 'tr-stations'
 
-const LYR_EDGES = 'tr-edges-line'
-const LYR_EDGES_DASH = 'tr-edges-line-dash' // Overground edges, dashed texture
 const LYR_PATH = 'tr-path-line'
 const LYR_PATH_DASH = 'tr-path-line-dash' // Overground hops of the ridden path
 const LYR_OPTIMAL = 'tr-optimal-line'
+const LYR_HINT = 'tr-hint-ring' // gold ring on the hinted station
 const LYR_STATION_DOT = 'tr-station-dot'
 const LYR_STATION_RING = 'tr-station-ring'
+const LYR_CHANGE = 'tr-change-diamond' // hollow-diamond markers for line changes
 const LYR_LABELS_FIXED = 'tr-labels-fixed' // current + target, always on
 const LYR_LABELS_HOVER = 'tr-labels-hover' // hovered station only
+
+const IMG_DIAMOND = 'tr-diamond' // generated hollow-diamond icon for change moves
 
 const EMPTY_FC = { type: 'FeatureCollection', features: [] } as const
 
 // --- Marker colours (read on a light Positron background) -------------------
 
 const COLOUR_CURRENT = '#1ea672' // progress green ("you are here")
-const COLOUR_START = '#11151c' // ink — clear, recognisable origin
 const COLOUR_TARGET = '#e11d48' // strong rose flag
 const COLOUR_OPTIMAL = '#d4a017' // gold
+const COLOUR_HINT = '#d4a017' // gold ring, matches the optimal-route reveal
+const COLOUR_CHANGE = '#5b6470' // ink-soft: a line change is the muted option
+
+/**
+ * Build a hollow-diamond icon (white fill, grey outline) for line-change move
+ * markers, so "change" differs from "continue" by SHAPE, not colour alone
+ * (red-green safety). Returns null when no 2D canvas is available (e.g. tests).
+ */
+function diamondIcon(): ImageData | null {
+  if (typeof document === 'undefined') return null
+  const size = 40
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = size
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  const r = size / 2 - 5
+  ctx.translate(size / 2, size / 2)
+  ctx.beginPath()
+  ctx.moveTo(0, -r)
+  ctx.lineTo(r, 0)
+  ctx.lineTo(0, r)
+  ctx.lineTo(-r, 0)
+  ctx.closePath()
+  ctx.fillStyle = '#ffffff'
+  ctx.fill()
+  ctx.lineWidth = 4
+  ctx.strokeStyle = COLOUR_CHANGE
+  ctx.stroke()
+  return ctx.getImageData(0, 0, size, size)
+}
 
 export default function PlayfieldMap({
   graph,
@@ -108,6 +142,7 @@ export default function PlayfieldMap({
   stationsById,
   onMove,
   showOptimal = false,
+  hintStationId = null,
   className,
 }: PlayfieldMapProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -165,7 +200,11 @@ export default function PlayfieldMap({
     heading.textContent = singleOption ? `Change to reach ${stationName}?` : `Board for ${stationName}`
     root.appendChild(heading)
 
-    for (const opt of target.options) {
+    // List "Stay on {line}" first as the obvious default, then the changes.
+    const options = [...target.options].sort(
+      (a, b) => Number(b.continuation) - Number(a.continuation),
+    )
+    for (const opt of options) {
       root.appendChild(makeMoveButton(g, opt, () => {
         emit({ stationId: opt.stationId, line: opt.line })
         popup.remove()
@@ -198,41 +237,17 @@ export default function PlayfieldMap({
 
     map.on('load', () => {
       // Overlay sources (populated by the data effect below).
-      for (const id of [SRC_EDGES, SRC_PATH, SRC_OPTIMAL, SRC_STATIONS]) {
+      for (const id of [SRC_PATH, SRC_OPTIMAL, SRC_STATIONS]) {
         map.addSource(id, { type: 'geojson', data: EMPTY_FC })
       }
 
-      // Revealed network edges, coloured per line. Co-located lines fan out as
-      // parallel strokes via the precomputed offsetIdx (see mapgeo), so a
-      // segment shared by, say, Circle and District shows BOTH colours and the
-      // player's current line always reads as continuing. Overground lines are
-      // drawn by a dashed twin layer (line-dasharray is not data-drivable), so
-      // each layer filters to its half of the source.
-      const edgePaint: LineLayerSpecification['paint'] = {
-        'line-color': ['get', 'colour'],
-        'line-width': 3,
-        'line-opacity': 0.55,
-        'line-offset': ['*', ['get', 'offsetIdx'], 6],
+      // Register the hollow-diamond change-move icon (no-op if unavailable).
+      const diamond = diamondIcon()
+      if (diamond && !map.hasImage(IMG_DIAMOND)) {
+        map.addImage(IMG_DIAMOND, diamond, { pixelRatio: 2 })
       }
-      map.addLayer({
-        id: LYR_EDGES,
-        type: 'line',
-        source: SRC_EDGES,
-        filter: ['!=', ['get', 'dashed'], true],
-        layout: { 'line-cap': 'round', 'line-join': 'round' },
-        paint: { ...edgePaint },
-      })
-      map.addLayer({
-        id: LYR_EDGES_DASH,
-        type: 'line',
-        source: SRC_EDGES,
-        filter: ['==', ['get', 'dashed'], true],
-        // Butt caps keep the dash rhythm crisp; round caps would blob them.
-        layout: { 'line-cap': 'butt', 'line-join': 'round' },
-        paint: { ...edgePaint, 'line-dasharray': [2.2, 1.6] },
-      })
 
-      // Optimal/par route (post-game): dashed gold, above edges, below path.
+      // Optimal/par route (post-game): dashed gold, below the travelled path.
       map.addLayer({
         id: LYR_OPTIMAL,
         type: 'line',
@@ -270,81 +285,85 @@ export default function PlayfieldMap({
         paint: { ...pathPaint, 'line-dasharray': [1.6, 0.9] },
       })
 
-      // Station outer ring — emphasis for current/target/start/legal.
+      // Hint halo: a gold ring behind whichever station a hint points at.
+      map.addLayer({
+        id: LYR_HINT,
+        type: 'circle',
+        source: SRC_STATIONS,
+        filter: ['==', ['get', 'hint'], true],
+        paint: {
+          'circle-radius': 18,
+          'circle-color': 'rgba(212,160,23,0.18)',
+          'circle-stroke-width': 3,
+          'circle-stroke-color': COLOUR_HINT,
+        },
+      })
+
+      // Continue moves render as filled dots; line changes render as hollow
+      // diamonds (the LYR_CHANGE symbol layer below), so move type reads by
+      // SHAPE not colour alone. The circle layers therefore skip switch moves.
+      const notSwitch: maplibregl.FilterSpecification = [
+        '!',
+        ['all', ['==', ['get', 'kind'], 'legal'], ['==', ['get', 'moveClass'], 'switch']],
+      ]
+
+      // Station outer ring — emphasis for current / target / continue moves.
       map.addLayer({
         id: LYR_STATION_RING,
         type: 'circle',
         source: SRC_STATIONS,
+        filter: notSwitch,
         paint: {
-          'circle-radius': [
-            'match',
-            ['get', 'kind'],
-            'current', 13,
-            'target', 12,
-            'start', 11,
-            'legal', 11,
-            7,
-          ],
+          'circle-radius': ['match', ['get', 'kind'], 'current', 13, 'target', 12, 11],
           'circle-color': 'rgba(0,0,0,0)',
-          'circle-stroke-width': [
-            'match',
-            ['get', 'kind'],
-            'current', 3.5,
-            'target', 3,
-            'start', 3,
-            ['case', ['==', ['get', 'moveClass'], 'continue'], 3, 1.5],
-          ],
+          'circle-stroke-width': ['match', ['get', 'kind'], 'current', 3.5, 'target', 3, 3],
           'circle-stroke-color': [
             'match',
             ['get', 'kind'],
             'current', COLOUR_CURRENT,
             'target', COLOUR_TARGET,
-            'start', COLOUR_START,
-            // Legal/visited rings tint by line continuation vs switch.
-            ['case', ['==', ['get', 'moveClass'], 'continue'], COLOUR_CURRENT, '#9aa3af'],
+            COLOUR_CURRENT, // a continue move
           ],
-          // The just-left station reads dimmest (backtracking is legal but
-          // discouraged); switch moves muted; continuations bold.
-          'circle-stroke-opacity': [
-            'case',
-            ['==', ['get', 'prev'], true],
-            0.35,
-            ['==', ['get', 'moveClass'], 'switch'],
-            0.6,
-            1,
-          ],
+          // The just-left station (a legal backtrack) reads dimmer.
+          'circle-stroke-opacity': ['case', ['==', ['get', 'prev'], true], 0.4, 1],
         },
       })
 
-      // Station inner dot.
+      // Station inner dot (filled).
       map.addLayer({
         id: LYR_STATION_DOT,
         type: 'circle',
         source: SRC_STATIONS,
+        filter: notSwitch,
         paint: {
-          'circle-radius': [
-            'match',
-            ['get', 'kind'],
-            'current', 6,
-            'target', 5.5,
-            'start', 5,
-            'legal', 5,
-            4,
-          ],
+          'circle-radius': ['match', ['get', 'kind'], 'current', 6, 'target', 5.5, 5],
           'circle-color': [
             'match',
             ['get', 'kind'],
             'current', COLOUR_CURRENT,
             'target', COLOUR_TARGET,
-            'start', COLOUR_START,
-            'legal', ['case', ['==', ['get', 'moveClass'], 'continue'], '#ffffff', '#f1f3f5'],
-            '#ffffff',
+            '#ffffff', // a continue move: white dot in a green ring
           ],
           'circle-stroke-width': 1.5,
           'circle-stroke-color': '#ffffff',
-          // Dim the just-left station's dot along with its ring.
           'circle-opacity': ['case', ['==', ['get', 'prev'], true], 0.45, 1],
           'circle-stroke-opacity': ['case', ['==', ['get', 'prev'], true], 0.45, 1],
+        },
+      })
+
+      // Line-change moves: hollow diamonds (distinct shape from continue dots).
+      map.addLayer({
+        id: LYR_CHANGE,
+        type: 'symbol',
+        source: SRC_STATIONS,
+        filter: ['all', ['==', ['get', 'kind'], 'legal'], ['==', ['get', 'moveClass'], 'switch']],
+        layout: {
+          'icon-image': IMG_DIAMOND,
+          'icon-size': 0.55,
+          'icon-allow-overlap': true,
+        },
+        paint: {
+          'icon-opacity': ['case', ['==', ['get', 'prev'], true], 0.5, 1],
         },
       })
 
@@ -391,8 +410,8 @@ export default function PlayfieldMap({
         },
       })
 
-      // Interactions: hit-test the two station circle layers.
-      const hitLayers = [LYR_STATION_DOT, LYR_STATION_RING]
+      // Interactions: hit-test the dots, rings and change-diamond markers.
+      const hitLayers = [LYR_STATION_DOT, LYR_STATION_RING, LYR_CHANGE]
 
       // General click with a generous hit box so the small dots are easy to tap
       // — a layer-scoped click only fires on a pixel-perfect hit, which felt
@@ -460,18 +479,24 @@ export default function PlayfieldMap({
   // --- Data: push fresh GeoJSON whenever game state changes. ---
   const overlay = useMemo(
     () => ({
-      edges: revealedEdgesGeoJSON(graph, state, stationsById),
       path: travelledPathGeoJSON(graph, state, stationsById),
-      stations: stationsGeoJSON(graph, state, stationsById, legalMoves, currentLine, targetId),
+      stations: stationsGeoJSON(
+        graph,
+        state,
+        stationsById,
+        legalMoves,
+        currentLine,
+        targetId,
+        hintStationId,
+      ),
       optimal: showOptimal ? optimalRouteGeoJSON(state, stationsById) : EMPTY_FC,
     }),
-    [graph, state, stationsById, legalMoves, currentLine, targetId, showOptimal],
+    [graph, state, stationsById, legalMoves, currentLine, targetId, showOptimal, hintStationId],
   )
 
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
-    ;(map.getSource(SRC_EDGES) as GeoJSONSource | undefined)?.setData(overlay.edges)
     ;(map.getSource(SRC_PATH) as GeoJSONSource | undefined)?.setData(overlay.path)
     ;(map.getSource(SRC_STATIONS) as GeoJSONSource | undefined)?.setData(overlay.stations)
     ;(map.getSource(SRC_OPTIMAL) as GeoJSONSource | undefined)?.setData(overlay.optimal)
@@ -545,14 +570,16 @@ function makeMoveButton(
   const lineName = graph.lines.find((l) => l.id === option.line)?.name ?? option.line
   const btn = document.createElement('button')
   btn.type = 'button'
-  btn.className =
-    'flex items-center gap-2 rounded-md px-2 py-1 text-left text-xs font-medium text-ink hover:bg-stone'
+  // The "stay" option is the obvious default, so it reads bolder than a change.
+  btn.className = option.continuation
+    ? 'flex items-center gap-2 rounded-md bg-stone px-2 py-1 text-left text-xs font-bold text-ink hover:brightness-95'
+    : 'flex items-center gap-2 rounded-md px-2 py-1 text-left text-xs font-medium text-ink-soft hover:bg-stone'
   const swatch = document.createElement('span')
   swatch.className = 'inline-block h-3 w-3 shrink-0 rounded-full'
   swatch.style.backgroundColor = colour
   btn.appendChild(swatch)
   const label = document.createElement('span')
-  label.textContent = option.continuation ? `${lineName} (stay)` : `${lineName} (change)`
+  label.textContent = option.continuation ? `Stay on ${lineName}` : `Change to ${lineName}`
   btn.appendChild(label)
   btn.addEventListener('click', onClick)
   return btn

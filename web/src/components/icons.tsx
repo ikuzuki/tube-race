@@ -105,3 +105,48 @@ export function ExpertIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+/** Lightbulb: a hint. */
+export function HintIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="1em"
+      height="1em"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      role="img"
+      aria-hidden="true"
+    >
+      <path d="M9 18h6" />
+      <path d="M10 21h4" />
+      <path d="M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 3Z" />
+    </svg>
+  )
+}
+
+/** White flag: give up / concede. */
+export function GiveUpIcon({ className }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="1em"
+      height="1em"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      role="img"
+      aria-hidden="true"
+    >
+      <path d="M5 21V4" />
+      <path d="M5 5h11l-2 3.5L16 12H5" />
+    </svg>
+  )
+}

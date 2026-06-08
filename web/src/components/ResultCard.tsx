@@ -76,6 +76,8 @@ interface ResultCardProps {
   changes: number
   parChanges: number
   optimal: boolean
+  /** Hints taken this run (each added to the score); shown as a small note. */
+  hintsUsed?: number
   /** Pre-built spoiler-free share text (see lib/share). */
   shareText: string
   streak: number
@@ -103,6 +105,7 @@ export default function ResultCard({
   changes,
   parChanges,
   optimal,
+  hintsUsed = 0,
   shareText,
   streak,
   start,
@@ -169,6 +172,12 @@ export default function ResultCard({
       </p>
 
       <StarRow stars={stars} />
+
+      {hintsUsed > 0 && (
+        <p className="mt-1 text-center text-xs text-ink-soft">
+          Includes +{hintsUsed * 3} for {hintsUsed} {hintsUsed === 1 ? 'hint' : 'hints'}
+        </p>
+      )}
 
       <ScoreBlock
         score={score}

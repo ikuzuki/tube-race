@@ -148,39 +148,29 @@ describe('moveTargets', () => {
   })
 })
 
-describe('stationsGeoJSON — fog + roles', () => {
-  it('emits revealed stations plus the always-shown target (fog hides the rest)', () => {
-    const state = makeState()
-    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], null, 'kings-cross')
-    const ids = fc.features.map((f) => f.properties.id).sort()
-    expect(ids).toContain('kings-cross') // target is always shown as the goal
-    expect(ids).toContain('oxford-circus')
-    expect(ids).toContain('warren-street')
-    expect(ids).not.toContain('victoria-stn') // unrevealed non-target stays hidden
-  })
-
-  it('marks start vs current distinctly', () => {
-    // Player has moved to warren-street; oxford-circus is now the start only.
+describe('stationsGeoJSON — minimal map', () => {
+  it('emits only the current station, the legal moves and the target', () => {
+    // Player at warren-street; one legal move to euston. Past/other stations
+    // (oxford-circus visited, goodge-street unrelated) are NOT drawn.
     const state = makeState({
       currentId: 'warren-street',
       path: [{ stationId: 'warren-street', line: 'victoria' }],
-      revealed: new Set(['oxford-circus', 'warren-street', 'euston']),
     })
-    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], 'victoria', 'kings-cross')
-    const byId = new Map(fc.features.map((f) => [f.properties.id, f.properties.kind]))
-    expect(byId.get('oxford-circus')).toBe('start')
-    expect(byId.get('warren-street')).toBe('current')
-    expect(byId.get('euston')).toBe('visited')
+    const legal: Neighbour[] = [{ stationId: 'euston', line: 'victoria' }]
+    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, legal, 'victoria', 'kings-cross')
+    const ids = fc.features.map((f) => f.properties.id).sort()
+    expect(ids).toEqual(['euston', 'kings-cross', 'warren-street'])
+    expect(ids).not.toContain('oxford-circus') // the visited start is dropped
   })
 
-  it('marks the target once it is revealed', () => {
-    const state = makeState({ revealed: new Set(['oxford-circus', 'kings-cross']) })
+  it('always shows the target even when far away and unrevealed', () => {
+    const state = makeState()
     const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], null, 'kings-cross')
     const byId = new Map(fc.features.map((f) => [f.properties.id, f.properties.kind]))
     expect(byId.get('kings-cross')).toBe('target')
   })
 
-  it('current wins over start when start === current (turn zero)', () => {
+  it('marks the current station, with current winning over target at turn zero', () => {
     const state = makeState() // current === start === oxford-circus
     const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], null, 'kings-cross')
     const oxford = fc.features.find((f) => f.properties.id === 'oxford-circus')
@@ -191,7 +181,6 @@ describe('stationsGeoJSON — fog + roles', () => {
     const state = makeState({
       currentId: 'warren-street',
       path: [{ stationId: 'warren-street', line: 'victoria' }],
-      revealed: new Set(['oxford-circus', 'warren-street', 'euston', 'goodge-street']),
     })
     const legal: Neighbour[] = [
       { stationId: 'euston', line: 'victoria' }, // continue
@@ -202,48 +191,43 @@ describe('stationsGeoJSON — fog + roles', () => {
     expect(byId.get('euston')?.kind).toBe('legal')
     expect(byId.get('euston')?.moveClass).toBe('continue')
     expect(byId.get('goodge-street')?.moveClass).toBe('switch')
-    // Non-legal stations carry no moveClass.
-    expect(byId.get('oxford-circus')?.moveClass).toBeUndefined()
+    // The current station carries no moveClass.
+    expect(byId.get('warren-street')?.moveClass).toBeUndefined()
   })
 
-  it('flags only the just-left station as prev', () => {
-    // Two moves in: oxford-circus -> warren-street -> euston. Warren Street is
-    // the immediately-previous station; the start is not.
+  it('flags a legal backtrack to the just-left station as prev', () => {
+    // current oxford-circus, just came from warren-street, which is a legal move back.
     const state = makeState({
-      currentId: 'euston',
-      path: [
-        { stationId: 'warren-street', line: 'victoria' },
-        { stationId: 'euston', line: 'victoria' },
-      ],
-      revealed: new Set(['oxford-circus', 'warren-street', 'euston']),
+      currentId: 'oxford-circus',
+      path: [{ stationId: 'oxford-circus', line: 'victoria' }],
+      startId: 'warren-street',
     })
-    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], 'victoria', 'kings-cross')
+    const legal: Neighbour[] = [{ stationId: 'warren-street', line: 'victoria' }]
+    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, legal, 'victoria', 'kings-cross')
     const byId = new Map(fc.features.map((f) => [f.properties.id, f.properties]))
     expect(byId.get('warren-street')?.prev).toBe(true)
-    expect(byId.get('oxford-circus')?.prev).toBeUndefined()
-    expect(byId.get('euston')?.prev).toBeUndefined()
   })
 
-  it('flags the start as prev right after the first move', () => {
+  it('flags the hinted legal move with hint', () => {
     const state = makeState({
       currentId: 'warren-street',
       path: [{ stationId: 'warren-street', line: 'victoria' }],
-      revealed: new Set(['oxford-circus', 'warren-street']),
     })
-    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], 'victoria', 'kings-cross')
+    const legal: Neighbour[] = [
+      { stationId: 'euston', line: 'victoria' },
+      { stationId: 'goodge-street', line: 'northern' },
+    ]
+    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, legal, 'victoria', 'kings-cross', 'euston')
     const byId = new Map(fc.features.map((f) => [f.properties.id, f.properties]))
-    expect(byId.get('oxford-circus')?.prev).toBe(true)
-  })
-
-  it('flags nothing as prev before the first move', () => {
-    const fc = stationsGeoJSON(GRAPH, makeState(), STATIONS_BY_ID, [], null, 'kings-cross')
-    expect(fc.features.every((f) => f.properties.prev === undefined)).toBe(true)
+    expect(byId.get('euston')?.hint).toBe(true)
+    expect(byId.get('goodge-street')?.hint).toBeUndefined()
   })
 
   it('emits [lon, lat] order', () => {
-    const state = makeState({ revealed: new Set(['oxford-circus']) })
-    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], null, 'kings-cross')
-    expect(fc.features[0].geometry.coordinates).toEqual([-0.1418, 51.5152])
+    const state = makeState()
+    const fc = stationsGeoJSON(GRAPH, state, STATIONS_BY_ID, [], null, 'oxford-circus')
+    const oxford = fc.features.find((f) => f.properties.id === 'oxford-circus')
+    expect(oxford?.geometry.coordinates).toEqual([-0.1418, 51.5152])
   })
 })
 

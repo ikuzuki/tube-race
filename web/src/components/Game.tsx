@@ -5,8 +5,8 @@
 // determinism + the share grid.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { Adjacency, DailyPuzzle, GameState, Station, TubeGraph } from '../engine'
-import { compass, score, stationIndex } from '../engine'
+import type { Adjacency, DailyPuzzle, GameState, Neighbour, Station, TubeGraph } from '../engine'
+import { compass, score, shortestPath, stationIndex } from '../engine'
 import { useGameState } from '../hooks/useGameState'
 import { useStats } from '../hooks/useStats'
 import { useArchive } from '../hooks/useArchive'
@@ -18,6 +18,7 @@ import { buildShareText } from '../lib/share'
 import { points } from '../lib/score'
 import { displayName } from '../lib/format'
 import { journeyLegs } from '../lib/route'
+import { HintIcon, GiveUpIcon } from './icons'
 import Header from './Header'
 import StatusBar from './StatusBar'
 import PlayfieldMap from './PlayfieldMap'
@@ -46,6 +47,9 @@ interface GameProps {
   /** Optional seed state, primarily for tests. */
   initialState?: GameState
 }
+
+/** Score added per hint taken. A hint reveals the optimal next hop. */
+const HINT_COST = 3
 
 /** "2026-06-06" -> "Sat 6 Jun" (falls back to the raw string if unparseable). */
 function prettyDate(iso: string): string {
@@ -119,6 +123,21 @@ export default function Game({
   const [archiveOpen, setArchiveOpen] = useState(false)
   const [resultOpen, setResultOpen] = useState(false)
   const [showOptimal, setShowOptimal] = useState(false)
+  // Hints taken (each adds HINT_COST to the score) and the station the current
+  // hint points at (cleared on the next move). The player conceded if gaveUp.
+  const [hintsUsed, setHintsUsed] = useState(0)
+  const [hintStationId, setHintStationId] = useState<string | null>(null)
+  const [gaveUp, setGaveUp] = useState(false)
+
+  // A hint highlights the optimal next hop until the player moves; clear it
+  // whenever the current station changes (a move taken, or a restart).
+  useEffect(() => {
+    setHintStationId(null)
+  }, [state.currentId])
+
+  const hintCost = hintsUsed * HINT_COST
+  // The run is over once solved or conceded; moves and controls lock then.
+  const runOver = state.solved || gaveUp
 
   // First run shows only the onboarding, then drops straight into play; the
   // status bar already names the start and destination, so the separate intro
@@ -135,40 +154,39 @@ export default function Game({
   // Record the result once per date when solved, then surface the result card.
   // Archive completions are kept for every run; lifetime stats and the streak
   // only when this is the genuine daily.
+  const parScore = points(puzzle.par.hops, puzzle.par.changes)
+  // The player's score includes the hint surcharge, so it feeds the headline,
+  // the stars, the share and the recorded completion alike.
+  const finalScore = points(state.path.length, state.changes) + hintCost
+  // Optimal (3 stars) requires matching par with no hints, since each hint
+  // pushes the score over par.
+  const isOptimalRun = state.solved && finalScore <= parScore
+
   const recordedRef = useRef<string | null>(null)
   useEffect(() => {
     if (!state.solved || recordedRef.current === completionKey) return
     recordedRef.current = completionKey
     const sc = score(state)
-    const scoreOverPar = Math.max(
-      0,
-      points(sc.hops, sc.changes) - points(sc.parHops, sc.parChanges),
-    )
+    const solvedScore = points(sc.hops, sc.changes) + hintCost
+    const scoreOverPar = Math.max(0, solvedScore - parScore)
     if (isStreakDaily) {
-      recordResult({ date: dateISO, solved: true, scoreOverPar, optimal: sc.optimal })
+      recordResult({ date: dateISO, solved: true, scoreOverPar, optimal: scoreOverPar === 0 })
     }
-    recordCompletion(completionKey, {
-      solved: true,
-      score: points(sc.hops, sc.changes),
-      parScore: points(sc.parHops, sc.parChanges),
-    })
+    recordCompletion(completionKey, { solved: true, score: solvedScore, parScore })
     setIntroOpen(false)
     setResultOpen(true)
-  }, [state, dateISO, completionKey, isStreakDaily, recordResult, recordCompletion])
+  }, [state, dateISO, completionKey, isStreakDaily, hintCost, parScore, recordResult, recordCompletion])
 
-  const sc = state.solved ? score(state) : null
-  const playerScore = sc ? points(sc.hops, sc.changes) : points(state.path.length, state.changes)
-  const parScore = points(puzzle.par.hops, puzzle.par.changes)
-  const shareText = sc
+  const shareText = runOver
     ? buildShareText({
         dateISO,
-        solved: true,
-        score: points(sc.hops, sc.changes),
+        solved: state.solved,
+        score: finalScore,
         parScore,
-        stops: sc.hops,
-        parStops: sc.parHops,
-        changes: sc.changes,
-        parChanges: sc.parChanges,
+        stops: state.path.length,
+        parStops: puzzle.par.hops,
+        changes: state.changes,
+        parChanges: puzzle.par.changes,
         streak: stats.curStreak,
       })
     : ''
@@ -176,6 +194,9 @@ export default function Game({
   const handlePlayAgain = useCallback(() => {
     setResultOpen(false)
     setShowOptimal(false)
+    setHintsUsed(0)
+    setHintStationId(null)
+    setGaveUp(false)
     recordedRef.current = null
     restart()
   }, [restart])
@@ -184,6 +205,48 @@ export default function Game({
     setShowOptimal(true)
     setResultOpen(false)
   }, [])
+
+  // Reveal the optimal next hop and charge a hint; one hint per position (it
+  // clears on the next move), so pressing again while one shows is a no-op.
+  const handleHint = useCallback(() => {
+    if (runOver || hintStationId) return
+    const best = shortestPath(adj, state.currentId, puzzle.targetId)
+    const next = best?.stations[1]
+    if (!next) return
+    setHintStationId(next)
+    setHintsUsed((n) => n + 1)
+  }, [runOver, hintStationId, adj, state.currentId, puzzle.targetId])
+
+  // Concede: record a played-but-unsolved result (resets the streak on the
+  // daily) and open the result card with the best route on offer.
+  const handleGiveUp = useCallback(() => {
+    if (runOver) return
+    setGaveUp(true)
+    if (isStreakDaily) {
+      recordResult({ date: dateISO, solved: false, scoreOverPar: 0, optimal: false })
+    }
+    recordCompletion(completionKey, { solved: false, score: finalScore, parScore })
+    setShowOptimal(false)
+    setIntroOpen(false)
+    setResultOpen(true)
+  }, [
+    runOver,
+    isStreakDaily,
+    dateISO,
+    completionKey,
+    finalScore,
+    parScore,
+    recordResult,
+    recordCompletion,
+  ])
+
+  const playMove = useCallback(
+    (to: Neighbour) => {
+      if (runOver) return
+      play(to)
+    },
+    [runOver, play],
+  )
 
   return (
     <div className="flex min-h-screen flex-col bg-stone text-ink">
@@ -219,6 +282,7 @@ export default function Game({
           parHops={puzzle.par.hops}
           changes={state.changes}
           parChanges={puzzle.par.changes}
+          hintCost={hintCost}
           bearingDeg={bearingDeg}
           km={km}
         />
@@ -233,10 +297,37 @@ export default function Game({
             currentLine={currentLine}
             targetId={puzzle.targetId}
             stationsById={stationsById}
-            onMove={play}
+            onMove={playMove}
             showOptimal={showOptimal}
+            hintStationId={hintStationId}
             className="absolute inset-0 h-full w-full"
           />
+
+          {/* Hint + give-up controls, live only during an active run. */}
+          {!runOver && (
+            <div className="absolute left-3 top-3 z-20 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={handleHint}
+                disabled={hintStationId !== null}
+                title={`Hint (+${HINT_COST})`}
+                className="flex items-center gap-1.5 rounded-full bg-paper px-3 py-1.5 text-sm font-semibold text-ink shadow-lg ring-1 ring-black/10 transition hover:bg-stone disabled:opacity-50"
+              >
+                <HintIcon className="text-base" />
+                Hint
+                <span className="text-xs font-bold text-warn">+{HINT_COST}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleGiveUp}
+                title="Give up and show the best route"
+                className="flex items-center gap-1.5 rounded-full bg-paper px-3 py-1.5 text-sm font-semibold text-ink-soft shadow-lg ring-1 ring-black/10 transition hover:bg-stone"
+              >
+                <GiveUpIcon className="text-base" />
+                Give up
+              </button>
+            </div>
+          )}
 
           {showOptimal && (
             <div className="absolute left-3 top-3 z-20 max-h-[calc(100%-1.5rem)] w-[min(20rem,calc(100%-1.5rem))] overflow-y-auto rounded-xl border border-stone-200 bg-paper/95 p-3 shadow-lg backdrop-blur">
@@ -256,7 +347,7 @@ export default function Game({
       {/* When the result card is dismissed (e.g. to view the best route), keep a
           way back to it; archive replays also get a fresh-game shortcut. The
           genuine daily is one attempt per day, so it never offers a replay. */}
-      {state.solved && !resultOpen && (
+      {runOver && !resultOpen && (
         <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center gap-2">
           <button
             onClick={() => setResultOpen(true)}
@@ -277,8 +368,8 @@ export default function Game({
 
       {/* Mid-run restart for archive replays only: retry the past puzzle from
           scratch (the best result per date is kept, so an improved retry counts). */}
-      {!isStreakDaily && !state.solved && state.path.length > 0 && (
-        <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center">
+      {!isStreakDaily && !runOver && state.path.length > 0 && (
+        <div className="fixed inset-x-0 bottom-4 z-30 flex justify-center">
           <button
             onClick={handlePlayAgain}
             className="flex items-center gap-1.5 rounded-full bg-paper px-4 py-2 text-sm font-semibold text-ink shadow-lg ring-1 ring-black/10 transition hover:bg-stone"
@@ -320,13 +411,14 @@ export default function Game({
       <ResultCard
         open={resultOpen}
         solved={state.solved}
-        score={playerScore}
+        score={finalScore}
         parScore={parScore}
-        stops={sc?.hops ?? state.path.length}
+        stops={state.path.length}
         parStops={puzzle.par.hops}
-        changes={sc?.changes ?? state.changes}
+        changes={state.changes}
         parChanges={puzzle.par.changes}
-        optimal={sc?.optimal ?? false}
+        optimal={isOptimalRun}
+        hintsUsed={hintsUsed}
         shareText={shareText}
         streak={stats.curStreak}
         start={startCard ?? undefined}

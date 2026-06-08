@@ -39,6 +39,8 @@ interface StatusBarProps {
   parHops: number
   changes: number
   parChanges: number
+  /** Score surcharge from hints taken (each hint adds to the live score). */
+  hintCost?: number
   /** Bearing to target in degrees (0 = north, clockwise). */
   bearingDeg: number
   /** Straight-line distance to target in km. */
@@ -48,7 +50,7 @@ interface StatusBarProps {
 export default function StatusBar(props: StatusBarProps) {
   const { currentLineId, currentLineName, hops, parHops, changes, parChanges, bearingDeg, km } =
     props
-  const score = points(hops, changes)
+  const score = points(hops, changes) + (props.hintCost ?? 0)
   const parScore = points(parHops, parChanges)
 
   return (
