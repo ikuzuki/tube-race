@@ -1,0 +1,10 @@
+# Terraform working directories and state. The provider lock file
+# (.terraform.lock.hcl) is intentionally NOT ignored so it stays committed.
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+.terraformrc
+terraform.rc
