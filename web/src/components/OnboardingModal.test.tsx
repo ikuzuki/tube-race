@@ -5,12 +5,12 @@ import OnboardingModal from './OnboardingModal'
 describe('OnboardingModal', () => {
   it('renders nothing when closed', () => {
     render(<OnboardingModal open={false} onClose={vi.fn()} />)
-    expect(screen.queryByText(/mind the gap/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/how to play/i)).not.toBeInTheDocument()
   })
 
   it('renders the title and keeps the one explicit compass rule', () => {
     render(<OnboardingModal open onClose={vi.fn()} />)
-    expect(screen.getByRole('heading', { name: /mind the gap/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /how to play/i })).toBeInTheDocument()
     expect(screen.getByText(/never/i)).toBeInTheDocument()
     expect(screen.getByText(/which line/i)).toBeInTheDocument()
   })

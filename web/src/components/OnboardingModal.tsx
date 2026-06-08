@@ -1,4 +1,4 @@
-// First-run "how to play" card. Leads with a looping animated mini-demo of
+// First-run "How to play" card. Leads with a looping animated mini-demo of
 // actual gameplay (fog lifting, two stops ridden, a line change costing +4,
 // arrival), followed by three tight rules and an explicit scoring strip:
 // score = stops + 4 x changes, lower is better, you are racing the optimal
@@ -14,7 +14,7 @@ interface OnboardingModalProps {
 
 export default function OnboardingModal({ open, onClose }: OnboardingModalProps) {
   return (
-    <Modal open={open} onClose={onClose} title="Mind the gap">
+    <Modal open={open} onClose={onClose} title="How to play">
       <p className="text-sm text-ink-soft">
         Find your way from your start to the destination in as few stops and changes as you can.
       </p>
