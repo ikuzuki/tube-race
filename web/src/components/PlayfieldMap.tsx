@@ -1,5 +1,5 @@
-// Playfield map — the tube graph rendered as an overlay on a clean CARTO Positron
-// street map (metro-memory style) via MapLibre GL. Replaces the V2 SVG canvas:
+// Playfield map — the tube graph rendered as an overlay on a clean, label-free
+// grey street map (metro-memory style) via MapLibre GL. Replaces the V2 SVG canvas:
 // MapLibre owns projection, pan/zoom and the follow-camera, so this component is
 // purely presentational — it consumes `state`, draws GeoJSON overlays, and calls
 // `onMove` when the player taps a legal station. All testable geometry lives in
@@ -12,7 +12,6 @@ import maplibregl, {
   type GeoJSONSource,
   type LineLayerSpecification,
   type MapGeoJSONFeature,
-  type StyleSpecification,
 } from 'maplibre-gl'
 import type { GameState, Neighbour, Station, TubeGraph } from '../engine'
 import { displayName } from '../lib/format'
@@ -58,25 +57,9 @@ const FOLLOW_MS = 600
 /** Screen padding (px) kept around the current station + its legal moves. */
 const FOLLOW_PADDING = 64
 
-/** CARTO Positron raster basemap — keyless, clean and light. */
-const POSITRON_STYLE: StyleSpecification = {
-  version: 8,
-  // Glyphs so our own symbol-layer labels render over the raster basemap.
-  glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
-  sources: {
-    carto: {
-      type: 'raster',
-      tiles: [
-        'https://a.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
-        'https://b.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
-        'https://c.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png',
-      ],
-      tileSize: 256,
-      attribution: '© OpenStreetMap contributors © CARTO',
-    },
-  },
-  layers: [{ id: 'carto', type: 'raster', source: 'carto' }],
-}
+/** Positron, keyless, from OpenFreeMap's hosted tiles. Its own place labels are
+ *  stripped on load: the only names on the map are the ones the game draws. */
+const BASEMAP_STYLE = 'https://tiles.openfreemap.org/styles/positron'
 
 // Source + layer ids. The map is deliberately minimal: the travelled route, the
 // current station, the legal next moves (continue = filled dot, change = hollow
@@ -107,7 +90,7 @@ const IMG_DIAMOND = 'tr-diamond' // generated hollow-diamond icon for change mov
 
 const EMPTY_FC = { type: 'FeatureCollection', features: [] } as const
 
-// --- Marker colours (read on a light Positron background) -------------------
+// --- Marker colours (read on a light grey basemap) --------------------------
 
 const COLOUR_CURRENT = '#1ea672' // progress green ("you are here")
 const COLOUR_TARGET = '#e11d48' // strong rose flag
@@ -230,7 +213,7 @@ export default function PlayfieldMap({
     if (!containerRef.current) return
     const map = new maplibregl.Map({
       container: containerRef.current,
-      style: POSITRON_STYLE,
+      style: BASEMAP_STYLE,
       center: LONDON_CENTRE,
       zoom: INITIAL_ZOOM,
       attributionControl: { compact: true },
@@ -246,6 +229,11 @@ export default function PlayfieldMap({
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right')
 
     map.on('load', () => {
+      // Station names are the puzzle, so the basemap keeps none of its own.
+      for (const layer of map.getStyle().layers ?? []) {
+        if (layer.type === 'symbol') map.removeLayer(layer.id)
+      }
+
       // Overlay sources (populated by the data effect below).
       for (const id of [
         SRC_OPTIONS,
@@ -451,7 +439,7 @@ export default function PlayfieldMap({
           'text-size': 12,
           'text-offset': [0, 1.4],
           'text-anchor': 'top',
-          'text-font': ['Open Sans Regular'],
+          'text-font': ['Noto Sans Regular'],
           'text-allow-overlap': true,
         },
         paint: {
@@ -473,7 +461,7 @@ export default function PlayfieldMap({
           'text-size': 12,
           'text-offset': [0, 1.4],
           'text-anchor': 'top',
-          'text-font': ['Open Sans Regular'],
+          'text-font': ['Noto Sans Regular'],
           'text-allow-overlap': true,
         },
         paint: {
